@@ -1,0 +1,135 @@
+import 'package:flutter/material.dart';
+import 'package:social_media_app/views/widgets/chat_item.dart';
+import 'package:social_media_app/util/data.dart';
+
+class Chats extends StatefulWidget {
+  @override
+  _ChatsState createState() => _ChatsState();
+}
+
+class _ChatsState extends State<Chats>
+    with SingleTickerProviderStateMixin, AutomaticKeepAliveClientMixin {
+  TabController _tabController;
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(vsync: this, initialIndex: 0, length: 2);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    super.build(context);
+    return Scaffold(
+      appBar: AppBar(
+        title: TextField(
+          decoration: InputDecoration.collapsed(
+            hintText: 'Search',
+          ),
+        ),
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(
+              Icons.filter_list,
+            ),
+            onPressed: () {},
+          ),
+        ],
+        bottom: TabBar(
+          controller: _tabController,
+          indicatorColor: Theme.of(context).accentColor,
+          labelColor: Theme.of(context).accentColor,
+          unselectedLabelColor: Theme.of(context).textTheme.caption.color,
+          isScrollable: false,
+          tabs: <Widget>[
+            Tab(
+              text: "Message",
+            ),
+            Tab(
+              text: "Groups",
+            ),
+          ],
+        ),
+      ),
+      body: TabBarView(
+        controller: _tabController,
+        children: <Widget>[
+          ListView.separated(
+            physics: BouncingScrollPhysics(),
+            padding: EdgeInsets.all(10),
+            separatorBuilder: (BuildContext context, int index) {
+              return Align(
+                alignment: Alignment.centerRight,
+                child: Container(
+                  height: 0.5,
+                  width: MediaQuery.of(context).size.width / 1.3,
+                  child: Divider(),
+                ),
+              );
+            },
+            itemCount: chats.length+1,
+            itemBuilder: (BuildContext context, int index) {
+              if(chats.length==index){
+                return Container(
+                  height: AppBar().preferredSize.height,
+                );
+              }
+              Map chat = chats[index];
+              return ChatItem(
+                dp: chat['dp'],
+                name: chat['name'],
+                isOnline: chat['isOnline'],
+                counter: chat['counter'],
+                msg: chat['msg'],
+                time: chat['time'],
+              );
+            },
+          ),
+          ListView.separated(
+            physics: BouncingScrollPhysics(),
+            padding: EdgeInsets.all(10),
+            separatorBuilder: (BuildContext context, int index) {
+              return Align(
+                alignment: Alignment.centerRight,
+                child: Container(
+                  height: 0.5,
+                  width: MediaQuery.of(context).size.width / 1.3,
+                  child: Divider(),
+                ),
+              );
+            },
+            itemCount: groups.length+1,
+            itemBuilder: (BuildContext context, int index) {
+              if(groups.length==index){
+                return Container(
+                  height: AppBar().preferredSize.height,
+                );
+              }
+              Map chat = groups[index];
+              return ChatItem(
+                dp: chat['dp'],
+                name: chat['name'],
+                isOnline: chat['isOnline'],
+                counter: chat['counter'],
+                msg: chat['msg'],
+                time: chat['time'],
+              );
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  @override
+  bool get wantKeepAlive => true;
+}
+
+class LocationButton extends FloatingActionButtonLocation{
+  @override
+  Offset getOffset(ScaffoldPrelayoutGeometry scaffoldGeometry) {
+    Size size=scaffoldGeometry.scaffoldSize;
+    return Offset(size.width-70,size.height-(AppBar().preferredSize.height*2)-10);
+  }
+
+}
