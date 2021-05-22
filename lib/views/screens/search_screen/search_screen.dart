@@ -92,8 +92,10 @@ class _SearchScreenState extends State<SearchScreen> {
                     MyUser user = filteredUsers[i];
                     bool isMee = user.uid == userBlock.user.uid;
                     bool isRequest=requests.any((e) =>e.uid==user.uid);
+                    bool isFriend=profileBlock.friends.valueWrapper.value.any((e) =>e.uid==user.uid);
+                    bool result=isMee||isRequest||isFriend;
                     return BuildUserListile(
-                      onPressed: isMee||isRequest
+                      onPressed: result
                           ? null
                           : () async {
                               await profileBlock.sendFriendshipRequest(
@@ -102,13 +104,14 @@ class _SearchScreenState extends State<SearchScreen> {
                                       .getUserFromUid(userBlock.user.uid));
                             },
                       user: user,
-                      textColor: isMee||isRequest ? Colors.red.shade100 : null,
+                      textColor:result ? Colors.red.shade100 : null,
+                      buttonBackgroundColor: result ? Colors.grey.shade100 : null,
                       icon: Icon(
                         isRequest ? Icons.person_outlined : Icons.person_add_alt,
                         color:
-                            isMee||isRequest ? Colors.red.shade100 : Colors.red.shade300,
+                            result ? Colors.red.shade100 : Colors.red.shade300,
                       ),
-                      mesaj: isMee ? "Bu sizsiniz" :isRequest ? "İstek Gönderildi" : "Arkadaş Ekle",
+                      mesaj: isMee ? "Bu sizsiniz" :isRequest ? "İstek Gönderildi" :isFriend ? "Arkadaşsınız" : "Arkadaş Ekle",
                     );
                   },
                 );

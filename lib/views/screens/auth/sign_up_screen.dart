@@ -1,6 +1,8 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_card_swipper/widgets/flutter_page_indicator/flutter_page_indicator.dart';
+import 'package:flutter_card_swipper/widgets/transformer_page_view/transformer_page_view.dart';
 import 'dart:math' as math;
 import 'package:provider/provider.dart';
 import 'package:screenshot/screenshot.dart';
@@ -8,27 +10,29 @@ import 'package:social_media_app/mixins/textfield_mixin.dart';
 import 'package:social_media_app/providers/userBlock.dart';
 import 'package:social_media_app/providers/usersBlock.dart';
 import 'package:social_media_app/util/router.dart';
+import 'package:social_media_app/views/screens/auth/loginPage.dart';
 import 'package:social_media_app/views/screens/auth/screenshot_widget.dart';
-import 'package:social_media_app/views/screens/auth/sign_up_screen.dart';
 import 'package:wave/config.dart';
 import 'package:wave/wave.dart';
-import 'package:sign_button/sign_button.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:flutter_card_swipper/flutter_card_swiper.dart';
 
-class LoginPage extends StatefulWidget {
+class SignUpScreen extends StatefulWidget {
   @override
-  _LoginPageState createState() => _LoginPageState();
+  _SignUpScreenState createState() => _SignUpScreenState();
 }
 
-class _LoginPageState extends State<LoginPage> with TextFieldMixin {
+class _SignUpScreenState extends State<SignUpScreen> with TextFieldMixin{
   int avatarIndex = 0;
-  ScreenshotController _controller = ScreenshotController();
+  SwiperController _swiperController;
   bool result = false;
   String imagePath;
+  List<ScreenshotController> controllers=List.generate(100, (index) => ScreenshotController());
 
   @override
   void initState() {
     super.initState();
+    _swiperController = SwiperController();
   }
 
   @override
@@ -38,7 +42,7 @@ class _LoginPageState extends State<LoginPage> with TextFieldMixin {
     UsersBlock usersBlock = Provider.of<UsersBlock>(context);
     return Scaffold(
       appBar: AppBar(
-        title: Text("Giriş Yap".toUpperCase(),
+        title: Text("Kayıt ol".toUpperCase(),
             textAlign: TextAlign.center,
             style: TextStyle(
                 color: Colors.black,
@@ -93,6 +97,10 @@ class _LoginPageState extends State<LoginPage> with TextFieldMixin {
                               Colors.red.shade300.withOpacity(0.2),
                               Color(0x990004F1)
                             ],
+                            // [Colors.red, Color(0xAAF44336)],
+                            // [Colors.orange, Color(0x66FF9800)],
+                            // [Colors.red[800], Color(0x77E57373)],
+                            // [Colors.yellow, Color(0x55FFEB3B)],
                           ],
                           durations: [15000, 19440, 10800, 34000],
                           heightPercentages: [0.20, 0.23, 0.25, 0.30],
@@ -113,46 +121,62 @@ class _LoginPageState extends State<LoginPage> with TextFieldMixin {
                   Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
-                      ScreenshotWidget.fromWidget(
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(90),
-                          child: Container(
-                            height: 146,
-                            width: 146,
-                            color: Colors.white,
-                            padding: EdgeInsets.all(20),
-                            child: Center(
-                                child: FlutterLogo(
-                              size: 126,
-                            )),
-                          ),
+                      Swiper(
+                        onIndexChanged: (i){
+                          avatarIndex=i;
+                        },
+                        itemWidth: 100,
+                        layout: SwiperLayout.TINDER,
+                        itemHeight: 100,
+                        itemCount: 100,
+                        loop: true,
+                        controller: _swiperController,
+                        itemBuilder: (c, i) {
+                          return ScreenshotWidget(
+                            size: 100,
+                            controller: controllers[i],
+                            url:"https://avatars.dicebear.com/api/avataaars/:seed$i.svg");
+                        },
+                      ),
+                      buildTextField(
+                        size: size,
+                        hintText: "Kullanıcı Adı",
+                        prefixIcon: Icon(
+                          Icons.person_outline_rounded,
+                          color: Colors.black26,
+                        ),
+                        suffixIcon: Icon(
+                          Icons.check_circle,
+                          color: Colors.black26,
                         ),
                       ),
                       buildTextField(
                         size: size,
                         hintText: "E-mail",
-                        prefixIcon: Icon(Icons.alternate_email_rounded),
+                        prefixIcon: Icon(
+                          Icons.alternate_email_rounded,
+                          color: Colors.black26,
+                        ),
+                        suffixIcon: Icon(
+                          Icons.check_circle,
+                          color: Colors.black26,
+                        ),
                       ),
-                      Column(
-                        children: [
-                          buildTextField(
-                            size: size,
-                            hintText: "Şifre",
-                            prefixIcon: Icon(Icons.lock_outlined),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 30.0, vertical: 3.0),
-                            child: Container(
-                              width: double.maxFinite,
-                              child: Text("Şifreni mi unuttun?",
-                                  textAlign: TextAlign.right,
-                                  style: TextStyle(
-                                      color: Colors.black,
-                                      fontWeight: FontWeight.bold)),
-                            ),
-                          ),
-                        ],
+                      buildTextField(
+                        size:size,
+                        hintText: "Şifre",
+                        prefixIcon: Icon(
+                          Icons.lock_outline_rounded,
+                          color: Colors.black26,
+                        ),
+                      ),
+                      buildTextField(
+                        size:size,
+                        hintText: "Şifre Tekrar",
+                        prefixIcon: Icon(
+                          Icons.lock_outline_rounded,
+                          color: Colors.black26,
+                        ),
                       ),
                       Container(
                         width: 200,
@@ -161,10 +185,11 @@ class _LoginPageState extends State<LoginPage> with TextFieldMixin {
                           padding: EdgeInsets.symmetric(vertical: 16.0),
                           fillColor: Colors.pink,
                           onPressed: () async {
+                            print(avatarIndex);
                             try {
                               Directory temporaryDir =
                                   await getTemporaryDirectory();
-                              String path = await _controller.captureAndSave(
+                              String path = await controllers[avatarIndex].captureAndSave(
                                   temporaryDir.path,
                                   fileName: "${DateTime.now()}.png");
                               print(path);
@@ -180,8 +205,8 @@ class _LoginPageState extends State<LoginPage> with TextFieldMixin {
                           shape: RoundedRectangleBorder(
                               borderRadius:
                                   BorderRadius.all(Radius.circular(40.0))),
-                          child: Text("Giriş Yap",
-                              style: TextStyle(color: Colors.white70)),
+                          child: Text("Kayıt Ol",
+                              style: TextStyle(color: Colors.white70,fontWeight: FontWeight.bold)),
                         ),
                       ),
                     ],
@@ -191,53 +216,22 @@ class _LoginPageState extends State<LoginPage> with TextFieldMixin {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: <Widget>[
-                        Text(
-                          "yada".toUpperCase(),
-                        ),
-                        SizedBox(
-                          height: 20.0,
-                        ),
-                        Row(
-                          children: <Widget>[
-                            Expanded(
-                              child: Center(
-                                child: SignInButton(
-                                  btnText: "Google ile giriş yap",
-                                  btnTextColor: Colors.white70,
-                                  btnColor: Colors.black.withOpacity(0.65),
-                                  buttonType: ButtonType.google,
-                                  elevation: 12,
-                                  // imagePosition: ImagePosition.left,
-                                  // btnColor: Colors.pink.shade700,
-                                  // btnTextColor: Colors.white70,
-                                  buttonSize: ButtonSize.medium,
-                                  shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(12)),
-                                  onPressed: () async {
-                                    await userBlock.signInWithGoogle(
-                                        context, usersBlock);
-                                  },
-                                ),
-                              ),
-                            ),
-                            SizedBox(
-                              width: 20.0,
-                            ),
-                          ],
-                        ),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
-                            Text("Hesabın yok mu?"),
+                            Text("Hesabın var mı?"),
                             TextButton(
                               child: Text(
-                                "Kayıt ol".toUpperCase(),
+                                "Giriş yap".toUpperCase(),
                                 style: TextStyle(
                                     color: Colors.indigo,
                                     fontWeight: FontWeight.bold),
                               ),
-                              onPressed: () {
-                                Navigate.pushPage(context, SignUpScreen());
+                              onPressed: () async {
+                                bool result = await Navigator.maybePop(context);
+                                if (!result) {
+                                  Navigate.pushPage(context, LoginPage());
+                                }
                               },
                             )
                           ],
@@ -253,4 +247,6 @@ class _LoginPageState extends State<LoginPage> with TextFieldMixin {
       ),
     );
   }
+
+  
 }

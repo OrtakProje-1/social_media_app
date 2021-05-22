@@ -1,8 +1,8 @@
 import 'dart:convert';
-
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:social_media_app/views/screens/notification_screen/enum/notification_type.dart';
@@ -22,14 +22,20 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 }
 
 void showNotification(RemoteMessage message) {
-  Map<String,dynamic> data=message.data;
-  NSender sender=NSender.fromMap(data["nSender"]);
-  NType nType=NType.values[data["nType"]];
+  Map<String, dynamic> data = message.data;
+  NSender sender = NSender.fromMap(data["nSender"]);
+  NType nType = NType.values[data["nType"]];
   RemoteNotification notification = message.notification;
-  NotificationDetails notificationDetails =
+ if(!kIsWeb){
+   print("bildirim oluşturuluyor");
+    NotificationDetails notificationDetails =
       NotificationDetails(android: androidNotificationDetails);
   flutterLocalNotificationsPlugin.show(notification.hashCode,
-      notification.title, notification.body, notificationDetails,payload:JsonEncoder().convert(data));
+      notification.title, notification.body, notificationDetails,
+      payload: JsonEncoder().convert(data));
+ }else{
+   print("Web de mesaj= "+notification.title);
+ }
 }
 
 AndroidNotificationDetails androidNotificationDetails =
@@ -42,8 +48,8 @@ AndroidNotificationDetails androidNotificationDetails =
   priority: Priority.high,
 );
 
-Future<void> selectNotification(String s)async{
-  print("Bildirim seçildi payload= "+s?.toString());
+Future<void> selectNotification(String s) async {
+  print("Bildirim seçildi payload= " + s?.toString());
 }
 
 const AndroidNotificationChannel channel = AndroidNotificationChannel(
@@ -53,9 +59,12 @@ const AndroidNotificationChannel channel = AndroidNotificationChannel(
   importance: Importance.high,
 );
 
-Future<void> initializeNotification()async{
-   AndroidInitializationSettings androidInitializationSettings=AndroidInitializationSettings("app_icon");
-  await flutterLocalNotificationsPlugin.initialize(InitializationSettings(android:androidInitializationSettings),onSelectNotification: selectNotification);
+Future<void> initializeNotification() async {
+  AndroidInitializationSettings androidInitializationSettings =
+      AndroidInitializationSettings("app_icon");
+  await flutterLocalNotificationsPlugin.initialize(
+      InitializationSettings(android: androidInitializationSettings),
+      onSelectNotification: selectNotification);
 }
 
 void main() async {
@@ -68,26 +77,24 @@ void main() async {
       print("onData");
       showNotification(message);
     },
-    onDone: (){
+    onDone: () {
       print("onDone");
     },
   );
-  await flutterLocalNotificationsPlugin
-      .resolvePlatformSpecificImplementation<
-          AndroidFlutterLocalNotificationsPlugin>()
-      ?.createNotificationChannel(channel);
+
+  if (!kIsWeb) {
+    await initializeNotification();
+    await flutterLocalNotificationsPlugin
+        .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin>()
+        ?.createNotificationChannel(channel);
+  }else{
+  }
 
   await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
     alert: true,
     badge: true,
     sound: true,
   );
-  await initializeNotification();
   runApp(MyApp());
-}
-class LargeIcon extends AndroidBitmap{
-  @override
-  // TODO: implement bitmap
-  String get bitmap => throw UnimplementedError();
-
 }

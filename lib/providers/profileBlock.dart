@@ -43,6 +43,10 @@ class ProfileBlock{
   CollectionReference friendRequest(String uid)=>queryFromUid(uid).collection("friend_request");
 
   
+  Future<void> updateUserisOnline(String uid,bool isOnline)async{
+    await _firestore.collection("Users").doc(uid).update({"isOnline":isOnline});
+  }
+
   Future<void> sendFriendshipRequest({MyUser friend,MyUser sender})async{
     MyNotification notification=MyNotification(
       friend: sender,
@@ -65,6 +69,15 @@ class ProfileBlock{
 
   Future<void> _addMyFriendRequest(MyUser my,MyUser friend)async{
    await friendRequest(my.uid).doc(friend.uid).set(friend.toMap());
+   await updateFriendRequest(friend);
+  }
+
+  Future<void> updateFriendRequest(MyUser newFriend)async{
+    List<MyUser> fReq= friendRequests.value;
+    if(!fReq.any((e) =>e.uid==newFriend.uid)){
+      fReq.add(newFriend);
+      friendRequests.add(fReq);
+    }
   }
 
   Future<void> addFriend(MyUser me,MyUser friend)async{
@@ -104,6 +117,14 @@ class ProfileBlock{
     friendsUid.add(uids);
   }
 
+  bool isRequest(String uid){
+    return friendRequests.value.any((e) =>e.uid==uid);
+  }
+
+  bool isFriend(String uid){
+    return friends.value.any((e) =>e.uid==uid);
+  }
+
   Future<void> fetchDatas(String uid)async{
     await getAllFriendsUid(uid);
     QuerySnapshot friendRequestsCollections= await friendRequest(uid).get();
@@ -114,6 +135,12 @@ class ProfileBlock{
 
     friends.add(myFriends);
     friendRequests.add(myFriendRequests);
+  }
+
+  void clearDatas(){
+    friendRequests.add([]);
+    friends.add([]);
+    friendsUid.add([]);
   }
 
   void dispose(){

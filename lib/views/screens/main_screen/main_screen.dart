@@ -17,6 +17,7 @@ import 'package:social_media_app/providers/storageBlock.dart';
 import 'package:social_media_app/providers/userBlock.dart';
 import 'package:social_media_app/util/const.dart';
 import 'package:social_media_app/util/enum.dart';
+import 'package:social_media_app/views/screens/chat/chats_screen.dart';
 import 'package:social_media_app/views/screens/main_screen/widgets/BuildImageListWidget.dart';
 import 'package:social_media_app/views/screens/main_screen/widgets/build_badge_widget.dart';
 import 'package:social_media_app/views/screens/main_screen/widgets/build_video_widget.dart';
@@ -42,6 +43,7 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen>
     with SingleTickerProviderStateMixin, PickerMixin {
   PageController _pageController;
+  ScrollController _scrollController;
   AnimationController _controller;
   int _page = 2;
 
@@ -59,10 +61,11 @@ class _MainScreenState extends State<MainScreen>
         controller: _pageController,
         onPageChanged: onPageChanged,
         children: <Widget>[
-          Chats(),
+          ChatsScreen(),
           NotificationsScreen(),
           Home(
             key:PageStorageKey("home"),
+            controller: _scrollController,
           ),
           ProfileScreen(
             user: MyUser.fromUser(userBlock.user,token:userBlock.token),
@@ -477,8 +480,8 @@ class _MainScreenState extends State<MainScreen>
   void initState() {
     super.initState();
     _pageController = PageController(initialPage: 2);
-    _controller =
-        AnimationController(duration: Duration(milliseconds: 800), vsync: this);
+    _controller = AnimationController(duration: Duration(milliseconds: 800), vsync: this);
+    _scrollController=ScrollController();
   }
 
   @override

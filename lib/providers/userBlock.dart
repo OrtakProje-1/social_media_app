@@ -61,7 +61,7 @@ class UserBlock {
         if (!isSavedUser) {
           usersBlock.addUser(MyUser.fromUser(user,token:token));
         }
-        await GetDatas().getAllDatas(context,user.uid);
+        await GetDatas().getAllDatas(context,user.uid,isSignOut: true);
         Navigate.pushPageReplacement(context, MainScreen());
       } else {
         final GoogleSignInAccount googleUser = await GoogleSignIn().signIn();
@@ -81,7 +81,7 @@ class UserBlock {
         if (!isSavedUser) {
           usersBlock.addUser(MyUser.fromUser(user,token: token));
         }
-        GetDatas().getAllDatas(context,user.uid);
+        GetDatas().getAllDatas(context,user.uid,isSignOut: true);
         Navigate.pushPageReplacement(context, MainScreen());
       }
     } catch (e) {

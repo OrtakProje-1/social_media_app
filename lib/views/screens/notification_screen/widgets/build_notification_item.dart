@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:social_media_app/models/my_user.dart';
@@ -106,25 +107,20 @@ class NotificationItem extends StatelessWidget {
             boxShadow: [
               BoxShadow(
                 color: notification.isRead
-                    ? Colors.blue.shade300
+                    ? Colors.grey.shade400
                     : Colors.pink.shade300,
                 blurRadius: notification.isRead ? 4 : 6,
               ),
             ],
           ),
           child: ListTile(
-            horizontalTitleGap:0,
             isThreeLine: isFriend ? true : false,
-            trailing:Padding(
-              padding: const EdgeInsets.only(left: 10),
-              child: BuildUserImageAndIsOnlineWidget(
-                uid: notification.nSender.uid,
-                usersBlock: usersBlock,
-              ),
+            leading:CircleAvatar(
+              backgroundImage: CachedNetworkImageProvider(notification.nSender.photoURL),
             ),
             title: Text(notification.nMessage),
             subtitle: getSubTitle(isFriend,profileBlock,notification,me),
-            leading:getReadIcon(notification.nType), 
+           // leading:getReadIcon(notification.nType), 
             onTap: () async {
               await notificationBlock.updateNotification(
                   userBlock.user.uid,

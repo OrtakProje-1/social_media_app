@@ -2,10 +2,8 @@ import 'dart:developer' as dev;
 import 'dart:math';
 
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttericon/font_awesome5_icons.dart';
-import 'package:fluttericon/font_awesome_icons.dart';
 import 'package:fluttericon/linecons_icons.dart';
 import 'package:provider/provider.dart';
 import 'package:social_media_app/mixins/build_postitem_list.dart';
@@ -17,6 +15,7 @@ import 'package:social_media_app/providers/userBlock.dart';
 import 'package:social_media_app/util/router.dart';
 import 'package:social_media_app/views/screens/search_screen/search_screen.dart';
 import 'package:social_media_app/views/screens/search_screen/widgets/build_user_listile.dart';
+import 'package:social_media_app/views/widgets/buttons/custom_elevated_button.dart';
 import 'package:social_media_app/views/widgets/buttons/profile_blur_button.dart';
 
 typedef Builder = Widget Function(
@@ -39,6 +38,9 @@ class _ProfileScreenState extends State<ProfileScreen> with BuildPostItemList {
     PostsBlock postsBlock = Provider.of<PostsBlock>(context);
     UserBlock userBlock = Provider.of<UserBlock>(context);
     ProfileBlock profileBlock = Provider.of<ProfileBlock>(context);
+    bool isMee=widget.user.uid == userBlock.user.uid;
+    bool isRequest=profileBlock.isRequest(widget.user.uid);
+    bool isFriend=profileBlock.isFriend(widget.user.uid);
     return Scaffold(
       body: CustomScrollView(
         physics: BouncingScrollPhysics(),
@@ -95,7 +97,7 @@ class _ProfileScreenState extends State<ProfileScreen> with BuildPostItemList {
                 ),
               ],
             ),
-            leading: widget.user.uid != userBlock.user.uid
+            leading: !isMee
                 ? ProfileBlurButton(
                     icon: Icon(
                       Icons.arrow_back_ios_rounded,
@@ -112,7 +114,7 @@ class _ProfileScreenState extends State<ProfileScreen> with BuildPostItemList {
                     },
                   ),
             actions: [
-              if (widget.user.uid == userBlock.user.uid) ...[
+              if (isMee) ...[
                 //   ProfileBlurButton(
                 //   icon: Icon(Linecons.pencil,color: Colors.white),
                 //   onPressed: () {
@@ -144,8 +146,9 @@ class _ProfileScreenState extends State<ProfileScreen> with BuildPostItemList {
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
-                      buildFollowWidget("Takipçi"),
-                      buildFollowWidget("Takip ettiklerim")
+                      Expanded(child: buildFollowWidget("Takipçi")),
+                      Container(width:1,color: Colors.red.shade100,height: 20,),
+                      Expanded(child: buildFollowWidget("Takip ettiklerim"))
                     ],
                   ),
                 ),
@@ -156,6 +159,50 @@ class _ProfileScreenState extends State<ProfileScreen> with BuildPostItemList {
                     textAlign: TextAlign.center,
                   ),
                 ),
+                if(!isMee)...[
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      primary: Colors.grey.shade100,
+                    ),
+                    child:Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(isRequest ? Icons.person_outline_rounded :isFriend ? Icons.person_remove_alt_1_outlined : Icons.person_add_alt,color: Colors.red.shade300,),
+                        SizedBox(width: 10,),
+                        Text(isRequest ? "İstek gönderildi." :isFriend ? "Arkadaşlarımdan çıkar" : "Arkadaşlık isteği gönder",style:TextStyle(color: Colors.red.shade300))
+                      ],
+                    ),
+                    onPressed:isRequest ? null : (){},
+                  ),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      primary: Colors.grey.shade100,
+                    ),
+                    child:Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.block_outlined,color: Colors.red.shade300,),
+                        SizedBox(width: 10,),
+                        Text("Bu kullanıcıyı engelle",style:TextStyle(color: Colors.red.shade300))
+                      ],
+                    ),
+                    onPressed: (){},
+                  ),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      primary: Colors.grey.shade100,
+                    ),
+                    child:Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.notification_important_outlined,color: Colors.red.shade300,),
+                        SizedBox(width: 10,),
+                        Text("Bu kullanıcıyı şikayet et",style:TextStyle(color: Colors.red.shade300))
+                      ],
+                    ),
+                    onPressed: (){},
+                  ),
+                ],
               ],
             ),
           ),

@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:social_media_app/util/data.dart';
 import 'package:social_media_app/views/screens/notification_screen/models/notification.dart';
 
 class NotificationBlock{
@@ -37,6 +38,10 @@ class NotificationBlock{
     QuerySnapshot query=await _getNotifications(uid);
     List<MyNotification> myNotifications= query.docs.map((e) =>MyNotification.fromMap(e.data())).toList();
     notifications.add(myNotifications);
+  }
+
+  void clearDatas(){
+    notifications.add([]);
   }
 
   void dispose(){

@@ -23,7 +23,7 @@ class StorageBlock {
     return _storage.ref().child("videos");
   }
 
-  Reference get soundsRef {
+  Reference get audiosRef {
     return _storage.ref().child("sounds");
   }
 
@@ -33,6 +33,26 @@ class StorageBlock {
         .child(userUid)
         .child("$timeStamp-$index.$ext")
         .putFile(file,SettableMetadata(contentType: 'image/$ext'));
+    await task.whenComplete(() => null);
+    return await task.snapshot.ref.getDownloadURL();
+  }
+
+  Future<String> uploadAudio({File file, String userUid, int index,String timeStamp,String ext})async{
+    
+    UploadTask task = audiosRef
+        .child(userUid)
+        .child("$timeStamp-$index.$ext")
+        .putFile(file,SettableMetadata(contentType: 'audio/$ext'));
+    await task.whenComplete(() => null);
+    return await task.snapshot.ref.getDownloadURL();
+  }
+
+  Future<String> uploadVideo({File file, String userUid, int index,String timeStamp,String ext})async{
+    
+    UploadTask task = videosRef
+        .child(userUid)
+        .child("$timeStamp-$index.$ext")
+        .putFile(file,SettableMetadata(contentType: 'video/$ext'));
     await task.whenComplete(() => null);
     return await task.snapshot.ref.getDownloadURL();
   }

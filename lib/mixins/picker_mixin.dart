@@ -23,4 +23,13 @@ mixin PickerMixin{
     );
     return audio?.files;
   }
+
+  Future<List<PlatformFile>> getFilePicker() async {
+    FilePickerResult audio = await FilePicker.platform.pickFiles(
+      allowMultiple: false,
+      type: FileType.custom,
+      allowedExtensions: ["ppt","pptx","docx","pdf","txt","apk",],
+    );
+    return audio?.files;
+  }
 }

@@ -2,7 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:social_media_app/models/my_user.dart';
 import 'package:social_media_app/providers/usersBlock.dart';
-import 'package:social_media_app/views/widgets/clippers/isonline_rect.dart';
+import 'package:social_media_app/util/const.dart';
 
 class BuildUserImageAndIsOnlineWidget extends StatelessWidget {
   final UsersBlock usersBlock;
@@ -14,18 +14,49 @@ class BuildUserImageAndIsOnlineWidget extends StatelessWidget {
         super(key: key);
 
   BuildUserImageAndIsOnlineWidget.fromUser(
-      {Key key, this.user, this.width = 40, this.usersBlock})
-      : super(key: key);
+      {Key key, this.user, this.width = 40})
+      : this.usersBlock = null,
+        super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    double height = width + (width / 6);
+    //double height = width + (width / 6);
     return Container(
       width: width,
-      height: height,
+      height: width,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12),
+        image: DecorationImage(
+          image: CachedNetworkImageProvider(user.photoURL),
+        ),
+      ),
       child: Stack(
         children: [
-          Positioned(
+          if (user.isOnline)
+            Positioned(
+              right: -3,
+              bottom: 1,
+              child: Container(
+                height: 14,
+                width: 14,
+                decoration: BoxDecoration(
+                  color: kPrimaryColor,
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                      color: Theme.of(context).scaffoldBackgroundColor,
+                      width: 3),
+                ),
+              ),
+            )
+        ],
+      ),
+    );
+  }
+}
+
+/**
+ 
+ Positioned(
             bottom: 0,
             left: 10,
             right: 10,
@@ -73,8 +104,5 @@ class BuildUserImageAndIsOnlineWidget extends StatelessWidget {
               backgroundImage: CachedNetworkImageProvider(user.photoURL),
             ),
           ),
-        ],
-      ),
-    );
-  }
-}
+
+ */

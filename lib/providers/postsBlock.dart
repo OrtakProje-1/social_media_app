@@ -4,6 +4,7 @@ import 'package:social_media_app/models/Post.dart';
 import 'package:social_media_app/models/my_user.dart';
 import 'package:social_media_app/providers/notificationBlock.dart';
 import 'package:social_media_app/providers/usersBlock.dart';
+import 'package:social_media_app/util/data.dart';
 import 'package:social_media_app/views/screens/notification_screen/enum/notification_type.dart';
 import 'package:social_media_app/views/screens/notification_screen/models/notification.dart';
 import 'package:social_media_app/views/screens/notification_screen/models/notification_receiver.dart';
@@ -138,6 +139,10 @@ class PostsBlock {
     QuerySnapshot query= await getFriendsPost(uids);
     List<Post> myPost= query.docs.map((e) =>Post.fromMap(e.data())).toList();
     posts.add(myPost);
+  }
+
+  void clearDatas(){
+    posts.add([]);
   }
 
   void dispose(){

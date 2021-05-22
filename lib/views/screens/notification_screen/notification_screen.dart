@@ -34,6 +34,9 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
           elevation: 8,
           title: Text("Bildirimler"),
           centerTitle: true,
+          actions: [
+            BuildPopupMenu(value: 0,),
+          ],
         ),
         body: bodyy(userBlock, profileBlock, stream),
       ),

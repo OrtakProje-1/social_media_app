@@ -24,7 +24,14 @@ class _FriendsScreenState extends State<FriendsScreen> {
     UsersBlock usersBlock = Provider.of<UsersBlock>(context);
     MyUser me = usersBlock.getUserFromUid(userBlock.user.uid);
     return Container(
-      height: 100,
+      height:60,
+      decoration: BoxDecoration(
+        border: Border(
+          bottom: BorderSide(
+            color: Colors.grey.shade300,
+          ),
+        ),
+      ),
       width: double.infinity,
       child: StreamBuilder<QuerySnapshot>(
         stream: profileBlock.streamFriends(userBlock.user.uid),
@@ -34,62 +41,31 @@ class _FriendsScreenState extends State<FriendsScreen> {
             List<MyUser> users =
                 usersQuery.docs.map((e) => MyUser.fromMap(e.data())).toList();
             if (users.isEmpty||users==null) {
-              return Row(
-                children: [
-                  buildFriendsItem(usersBlock: usersBlock, me: me),
-                ],
-              );
+              return BuildFriendsItem(user:me);
             }
-            return Row(
-              children: [
-                buildFriendsItem(usersBlock: usersBlock, me: me),
-                Expanded(
-                  child: ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    padding: EdgeInsets.symmetric(horizontal: 8),
-                    physics: BouncingScrollPhysics(),
-                    itemCount: users.length,
-                    itemBuilder: (c, i) {
-                      MyUser user = users[i];
-                      if (user.uid == userBlock.user.uid) {
-                        return SizedBox();
-                      }
-                      return GestureDetector(
-                        onTap: () {
-                          Navigate.pushPage(
-                              context,
-                              ProfileScreen(
-                                user: user,
-                              ));
-                        },
-                        child: Container(
-                          height: 100,
-                          margin: EdgeInsets.symmetric(horizontal: 8),
-                          padding: EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(12),
-                              color: Colors.grey.shade400.withOpacity(0.5)),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              BuildUserImageAndIsOnlineWidget.fromUser(
-                                usersBlock: usersBlock,
-                                user: user,
-                                width: 50,
-                              ),
-                              Text(
-                                user.displayName,
-                                style: TextStyle(fontWeight: FontWeight.bold),
-                              ),
-                            ],
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-              ],
+            return ListView.builder(
+              scrollDirection: Axis.horizontal,
+              physics: BouncingScrollPhysics(),
+              itemCount: users.length+1,
+              itemBuilder: (c, i) {
+                if(i==0){
+                  return BuildFriendsItem(user:me);
+                }
+                MyUser user = users[i-1];
+                if (user.uid == userBlock.user.uid) {
+                  return SizedBox();
+                }
+                return GestureDetector(
+                  onTap: () {
+                    Navigate.pushPage(
+                        context,
+                        ProfileScreen(
+                          user: user,
+                        ));
+                  },
+                  child:BuildFriendsItem(user: user)
+                );
+              },
             );
           } else {
             return SizedBox();
@@ -100,39 +76,21 @@ class _FriendsScreenState extends State<FriendsScreen> {
   }
 }
 
-class buildFriendsItem extends StatelessWidget {
-  const buildFriendsItem({
+class BuildFriendsItem extends StatelessWidget {
+  const BuildFriendsItem({
     Key key,
-    @required this.usersBlock,
-    @required this.me,
+    @required this.user,
   }) : super(key: key);
 
-  final UsersBlock usersBlock;
-  final MyUser me;
+  final MyUser user;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 100,
-      margin: EdgeInsets.symmetric(horizontal: 8),
-      padding: EdgeInsets.all(8),
-      decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(12),
-          color: Colors.grey.shade400.withOpacity(0.5)),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          BuildUserImageAndIsOnlineWidget.fromUser(
-            usersBlock: usersBlock,
-            user: me,
-            width: 50,
-          ),
-          Text(
-            me.displayName,
-            style: TextStyle(fontWeight: FontWeight.bold),
-          ),
-        ],
+      margin: const EdgeInsets.all(5),
+      child: BuildUserImageAndIsOnlineWidget.fromUser(
+        user: user,
+        width: 50,
       ),
     );
   }

@@ -12,9 +12,9 @@ class BuildPopupMenu extends StatelessWidget {
   final List<String> elemans = [
     "Hepsi",
     "Arkadaşlık",
-    "Favori",
+    "Beğeni",
     "Yorum",
-    "Kayıt"
+    "Bahsetme"
   ];
 
   @override
@@ -59,7 +59,7 @@ class BuildPopupMenu extends StatelessWidget {
 
   NType getType(String e) {
     if (e == "Arkadaşlık") return NType.FRIEND;
-    if (e == "Favori") return NType.LIKE;
+    if (e == "Beğeni") return NType.LIKE;
     if (e == "Yorum") return NType.COMMENT;
 
     return NType.SAVED;

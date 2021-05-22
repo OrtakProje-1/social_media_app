@@ -5,8 +5,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:provider/provider.dart';
+import 'package:rxdart/rxdart.dart';
 import 'package:social_media_app/mixins/build_postitem_list.dart';
 import 'package:social_media_app/models/Post.dart';
+import 'package:social_media_app/providers/get_datas.dart';
 import 'package:social_media_app/providers/postsBlock.dart';
 import 'package:social_media_app/providers/profileBlock.dart';
 import 'package:social_media_app/providers/userBlock.dart';
@@ -24,14 +26,21 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> with BuildPostItemList {
   EasyRefreshController _easyRefreshController;
-  ScrollController _scrollController;
+  DateTime lastUpdated;
+  bool readyUpdate = true;
+  BehaviorSubject<double> elevation;
 
   @override
   void initState() {
     super.initState();
     _easyRefreshController = EasyRefreshController();
-    _scrollController=ScrollController();
+    elevation=BehaviorSubject.seeded(0);
+    widget.controller.addListener((){
+      getElevation();
+    });
   }
+
+  
 
   @override
   Widget build(BuildContext context) {
@@ -39,29 +48,39 @@ class _HomeState extends State<Home> with BuildPostItemList {
     PostsBlock postsBlock = Provider.of<PostsBlock>(context);
     ProfileBlock profileBlock = Provider.of<ProfileBlock>(context);
     return Scaffold(
-      appBar: AppBar(
-        title: Text(userBlock.user.displayName),
-        centerTitle: true,
-        leading: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: CircleAvatar(
-            backgroundImage:
-                CachedNetworkImageProvider(userBlock.user.photoURL),
-          ),
-        ),
-        actions: <Widget>[
-          Transform.rotate(
-            angle: -pi / 2,
-            child: IconButton(
-              icon: Icon(
-                Linecons.search,
+      appBar: PreferredSize(
+        preferredSize:AppBar().preferredSize,
+        child: StreamBuilder<double>(
+          stream:elevation,
+          initialData: 0,
+          builder: (context, snapshot) {
+            return AppBar(
+              elevation:snapshot.data,
+              title: Text(userBlock.user.displayName),
+              centerTitle: true,
+              leading: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: CircleAvatar(
+                  backgroundImage:
+                      CachedNetworkImageProvider(userBlock.user.photoURL),
+                ),
               ),
-              onPressed: () {
-                Navigate.pushPage(context, SearchScreen());
-              },
-            ),
-          ),
-        ],
+              actions: <Widget>[
+                Transform.rotate(
+                  angle: -pi / 2,
+                  child: IconButton(
+                    icon: Icon(
+                      Linecons.search,
+                    ),
+                    onPressed: () {
+                      Navigate.pushPage(context, SearchScreen());
+                    },
+                  ),
+                ),
+              ],
+            );
+          }
+        ),
       ),
       body: StreamBuilder<List<String>>(
         stream: profileBlock.friendsUid,
@@ -95,30 +114,51 @@ class _HomeState extends State<Home> with BuildPostItemList {
                 }
                 return EasyRefresh.custom(
                   controller: _easyRefreshController,
-                  scrollController: _scrollController,
-                  topBouncing: false,
-                  bottomBouncing: false,
-                  onLoad: ()async{
-                    print("onLoad()");
+                  scrollController: widget.controller,
+                  onRefresh: () async {
+                    GetDatas datas = GetDatas();
+                    _easyRefreshController.callLoad();
+                    if (readyUpdate) {
+                      
+                      Future.delayed(Duration(seconds: 5), () {
+                        setState(() {
+                          readyUpdate = true;
+                        });
+                      });
+                      await datas.getAllDatas(context, userBlock.user.uid);
+                      lastUpdated = DateTime.now();
+                      readyUpdate = false;
+                    } else {
+                      print("Güncelleme süre dolmadı");
+                    }
                   },
-                  onRefresh: ()async{
-                    print("onRefresh");
-                  },
-                  header:MaterialHeader(
-                    valueColor: AlwaysStoppedAnimation<Color>(Colors.red.shade300)
-                  ),
+                  header: ClassicalHeader(
+                      bgColor: Colors.grey.shade100,
+                      infoText: !readyUpdate
+                          ? "Yenileme hazır değil"
+                          : lastUpdated == null
+                              ? ""
+                              : "Son güncelleme ${lastUpdated.hour}:${lastUpdated.minute}",
+                      refreshingText: "Yükleniyor...",
+                      refreshFailedText: "Hata Oluştu.",
+                      refreshReadyText: "Yenilemek için bırakın.",
+                      refreshText: "Yenilemek için çekin.",
+                      refreshedText: "Tamamlandı"),
+                  footer: null,
                   slivers: [
                     SliverList(
-                      delegate: SliverChildBuilderDelegate((c,i){
+                      delegate: SliverChildBuilderDelegate(
+                        (c, i) {
                           if (i == 0) {
                             return Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 8),
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 8),
                               child: FriendsScreen(),
                             );
                           }
                           Post post = snapshot.data[i - 1];
                           return Padding(
-                            padding:const EdgeInsets.symmetric(horizontal: 8),
+                            padding: const EdgeInsets.symmetric(horizontal: 8),
                             child: buildPostItemList(
                                 index: i - 1,
                                 length: snapshot.data.length,
@@ -126,7 +166,7 @@ class _HomeState extends State<Home> with BuildPostItemList {
                                 post: post),
                           );
                         },
-                      childCount: snapshot.data.length + 1,
+                        childCount: snapshot.data.length + 1,
                       ),
                     ),
                   ],
@@ -140,5 +180,14 @@ class _HomeState extends State<Home> with BuildPostItemList {
         },
       ),
     );
+  }
+  void getElevation(){
+    double elev;
+    try {
+       elev= widget.controller?.offset?.toInt()<=0 ? 0 : 8;
+    } catch (e) {
+      elev= 0;
+    }
+    elevation.add(elev);
   }
 }
