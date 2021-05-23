@@ -19,7 +19,7 @@ samples, guidance on mobile development, and a full API reference.
 
 **Yapılan Son Güncellemeler:**
 
-- [Mesajlaşla Eklendi ( **Sadece metin**)]
+- [Mesajlaşla Eklendi ( **Metin ve Resim**)]
 - [Kullanıcının çevrimiçi olup olmadığı kontrolü yapıldı]
 - [Giriş ekranı ayarandı ve kaydolma ekranı eklendi]
 - [Kayıt olmada profil fotoğraı olarak avatar seçimi eklendi]
@@ -27,8 +27,8 @@ samples, guidance on mobile development, and a full API reference.
 
 ---
 
-| Özellikler                     | Android   |  | Web             |
-| -------                        | :-------: |  | :-----:         |
+| Özellikler                     | Android   |  | Web            |
+| ----------------------------- | :-------: |  | --------------:|
 | Google Girişi                  | ✔️         |  | ✔️              |
 | Kötü Kelimeleri Kapatma        | ✔️         |  | ✔️              |
 | Post Gönderme ( Yazı )         | ✔️         |  | (test edilmedi) |
