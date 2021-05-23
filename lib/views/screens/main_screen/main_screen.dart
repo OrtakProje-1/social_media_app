@@ -73,7 +73,7 @@ class _MainScreenState extends State<MainScreen>
         ],
       ),
       bottomNavigationBar: BottomAppBar(
-        shape: BottomAppbarNotchedShape(space: 0, radius: 12, spaceRadius: 4),
+        shape: BottomAppbarNotchedShape(space: 3, radius: 22, spaceRadius: 4),
         elevation: 11,
         notchMargin: 6,
         color: Constants.bottombarBackgroundColor,

@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:social_media_app/views/widgets/animations/fade_page_route.dart';
 
 class Navigate {
-  static Future pushPage(BuildContext context, Widget page) async {
-    return await Navigator.push(
+  static Future<T> pushPage<T>(BuildContext context, Widget page) async {
+    return await Navigator.push<T>(
       context,
       MaterialPageRoute(
         builder: (BuildContext context) {

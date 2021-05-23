@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:social_media_app/providers/userBlock.dart';
 import 'package:social_media_app/util/const.dart';
 import 'package:social_media_app/views/screens/chat/models/chat_message.dart';
 
@@ -9,6 +11,7 @@ class AudioMessage extends StatelessWidget {
   const AudioMessage({Key key, this.message}) : super(key: key);
   @override
   Widget build(BuildContext context) {
+    UserBlock userBlock=Provider.of<UserBlock>(context);
     return Container(
       width: MediaQuery.of(context).size.width * 0.55,
       padding: EdgeInsets.symmetric(
@@ -17,7 +20,7 @@ class AudioMessage extends StatelessWidget {
       ),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(30),
-        color: kPrimaryColor.withOpacity(message.senderUid.isEmpty ? 1 : 0.1),
+        color: getMessageColor(message.senderUid,userBlock.user.uid),
       ),
       child: Row(
         children: [

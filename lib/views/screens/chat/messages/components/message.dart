@@ -4,6 +4,7 @@ import 'package:social_media_app/models/my_user.dart';
 import 'package:social_media_app/providers/userBlock.dart';
 import 'package:social_media_app/providers/usersBlock.dart';
 import 'package:social_media_app/util/const.dart';
+import 'package:social_media_app/views/screens/chat/messages/components/image_message.dart';
 import 'package:social_media_app/views/screens/chat/models/chat_message.dart';
 import 'package:flutter/material.dart';
 import 'audio_message.dart';
@@ -33,6 +34,8 @@ class Message extends StatelessWidget {
           return AudioMessage(message: message);
         case ChatMessageType.video:
           return VideoMessage();
+        case ChatMessageType.image:
+          return ImageMessage(message: message);
         default:
           return SizedBox();
       }

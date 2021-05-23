@@ -1,3 +1,5 @@
+import 'package:provider/provider.dart';
+import 'package:social_media_app/providers/userBlock.dart';
 import 'package:social_media_app/util/const.dart';
 import 'package:social_media_app/views/screens/chat/models/chat_message.dart';
 import 'package:flutter/material.dart';
@@ -12,13 +14,14 @@ class TextMessage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    UserBlock userBlock=Provider.of<UserBlock>(context);
     return Container(
       padding: EdgeInsets.symmetric(
         horizontal: kDefaultPadding * 0.75,
         vertical: kDefaultPadding / 2,
       ),
       decoration: BoxDecoration(
-        color: kPrimaryColor.withOpacity(message.senderUid.isEmpty ? 1 : 0.1),
+        color:getMessageColor(message.senderUid,userBlock.user.uid),
         borderRadius: BorderRadius.circular(30),
       ),
       child: Text(

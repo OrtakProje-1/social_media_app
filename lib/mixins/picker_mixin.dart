@@ -1,14 +1,15 @@
+import 'dart:async';
+
 import 'package:file_picker/file_picker.dart';
 
 mixin PickerMixin{
-  Future<List<PlatformFile>> getImagePicker() async {
+  FutureOr<List<PlatformFile>> getImagePicker() async {
     FilePickerResult images = await FilePicker.platform.pickFiles(
         allowMultiple: true, type: FileType.image, withReadStream: true);
-    print("path= " + images.files[0]?.path);
-    return images.files;
+    return images?.files;
   }
 
-  Future<List<PlatformFile>> getVideoPicker() async {
+  FutureOr<List<PlatformFile>> getVideoPicker() async {
     FilePickerResult video = await FilePicker.platform.pickFiles(
       allowMultiple: false,
       type: FileType.video,
@@ -16,7 +17,7 @@ mixin PickerMixin{
     return video?.files;
   }
 
-  Future<List<PlatformFile>> getAudioPicker() async {
+  FutureOr<List<PlatformFile>> getAudioPicker() async {
     FilePickerResult audio = await FilePicker.platform.pickFiles(
       allowMultiple: false,
       type: FileType.audio,
@@ -24,7 +25,7 @@ mixin PickerMixin{
     return audio?.files;
   }
 
-  Future<List<PlatformFile>> getFilePicker() async {
+  FutureOr<List<PlatformFile>> getFilePicker() async {
     FilePickerResult audio = await FilePicker.platform.pickFiles(
       allowMultiple: false,
       type: FileType.custom,

@@ -1,6 +1,7 @@
 import 'package:connectivity/connectivity.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:social_media_app/models/my_user.dart';
 import 'package:social_media_app/providers/messagesBlock.dart';
@@ -56,26 +57,37 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         title: Constants.appName,
+        darkTheme: ThemeData.dark(),
+        themeMode: ThemeMode.dark,
+        localizationsDelegates: [
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: [Locale("en"), Locale("tr")],
+        locale: Locale("tr"),
         theme: themeData(ThemeConfig.lightTheme),
-        builder: (c,w){
-          return AppLifecycleWidget(child: w,);
+        builder: (c, w) {
+          return AppLifecycleWidget(
+            child: w,
+          );
         },
         // darkTheme: themeData(ThemeConfig.darkTheme),
-        home:  StreamBuilder<ConnectivityResult>(
-            stream: Connectivity().onConnectivityChanged,
-            builder: (BuildContext context,
-                AsyncSnapshot<ConnectivityResult> snapshot) {
-              if (snapshot.hasData) {
-                if (snapshot.data == ConnectivityResult.none) {
-                  return NoInternetScreen();
-                } else {
-                  return SplashScreen();
-                }
+        home: StreamBuilder<ConnectivityResult>(
+          stream: Connectivity().onConnectivityChanged,
+          builder: (BuildContext context,
+              AsyncSnapshot<ConnectivityResult> snapshot) {
+            if (snapshot.hasData) {
+              if (snapshot.data == ConnectivityResult.none) {
+                return NoInternetScreen();
               } else {
-                return SizedBox();
+                return SplashScreen();
               }
-            },
-          ),
+            } else {
+              return SizedBox();
+            }
+          },
+        ),
       ),
     );
   }
@@ -121,15 +133,15 @@ class _AppLifecycleWidgetState extends State<AppLifecycleWidget>
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    print("state= "+state.toString());
-    ProfileBlock profileBlock=context.read<ProfileBlock>();
-    UserBlock userBlock=context.read<UserBlock>();
+    print("state= " + state.toString());
+    ProfileBlock profileBlock = context.read<ProfileBlock>();
+    UserBlock userBlock = context.read<UserBlock>();
     switch (state) {
       case AppLifecycleState.resumed:
-        profileBlock.updateUserisOnline(userBlock.user.uid,true);
+        profileBlock.updateUserisOnline(userBlock.user.uid, true);
         break;
       case AppLifecycleState.paused:
-        profileBlock.updateUserisOnline(userBlock.user.uid,false);
+        profileBlock.updateUserisOnline(userBlock.user.uid, false);
         break;
       default:
         break;

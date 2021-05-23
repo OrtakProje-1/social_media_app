@@ -26,3 +26,28 @@ samples, guidance on mobile development, and a full API reference.
 
 
 ---
+
+| Özellikler                     | Android   |  | Web             |
+| -------                        | :-------: |  | :-----:         |
+| Google Girişi                  | ✔️         |  | ✔️              |
+| Kötü Kelimeleri Kapatma        | ✔️         |  | ✔️              |
+| Post Gönderme ( Yazı )         | ✔️         |  | (test edilmedi) |
+| Post Gönderme ( Resim )        | ✔️         |  | (test edilmedi) |
+| Arkadaş Ekleme                 | ✔️         |  | (test edilmedi) |
+| Arkadaş Silme                  | ✔️         |  | (test edilmedi) |
+| Gönderiye Yorum Yapma          | ✔️         |  | (test edilmedi) |
+| Gönderiyi Beğenme              | ✔️         |  | (test edilmedi) |
+| Mesaj Gönderme ( Yazı )        | ✔️         |  | (test edilmedi) |
+| Mesaj Gönderme ( Resim )       | ✔️         |  | (test edilmedi) |
+| Oturumu Kapatma                | ✔️         |  | (test edilmedi) |
+| Kullanıcı Bildirimleri         | ✔️ (kısmen)|  | (test edilmedi) |
+| Post Gönderme ( Video )        | ✖️         |  | ✖️               |
+| Post Gönderme ( Ses )          | ✖️         |  | ✖️               |
+| Mesaj Gönderme ( Video )       | ✖️         |  | ✖️               |
+| Mesaj Gönderme ( Ses )         | ✖️         |  | ✖️               |
+| Mesaj Gönderme ( Dosya )       | ✖️         |  | ✖️               |
+| Profil Güncelleme              | ✖️         |  | ✖️               |
+| Kullanıcıyı Şikayet Etme       | ✖️         |  | ✖️               |
+| Kullanıcıyı Engelleme          | ✖️         |  | ✖️               |
+| Gönderiyi Kaydetme             | ✖️         |  | ✖️               |
+| Diğer Kullanıcılardan bahsetme | ✖️         |  | ✖️               |

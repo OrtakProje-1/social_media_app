@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:rxdart/rxdart.dart';
@@ -70,12 +69,25 @@ class _BodyState extends State<Body> {
                   children: [
                     Padding(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: kDefaultPadding / 2, vertical: 4),
-                      child: Card(
-                        elevation: 20,
-                        shadowColor: Colors.grey.shade200,
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12)),
+                          horizontal: kDefaultPadding / 2, vertical: 10),
+                      child: Container(
+                        decoration:BoxDecoration(
+                        borderRadius:BorderRadius.circular(12),
+                        color:  Colors.grey[850],//Color(0xff292d32),
+                       
+                        boxShadow: [
+                          BoxShadow(
+                            blurRadius: 10,
+                            color: Colors.white.withOpacity(0.2),
+                            offset: Offset(-3,-3)
+                          ),
+                          BoxShadow(
+                            blurRadius: 10,
+                            color: Colors.black.withOpacity(0.5),
+                            offset: Offset(3,3)
+                          ),
+                        ],
+                        ),
                         child: Padding(
                           padding: const EdgeInsets.only(left: 25, right: 10),
                           child: TextField(
@@ -84,7 +96,7 @@ class _BodyState extends State<Body> {
                               setState(() {});
                             },
                             cursorRadius: Radius.circular(8),
-                            cursorColor: Colors.black87,
+                            cursorColor:Theme.of(context).textTheme.bodyText1.color,
                             cursorWidth: 1.5,
                             decoration: InputDecoration(
                                 hintText: "Kimi arıyorsun...",

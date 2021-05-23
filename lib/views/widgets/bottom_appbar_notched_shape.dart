@@ -4,8 +4,9 @@ class BottomAppbarNotchedShape extends NotchedShape {
   final int space;
   final double radius;
   final double spaceRadius;
+  final double horizontalSpace;
   BottomAppbarNotchedShape(
-      {this.space = 5, this.radius = 20, this.spaceRadius = 8});
+      {this.space = 5, this.radius = 20, this.spaceRadius = 8,this.horizontalSpace=0});
   @override
   Path getOuterPath(Rect host, Rect guest) {
     double iconSize=40;
@@ -16,17 +17,17 @@ class BottomAppbarNotchedShape extends NotchedShape {
     Path path = Path()..lineTo(0, host.bottom)..lineTo(host.right, host.bottom);
     path.lineTo(host.right, radius);
     path.quadraticBezierTo(host.right, 0, host.right - radius, 0);
-    path.lineTo(guestRight + space + spaceRadius, 0);
+    path.lineTo(guestRight + space + spaceRadius+horizontalSpace, 0);
     path.quadraticBezierTo(
-        guestRight + space, 0, guestRight + space - spaceRadius, spaceRadius);
+        guestRight + space+horizontalSpace, 0, guestRight + space - spaceRadius+horizontalSpace, spaceRadius);
     path
       ..lineTo(
           guestCenter + spaceRadius, guestBottom + space - spaceRadius);
     path.quadraticBezierTo(guestCenter, guestBottom + space,
         guestCenter - spaceRadius, guestBottom + space - spaceRadius);
-    path.lineTo(guestLeft - space + spaceRadius, spaceRadius);
+    path.lineTo(guestLeft - space + spaceRadius-horizontalSpace, spaceRadius);
     path.quadraticBezierTo(
-        guestLeft - space, 0, guestLeft - space - spaceRadius, 0);
+        guestLeft - space-horizontalSpace, 0, guestLeft - space - spaceRadius-horizontalSpace, 0);
     path.lineTo(radius, 0);
     path.quadraticBezierTo(0, 0, 0, radius);
     // Path path = Path()..lineTo(0, host.bottom)..lineTo(host.right, host.bottom);

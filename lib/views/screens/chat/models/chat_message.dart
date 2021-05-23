@@ -10,6 +10,11 @@ class ChatMessage {
   final String senderUid;
   final int messageTime;
   final bool isRemoved;
+  final List<String> images;
+  final String audio;
+  final String video;
+  final String file;
+
   ChatMessage({
     this.text,
     this.messageTime,
@@ -17,6 +22,10 @@ class ChatMessage {
     this.messageStatus,
     this.senderUid,
     this.isRemoved,
+    this.audio,
+    this.images,
+    this.video,
+    this.file
   });
 
 
@@ -26,7 +35,11 @@ class ChatMessage {
     MessageStatus messageStatus,
     bool senderUid,
     int messageTime,
-    bool isRemoved
+    bool isRemoved,
+    List<String> images,
+    String video,
+    String audio,
+    String file,
   }) {
     return ChatMessage(
       text: text ?? this.text,
@@ -35,6 +48,10 @@ class ChatMessage {
       senderUid: senderUid ?? this.senderUid,
       messageTime: messageTime ?? this.messageTime,
       isRemoved: isRemoved ?? this.isRemoved,
+      audio: audio ?? this.audio,
+      images: images ?? this.images,
+      video: video ?? this.video,
+      file: file ?? this.file,
     );
   }
 
@@ -45,7 +62,11 @@ class ChatMessage {
       'messageStatus': messageStatus.index,
       'senderUid': senderUid,
       'messageTime': messageTime,
-      'isRemoved': isRemoved
+      'isRemoved': isRemoved,
+      'audio': audio,
+      'video': video,
+      'images': images,
+      'file': file
     };
   }
 
@@ -57,6 +78,10 @@ class ChatMessage {
       senderUid: map['senderUid'],
       messageTime: map["messageTime"],
       isRemoved: map['isRemoved'],
+      video: map['video']??null,
+      audio: map['audio']??null,
+      images: map['images'] !=null ? (map['images']as List<dynamic>).map((e) =>e.toString()).toList() : null,
+      file: map['file']??null,
     );
   }
 

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -11,7 +13,9 @@ import 'package:social_media_app/util/const.dart';
 import 'package:social_media_app/util/router.dart';
 import 'package:social_media_app/views/screens/chat/models/chat.dart';
 import 'package:social_media_app/views/screens/chat/models/chat_message.dart';
+import 'package:social_media_app/views/screens/chat/models/sender_media_message.dart';
 import 'package:social_media_app/views/screens/detail_screens/images_details.dart';
+import 'package:social_media_app/views/screens/detail_screens/widgets/send_button.dart';
 
 class ChatInputField extends StatefulWidget {
   const ChatInputField({Key key, this.rUid, this.noMessage = false})
@@ -32,6 +36,8 @@ class _ChatInputFieldState extends State<ChatInputField> with PickerMixin {
     MessagesBlock messagesBlock = Provider.of<MessagesBlock>(context);
     UserBlock userBlock = Provider.of<UserBlock>(context);
     UsersBlock usersBlock = Provider.of<UsersBlock>(context);
+    MyUser rec = usersBlock.getUserFromUid(widget.rUid);
+    MyUser my = usersBlock.getUserFromUid(userBlock.user.uid);
     docId = messagesBlock.getDoc(widget.rUid, userBlock.user.uid);
     return Column(
       children: [
@@ -68,7 +74,42 @@ class _ChatInputFieldState extends State<ChatInputField> with PickerMixin {
                         print(fType.type.toString() +
                             " " +
                             fType.files.length.toString());
-                            getFilesDetailsScreen(fType);
+                        SenderMediaMessage senderMessage =
+                            await getFilesDetailsScreen(fType, usersBlock);
+                        if (senderMessage != null) {
+                          print("mesaj= " +
+                              senderMessage.message +
+                              "\ntype= ${senderMessage.type}\n urls= " +
+                              senderMessage.urls.length.toString());
+                          await messagesBlock.addMessage(
+                            my,
+                            rec,
+                            widget.noMessage,
+                            ChatMessage(
+                              isRemoved: false,
+                              messageStatus: MessageStatus.not_view,
+                              messageTime:
+                                  DateTime.now().millisecondsSinceEpoch,
+                              messageType: senderMessage.type,
+                              senderUid: userBlock.user.uid,
+                              text: senderMessage.message,
+                              audio: senderMessage.type == ChatMessageType.audio
+                                  ? senderMessage.urls[0]
+                                  : null,
+                              video: senderMessage.type == ChatMessageType.video
+                                  ? senderMessage.urls[0]
+                                  : null,
+                              images:
+                                  senderMessage.type == ChatMessageType.image
+                                      ? senderMessage.urls
+                                      : null,
+                              file:
+                                  senderMessage.type == ChatMessageType.file
+                                      ? senderMessage.urls[0]
+                                      : null,
+                            ),
+                          );
+                        }
                       }
                     },
                     style: ElevatedButton.styleFrom(
@@ -110,9 +151,9 @@ class _ChatInputFieldState extends State<ChatInputField> with PickerMixin {
                 SizedBox(
                   width: 10,
                 ),
-                TextButton(
-                  child: Icon(Icons.send_rounded, color: kPrimaryColor),
-                  onPressed: () async {
+                SendButton(
+                  iconColor: kPrimaryColor,
+                   onPressed: () async {
                     if (!loading) if (message.text.length > 0) {
                       if (mounted) {
                         setState(() {
@@ -122,60 +163,10 @@ class _ChatInputFieldState extends State<ChatInputField> with PickerMixin {
                       String mesaj = message.text;
                       message.clear();
                       int time = DateTime.now().millisecondsSinceEpoch;
-                      if (widget.noMessage) {
-                        MyUser my =
-                            usersBlock.getUserFromUid(userBlock.user.uid);
-                        MyUser rec = usersBlock.getUserFromUid(widget.rUid);
-
-                        await messagesBlock.setChatCard(
-                            userBlock.user.uid,
-                            widget.rUid,
-                            Chat(
-                                lastMessage: mesaj,
-                                name: rec.displayName,
-                                image: rec.photoURL,
-                                time: time,
-                                senderUid: my.uid,
-                                rUid: rec.uid));
-                        await messagesBlock.setChatCard(
-                            widget.rUid,
-                            userBlock.user.uid,
-                            Chat(
-                                lastMessage: mesaj,
-                                name: my.displayName,
-                                image: my.photoURL,
-                                time: time,
-                                senderUid: my.uid,
-                                rUid: rec.uid));
-                      } else {
-                        MyUser rec = usersBlock.getUserFromUid(widget.rUid);
-                        MyUser my =
-                            usersBlock.getUserFromUid(userBlock.user.uid);
-                        await messagesBlock.updateChatCard(
-                            userBlock.user.uid,
-                            widget.rUid,
-                            Chat(
-                                lastMessage: mesaj,
-                                name: rec.displayName,
-                                image: rec.photoURL,
-                                time: time,
-                                senderUid: my.uid,
-                                rUid: rec.uid));
-                        await messagesBlock.updateChatCard(
-                          widget.rUid,
-                          userBlock.user.uid,
-                          Chat(
-                            lastMessage: mesaj,
-                            name: rec.displayName,
-                            image: rec.photoURL,
-                            time: time,
-                            rUid: rec.uid,
-                            senderUid: my.uid,
-                          ),
-                        );
-                      }
                       await messagesBlock.addMessage(
-                        docId,
+                        my,
+                        rec,
+                        widget.noMessage,
                         ChatMessage(
                           messageStatus: MessageStatus.not_view,
                           messageTime: time,
@@ -193,13 +184,17 @@ class _ChatInputFieldState extends State<ChatInputField> with PickerMixin {
                       }
                     }
                   },
-                  style: ElevatedButton.styleFrom(
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(90)),
-                      primary: Colors.white,
-                      elevation: 0,
-                      onPrimary: kPrimaryColor.withOpacity(0.5)),
                 ),
+                // TextButton(
+                //   child: Icon(Icons.send_rounded, color: kPrimaryColor),
+                 
+                //   style: ElevatedButton.styleFrom(
+                //       shape: RoundedRectangleBorder(
+                //           borderRadius: BorderRadius.circular(90)),
+                //       primary: Colors.white,
+                //       elevation: 0,
+                //       onPrimary: kPrimaryColor.withOpacity(0.5)),
+                // ),
               ],
             ),
           ),
@@ -208,19 +203,23 @@ class _ChatInputFieldState extends State<ChatInputField> with PickerMixin {
     );
   }
 
-  Future<void> getFilesDetailsScreen(FilesTyper filesTyper)async{
+  Future<SenderMediaMessage> getFilesDetailsScreen(
+      FilesTyper filesTyper, UsersBlock usersBlock) async {
     switch (filesTyper.type) {
       case ChatMessageType.image:
-         await Navigate.pushPage(context,ImagesDetail(files:filesTyper.files));
+        return await Navigate.pushPage<SenderMediaMessage>(
+            context,
+            ImagesDetail(
+              files: filesTyper.files,
+              receiver: usersBlock.getUserFromUid(widget.rUid),
+            ));
         break;
       default:
+        return null;
     }
   }
 
-
-
-
-  Future<FilesTyper> showModal() async {
+  FutureOr<FilesTyper> showModal() async {
     return await showModalBottomSheet<FilesTyper>(
       backgroundColor: Colors.transparent,
       context: context,
@@ -265,7 +264,7 @@ class _ChatInputFieldState extends State<ChatInputField> with PickerMixin {
                         List<PlatformFile> files = await getImagePicker();
                         Navigator.pop(
                             context,
-                            files.isNotEmpty
+                            files != null
                                 ? FilesTyper(
                                     files: files, type: ChatMessageType.image)
                                 : null);

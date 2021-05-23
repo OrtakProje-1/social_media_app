@@ -14,9 +14,9 @@ class Body extends StatelessWidget {
   final ValueChanged<QueryDocumentSnapshot> longPressed;
   final ValueChanged<QueryDocumentSnapshot> removeSelected;
   final ValueChanged<QueryDocumentSnapshot> lastMessage;
+  final ScrollController controller;
 
-  Body(
-      {this.rUid, this.longPressed, this.selectedMessage, this.removeSelected,this.lastMessage});
+  Body({this.rUid, this.longPressed, this.selectedMessage, this.removeSelected,this.lastMessage,this.controller});
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +33,7 @@ class Body extends StatelessWidget {
                   empty(rUid),
                 ],
                 if (snap.data.docs.isNotEmpty) ...[
-                  buildMessageList(snap, select,userBlock),
+                  buildMessageList(snap, select,userBlock,controller),
                   ChatInputField(
                     rUid: rUid,
                     noMessage: false,
@@ -48,11 +48,12 @@ class Body extends StatelessWidget {
         });
   }
 
-  Expanded buildMessageList(AsyncSnapshot<QuerySnapshot> snap, bool select,UserBlock userBlock){
+  Expanded buildMessageList(AsyncSnapshot<QuerySnapshot> snap, bool select,UserBlock userBlock,ScrollController controller){
     lastMessage(snap.data.docs.first);
     return Expanded(
       child: ListView.builder(
           reverse: true,
+          controller: controller,
           physics: BouncingScrollPhysics(),
           padding: const EdgeInsets.symmetric(vertical: 3),
           itemCount: snap.data.size,

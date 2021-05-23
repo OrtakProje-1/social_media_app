@@ -23,6 +23,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_localizations: # Add this line
+    sdk: flutter 
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -102,6 +104,11 @@ dependencies:
   fluttericon: ^2.0.0
 
   dotted_border: ^2.0.0
+
+  #image editor
+  extended_image_library: ^3.1.0
+  extended_image: ^4.1.0
+  image_editor: ^1.0.0
 
   #dosya seçmek için gereklid
   file_picker: ^3.0.1

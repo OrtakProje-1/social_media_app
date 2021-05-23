@@ -24,35 +24,30 @@ class _SearchScreenState extends State<SearchScreen> {
     return Scaffold(
       appBar: AppBar(
         titleSpacing: 0,
+        elevation: 0,
+        backgroundColor: Colors.transparent,
         leading: TextButton(
           style: TextButton.styleFrom(
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(45))),
           child: Icon(
             Icons.keyboard_backspace_rounded,
-            color: Colors.black,
+            color: Theme.of(context).textTheme.bodyText1.color
           ),
           onPressed: () {
             Navigator.maybePop(context);
           },
         ),
-        title: Container(
-          padding: EdgeInsets.symmetric(horizontal: 7),
-          margin: EdgeInsets.only(right: 5),
-          decoration: BoxDecoration(
-              color: Colors.grey.shade300,
-              borderRadius: BorderRadius.circular(8)),
-          child: TextField(
-            controller: _searchQuery,
-            cursorColor: Colors.red.shade300,
-            cursorWidth: 1.5,
-            onChanged: (s) {
-              setState(() {});
-            },
-            cursorRadius: Radius.circular(3),
-            decoration: InputDecoration(
-                border: InputBorder.none, hintText: "Kimi arıyorsunuz ?"),
-          ),
+        title: TextField(
+          controller: _searchQuery,
+          cursorColor: Theme.of(context).textTheme.bodyText1.color,
+          cursorWidth: 1.5,
+          onChanged: (s) {
+            setState(() {});
+          },
+          cursorRadius: Radius.circular(3),
+          decoration: InputDecoration(
+              border: InputBorder.none, hintText: "Kimi arıyorsunuz ?"),
         ),
       ),
       body: StreamBuilder<QuerySnapshot>(
@@ -84,7 +79,7 @@ class _SearchScreenState extends State<SearchScreen> {
                 return ListView.separated(
                   separatorBuilder: (c, i) {
                     return Divider(
-                      color: Colors.orange,
+                      color: Theme.of(context).textTheme.bodyText1.color.withOpacity(0.5)
                     );
                   },
                   itemCount: filteredUsers.length,
@@ -104,12 +99,11 @@ class _SearchScreenState extends State<SearchScreen> {
                                       .getUserFromUid(userBlock.user.uid));
                             },
                       user: user,
-                      textColor:result ? Colors.red.shade100 : null,
-                      buttonBackgroundColor: result ? Colors.grey.shade100 : null,
+                      textColor:result ? Colors.grey.shade100.withOpacity(0.4) : null,
+                      buttonBackgroundColor: result ? Colors.grey.shade100.withOpacity(0.2) : null,
                       icon: Icon(
                         isRequest ? Icons.person_outlined : Icons.person_add_alt,
-                        color:
-                            result ? Colors.red.shade100 : Colors.red.shade300,
+                        //color: result ? Colors.red.shade100 : Colors.red.shade300,
                       ),
                       mesaj: isMee ? "Bu sizsiniz" :isRequest ? "İstek Gönderildi" :isFriend ? "Arkadaşsınız" : "Arkadaş Ekle",
                     );

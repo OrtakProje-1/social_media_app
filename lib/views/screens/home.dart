@@ -34,13 +34,11 @@ class _HomeState extends State<Home> with BuildPostItemList {
   void initState() {
     super.initState();
     _easyRefreshController = EasyRefreshController();
-    elevation=BehaviorSubject.seeded(0);
-    widget.controller.addListener((){
+    elevation = BehaviorSubject.seeded(0);
+    widget.controller.addListener(() {
       getElevation();
     });
   }
-
-  
 
   @override
   Widget build(BuildContext context) {
@@ -49,38 +47,43 @@ class _HomeState extends State<Home> with BuildPostItemList {
     ProfileBlock profileBlock = Provider.of<ProfileBlock>(context);
     return Scaffold(
       appBar: PreferredSize(
-        preferredSize:AppBar().preferredSize,
+        preferredSize: AppBar().preferredSize,
         child: StreamBuilder<double>(
-          stream:elevation,
-          initialData: 0,
-          builder: (context, snapshot) {
-            return AppBar(
-              elevation:snapshot.data,
-              title: Text(userBlock.user.displayName),
-              centerTitle: true,
-              leading: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: CircleAvatar(
-                  backgroundImage:
-                      CachedNetworkImageProvider(userBlock.user.photoURL),
-                ),
-              ),
-              actions: <Widget>[
-                Transform.rotate(
-                  angle: -pi / 2,
-                  child: IconButton(
-                    icon: Icon(
-                      Linecons.search,
+            stream: elevation,
+            initialData: 0,
+            builder: (context, snapshot) {
+              return AppBar(
+                elevation: snapshot.data,
+                title: Text(userBlock.user.displayName),
+                centerTitle: true,
+                leading: Center(
+                  child: Container(
+                    width: 40,
+                    height: 40,
+                    margin: EdgeInsets.only(left: 10),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8),
+                      image: DecorationImage(
+                        image:CachedNetworkImageProvider(userBlock.user.photoURL),
+                      ),
                     ),
-                    onPressed: () {
-                      Navigate.pushPage(context, SearchScreen());
-                    },
                   ),
                 ),
-              ],
-            );
-          }
-        ),
+                actions: <Widget>[
+                  Transform.rotate(
+                    angle: -pi / 2,
+                    child: IconButton(
+                      icon: Icon(
+                        Linecons.search,
+                      ),
+                      onPressed: () {
+                        Navigate.pushPage(context, SearchScreen());
+                      },
+                    ),
+                  ),
+                ],
+              );
+            }),
       ),
       body: StreamBuilder<List<String>>(
         stream: profileBlock.friendsUid,
@@ -119,7 +122,6 @@ class _HomeState extends State<Home> with BuildPostItemList {
                     GetDatas datas = GetDatas();
                     _easyRefreshController.callLoad();
                     if (readyUpdate) {
-                      
                       Future.delayed(Duration(seconds: 5), () {
                         setState(() {
                           readyUpdate = true;
@@ -181,12 +183,13 @@ class _HomeState extends State<Home> with BuildPostItemList {
       ),
     );
   }
-  void getElevation(){
+
+  void getElevation() {
     double elev;
     try {
-       elev= widget.controller?.offset?.toInt()<=0 ? 0 : 8;
+      elev = widget.controller?.offset?.toInt() <= 0 ? 0 : 8;
     } catch (e) {
-      elev= 0;
+      elev = 0;
     }
     elevation.add(elev);
   }

@@ -72,7 +72,7 @@ class _ProfileScreenState extends State<ProfileScreen> with BuildPostItemList {
                     decoration: BoxDecoration(
                       borderRadius:
                           BorderRadius.vertical(top: Radius.circular(33)),
-                      color: Colors.white,
+                      color:Theme.of(context).scaffoldBackgroundColor,
                     ),
                   ),
                 ),
@@ -135,9 +135,12 @@ class _ProfileScreenState extends State<ProfileScreen> with BuildPostItemList {
             child: Column(
               children: [
                 Center(
-                  child: Text(
-                    widget.user?.displayName?.toString(),
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 7),
+                    child: Text(
+                      widget.user?.displayName?.toString(),
+                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
+                    ),
                   ),
                 ),
                 Padding(
@@ -228,7 +231,7 @@ class _ProfileScreenState extends State<ProfileScreen> with BuildPostItemList {
                         dev.log("Gönderiler");
                       },
                       child: Container(
-                        child: Center(child: Text("Gönderiler")),
+                        child: Center(child: Text("Gönderiler",style: TextStyle(color: Colors.black,fontWeight: FontWeight.bold),)),
                         decoration: BoxDecoration(
                           color: index == 0 ? Colors.white : Colors.transparent,
                           borderRadius: BorderRadius.circular(15),
@@ -246,7 +249,7 @@ class _ProfileScreenState extends State<ProfileScreen> with BuildPostItemList {
                         dev.log("Arkadaşlar");
                       },
                       child: Container(
-                        child: Center(child: Text("Arkadaşlar")),
+                        child: Center(child: Text("Arkadaşlar",style:TextStyle(color: Colors.black,fontWeight: FontWeight.bold),)),
                         decoration: BoxDecoration(
                           color: index == 1 ? Colors.white : Colors.transparent,
                           borderRadius: BorderRadius.circular(15),
