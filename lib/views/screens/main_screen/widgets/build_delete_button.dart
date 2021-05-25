@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:social_media_app/util/const.dart';
 import 'package:social_media_app/views/widgets/blurWidget.dart';
 import 'package:social_media_app/views/widgets/buttons/transparant_button.dart';
 
@@ -23,14 +24,14 @@ class BuildDeleteButton extends StatelessWidget {
           child: Transform.rotate(
             angle: pi / 4,
             child: Container(
-              decoration: BoxDecoration(color: Colors.white.withOpacity(0.3)),
+              decoration: BoxDecoration(color: Colors.white.withOpacity(0.05)),
               child: Transform.rotate(
                 angle: -pi / 4,
                 child: Center(
                   child: TransparantButton(
                     icon: Icon(
                       Icons.delete_outline_rounded,
-                      color: Colors.red,
+                      color:kPrimaryColor,
                       size: 20,
                     ),
                     onPressed:onPressed,

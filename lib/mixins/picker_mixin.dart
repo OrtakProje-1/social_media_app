@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:file_picker/file_picker.dart';
+import 'package:images_picker/images_picker.dart';
 
 mixin PickerMixin{
   FutureOr<List<PlatformFile>> getImagePicker() async {
@@ -32,5 +33,15 @@ mixin PickerMixin{
       allowedExtensions: ["ppt","pptx","docx","pdf","txt","apk",],
     );
     return audio?.files;
+  }
+
+  FutureOr<List<Media>> getImgesPickerCamera({CropType type=CropType.rect}) async {
+    List<Media> images= await ImagesPicker.openCamera(
+      pickType: PickType.image,
+      // cropOpt: CropOption(
+      //   cropType: type
+      // ),
+    );
+    return images;
   }
 }

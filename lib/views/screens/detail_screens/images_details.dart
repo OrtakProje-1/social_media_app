@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:social_media_app/mixins/picker_mixin.dart';
+import 'package:social_media_app/models/media_reference.dart';
 import 'package:social_media_app/models/my_user.dart';
 import 'package:social_media_app/providers/storageBlock.dart';
 import 'package:social_media_app/providers/userBlock.dart';
@@ -36,7 +37,7 @@ class _ImagesDetailState extends State<ImagesDetail> with PickerMixin {
   PageController _pageController;
   ScrollController _scrollController;
   BehaviorSubject<double> shadow;
-  List<String> downloadUrls = [];
+  List<MediaReference> downloadsRef = [];
   TextEditingController _message = TextEditingController();
   BehaviorSubject<double> loadingProgress;
 
@@ -274,6 +275,7 @@ class _ImagesDetailState extends State<ImagesDetail> with PickerMixin {
                   Padding(
                     padding: const EdgeInsets.only(right: 5),
                     child: SendButton(
+                      backgroundColor: Colors.white,
                       onPressed: () async {
                        
                         String time =
@@ -281,24 +283,24 @@ class _ImagesDetailState extends State<ImagesDetail> with PickerMixin {
                         showLoadingDialog();
                        
                         files.asMap().forEach((index, value) async {
-                          String url = await storageBlock.uploadImage(
+                          MediaReference ref = await storageBlock.uploadImage(
                               index: index,
                               ext: StorageBlock.fileExt(value.path),
                               file: File(value.path),
                               timeStamp: time,
                               userUid: userBlock.user.uid);
-                          print("downloadurl= " + url);
-                          downloadUrls.add(url);
-                          double val=(downloadUrls.length/files.length);
+                          print("downloadurl= " + ref.downloadURL);
+                          downloadsRef.add(ref);
+                          double val=(downloadsRef.length/files.length);
                           loadingProgress.add(val>=1?1:val);
                           if(val>=1){
                             Navigator.pop(context);
                           }
-                          if (downloadUrls.length == files.length) {
+                          if (downloadsRef.length == files.length) {
                             SenderMediaMessage senderMessage =
                                 SenderMediaMessage(
                                     type: ChatMessageType.image,
-                                    urls: downloadUrls,
+                                    urls: downloadsRef,
                                     message: _message.text);
                             Navigator.pop(context, senderMessage);
                           }
@@ -331,6 +333,7 @@ class _ImagesDetailState extends State<ImagesDetail> with PickerMixin {
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Colors.white),),
+                  SizedBox(width: 10,),
                   Text("Resimler Yükleniyor ( %${(snapshot.data*100).toInt()} )",style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold)),
                 ],
               );

@@ -61,15 +61,16 @@ class ImageMessage extends StatelessWidget {
 
   Widget getImageWidget(ChatMessage message, String myUid) {
     bool noText = message.text == null ? true : message.text.isEmpty;
-    switch (message.images.length) {
+    List<String> urls=message.images.map((e) => e.downloadURL).toList();
+    switch (urls.length) {
       case 1:
-        return buildImageWidget(message.images[0], tL: 8, tR: 8, bL: noText ? 8 : 0, bR: noText ? 8 : 0);
+        return buildImageWidget(urls[0], tL: 8, tR: 8, bL: noText ? 8 : 0, bR: noText ? 8 : 0);
       case 2:
         return Row(
           children: [
-            buildImageWidget(message.images[0], tL: 8, bL: noText ? 8 : 0),
-            verticalDivider(),
-            buildImageWidget(message.images[1], tR: 8, bR: noText ? 8 : 0),
+            buildImageWidget(urls[0], tL: 8, bL: noText ? 8 : 0),
+            verticalDivider(message.senderUid,myUid),
+            buildImageWidget(urls[1], tR: 8, bR: noText ? 8 : 0),
           ],
         );
       case 3:
@@ -78,18 +79,18 @@ class ImageMessage extends StatelessWidget {
             Expanded(
               child: Column(
                 children: [
-                  buildImageWidget(message.images[0], tL:8),
-                  horizontalDivider(),
-                  buildImageWidget(message.images[1], bL: noText ? 8 : 0),
+                  buildImageWidget(urls[0], tL:8),
+                  horizontalDivider(message.senderUid,myUid),
+                  buildImageWidget(urls[1], bL: noText ? 8 : 0),
                 ],
               ),
             ),
-            verticalDivider(),
-            buildImageWidget(message.images[2], tR: 8, bR: noText ? 8 : 0),
+            verticalDivider(message.senderUid,myUid),
+            buildImageWidget(urls[2], tR: 8, bR: noText ? 8 : 0),
           ],
         );
       default:
-      int overCount=message.images.length-4;
+      int overCount=urls.length-4;
         return Stack(
           children: [
             Column(
@@ -97,25 +98,25 @@ class ImageMessage extends StatelessWidget {
                 Expanded(
                   child: Row(
                     children: [
-                     buildImageWidget(message.images[0], tL: 8),
-                     verticalDivider(),
-                     buildImageWidget(message.images[1], tR: 8),
+                     buildImageWidget(urls[0], tL: 8),
+                     verticalDivider(message.senderUid,myUid),
+                     buildImageWidget(urls[1], tR: 8),
                     ],
                   ),
                 ),
-                horizontalDivider(),
+                horizontalDivider(message.senderUid,myUid),
                 Expanded(
                   child: Row(
                     children: [
-                      buildImageWidget(message.images[2], bL: noText ? 8 : 0),
-                      verticalDivider(),
-                      buildImageWidget(message.images[3], bR: noText ? 8 : 0),
+                      buildImageWidget(urls[2], bL: noText ? 8 : 0),
+                      verticalDivider(message.senderUid,myUid),
+                      buildImageWidget(urls[3], bR: noText ? 8 : 0),
                     ],
                   ),
                 ),
               ],
             ),
-          if(message.images.length>4)  Center(
+          if(urls.length>4)  Center(
             child: Container(
               width: 30,
               height: 30,
@@ -152,19 +153,19 @@ class ImageMessage extends StatelessWidget {
     );
   }
 
-  Widget verticalDivider() {
+  Widget verticalDivider(String sUid,String myUid) {
     return Container(
       width: 2,
       height: double.maxFinite,
-      color: kPrimaryColor,
+      color:  getMessageColor(sUid,myUid),
     );
   }
 
-  Widget horizontalDivider() {
+  Widget horizontalDivider(String sUid,String myUid) {
     return Container(
       width: double.maxFinite,
       height: 2,
-      color: kPrimaryColor,
+      color:  getMessageColor(sUid,myUid),
     );
   }
 }

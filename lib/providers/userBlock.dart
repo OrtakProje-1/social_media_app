@@ -4,8 +4,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:provider/provider.dart';
+import 'package:social_media_app/database/firebase_yardimci.dart';
 import 'package:social_media_app/models/my_user.dart';
 import 'package:social_media_app/providers/get_datas.dart';
+import 'package:social_media_app/providers/profileBlock.dart';
 import 'package:social_media_app/providers/usersBlock.dart';
 import 'package:social_media_app/util/router.dart';
 import 'package:social_media_app/views/screens/auth/loginPage.dart';
@@ -33,7 +36,12 @@ class UserBlock {
     await FirebaseAuth.instance.signOut();
     GoogleSignIn googleSignIn = GoogleSignIn();
     await googleSignIn.signOut();
+    await userOffline(context);
     Navigate.pushPageWithFadeAnimation(context, LoginPage());
+  }
+
+  Future<void> userOffline(BuildContext context)async{
+   await Provider.of<ProfileBlock>(context,listen: false).updateUserisOnline(user.uid,false);
   }
 
   void dispose() {}

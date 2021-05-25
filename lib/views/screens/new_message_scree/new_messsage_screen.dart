@@ -23,34 +23,24 @@ class _NewMessageScreenState extends State<NewMessageScreen> {
     return Scaffold(
       appBar: AppBar(
         titleSpacing: 0,
+        elevation: 0,
+        backgroundColor: Colors.transparent,
         title: Padding(
           padding: const EdgeInsets.symmetric(
               horizontal: kDefaultPadding / 2, vertical: 7),
-          child: Card(
-            elevation: 3,
-            shadowColor: Colors.grey.shade200,
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-            child: Padding(
-              padding: const EdgeInsets.only(left: 20, right: 10),
-              child: TextField(
-                controller: _controller,
-                onChanged: (s) {
-                  setState(() {});
-                },
-                cursorColor:kPrimaryColor.withOpacity(0.6),
-                cursorRadius: Radius.circular(12),
-                cursorWidth: 1.4,
-                decoration: InputDecoration(
-                    hintText: "Kimi arıyorsun...",
-                    border: InputBorder.none,
-                    hintStyle: TextStyle(color: Colors.grey.shade400),
-                    suffixIcon: Icon(
-                      Icons.person_search_outlined,
-                      color: Colors.grey.shade400,
-                    )),
-              ),
-            ),
+          child: TextField(
+            controller: _controller,
+            onChanged: (s) {
+              setState(() {});
+            },
+            cursorColor:kPrimaryColor.withOpacity(0.6),
+            cursorRadius: Radius.circular(12),
+            cursorWidth: 1.4,
+            decoration: InputDecoration(
+                hintText: "Kimi arıyorsun...",
+                border: InputBorder.none,
+                hintStyle: TextStyle(color: Colors.grey.shade400),
+                ),
           ),
         ),
       ),

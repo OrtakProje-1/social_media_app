@@ -1,64 +1,191 @@
+import 'dart:async';
+
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firestore_ui/stream_subscriber_mixin.dart';
 import 'package:flutter/material.dart';
+import 'package:just_audio/just_audio.dart';
 import 'package:provider/provider.dart';
 import 'package:social_media_app/providers/userBlock.dart';
 import 'package:social_media_app/util/const.dart';
 import 'package:social_media_app/views/screens/chat/models/chat_message.dart';
 
-
-class AudioMessage extends StatelessWidget {
+class AudioMessage extends StatefulWidget {
   final ChatMessage message;
 
   const AudioMessage({Key key, this.message}) : super(key: key);
+
+  @override
+  _AudioMessageState createState() => _AudioMessageState();
+}
+
+class _AudioMessageState extends State<AudioMessage> {
+  AudioPlayer _player;
+  double millisecond = 0;
+  bool sliderScroll = false;
+  double scrollSliderValue = 0;
+  StreamSubscription<PlaybackEvent> eventStream;
+
+  @override
+  void initState() {
+    super.initState();
+    _player = AudioPlayer();
+    initPlayer();
+  }
+
+  @override
+  void didUpdateWidget (AudioMessage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    eventStream?.cancel();
+    listenPlayer();
+  }
+
+  initPlayer() async {
+    Duration dur = await _player.setAudioSource(
+      AudioSource.uri(Uri.parse(widget.message.audio.downloadURL)),
+    );
+  if(mounted)  setState(() {
+      millisecond = dur.inMilliseconds.toDouble();
+    });
+    listenPlayer();
+  }
+
+  listenPlayer(){
+    eventStream = _player.playbackEventStream.listen((event) {
+      if (event.processingState == ProcessingState.completed) {
+        print("bitti");
+        try {
+
+        if(mounted)  setState((){
+            sliderScroll=true;
+            scrollSliderValue=0;
+          });
+        } catch (e) {}
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    eventStream?.cancel();
+    super.dispose();
+  }
+
+  bool get isPlaying => _player.playing;
+
   @override
   Widget build(BuildContext context) {
-    UserBlock userBlock=Provider.of<UserBlock>(context);
+    UserBlock userBlock = Provider.of<UserBlock>(context);
+    User my = userBlock.user;
     return Container(
-      width: MediaQuery.of(context).size.width * 0.55,
-      padding: EdgeInsets.symmetric(
-        horizontal: kDefaultPadding * 0.75,
-        vertical: kDefaultPadding / 2.5,
-      ),
+      width: MediaQuery.of(context).size.width * 0.60,
+      padding: EdgeInsets.all(kDefaultPadding * 0.4),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(30),
-        color: getMessageColor(message.senderUid,userBlock.user.uid),
+        borderRadius: BorderRadius.circular(8),
+        color: getMessageColor(widget.message.senderUid, userBlock.user.uid),
       ),
       child: Row(
         children: [
-          InkWell(
-            borderRadius: BorderRadius.circular(90),
-            onTap: (){},
-            child: Icon(
-              Icons.play_arrow,
-              color: message.senderUid.isEmpty ? Colors.white : kPrimaryColor,
+          Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(8),
+              color: getMessageTextColor(widget.message.senderUid, my.uid)
+                  .withOpacity(0.4),
+            ),
+            child: Center(
+              child: Icon(Icons.audiotrack_rounded),
             ),
           ),
-          Expanded(
-            child: Padding(
-              padding:
-                  const EdgeInsets.only(left: kDefaultPadding/1.5),
-              child: SliderTheme(
-                data: SliderThemeData(
-                  overlayShape: RoundSliderOverlayShape(overlayRadius:0),
-                  thumbShape: RoundSliderThumbShape(disabledThumbRadius:12,enabledThumbRadius:7,),
-                ),
-                child: Slider(
-                  value: 0,
-                  max: 100,
-                  min: 0,
-                  activeColor: kPrimaryColor,
-                  inactiveColor: kPrimaryColor.withOpacity(0.3),
-                  onChanged:(i){},
-                ),
+          Padding(
+            padding: const EdgeInsets.all(4.0),
+            child: InkWell(
+              onLongPress: () {},
+              borderRadius: BorderRadius.circular(90),
+              onTap: () {
+               try {
+                  if (isPlaying) {
+                  _player.pause();
+                } else {
+                  _player.play();
+                }
+               if(mounted) setState(() {
+                 sliderScroll=false;
+               });
+               } catch (e) {
+               }
+              },
+              child: Icon(
+                isPlaying ? Icons.pause_rounded : Icons.play_arrow_rounded,
+                size: 30,
+                color: getMessageTextColor(widget.message.senderUid, my.uid),
               ),
             ),
           ),
-          Text(
-            "0.37",
-            style: TextStyle(
-                fontSize: 12, color: message.senderUid.isEmpty ? Colors.white : null),
+          Expanded(
+            child: StreamBuilder<Duration>(
+                initialData: Duration.zero,
+                stream: _player.positionStream,
+                builder: (context, pos) {
+                  return Padding(
+                    padding:
+                        const EdgeInsets.only(left: kDefaultPadding * 0.01),
+                    child: SliderTheme(
+                      data: SliderThemeData(
+                        overlayShape:
+                            RoundSliderOverlayShape(overlayRadius: 13),
+                        thumbShape: RoundSliderThumbShape(
+                          disabledThumbRadius: 12,
+                          enabledThumbRadius: 7,
+                        ),
+                      ),
+                      child: Slider(
+                        value: getValue(pos),
+                        max: millisecond,
+                        min: 0,
+                        activeColor: getMessageTextColor(
+                            widget.message.senderUid, my.uid),
+                        inactiveColor: getMessageTextColor(
+                                widget.message.senderUid, my.uid)
+                            .withOpacity(0.3),
+                        onChanged: (i) {
+                         if(mounted) setState(() {
+                            scrollSliderValue = i;
+                          });
+                        },
+                        onChangeStart: (i) {
+                          if(mounted) setState(() {
+                            sliderScroll = true;
+                          });
+                        },
+                        onChangeEnd: (d) {
+                         if(mounted)  setState(() {
+                            sliderScroll = false;
+                          });
+                          _player.seek(Duration(milliseconds: d.toInt()));
+                        },
+                      ),
+                    ),
+                  );
+                }),
           ),
+          // Text(
+          //   "0.37",
+          //   style: TextStyle(
+          //       fontSize: 12, color: message.senderUid.isEmpty ? Colors.white : null),
+          // ),
         ],
       ),
     );
+  }
+
+  double getValue(AsyncSnapshot<Duration> snapshot) {
+    return sliderScroll
+        ? scrollSliderValue
+        : snapshot.hasData
+            ? (snapshot.data.inMilliseconds.toDouble() >= millisecond
+                ? millisecond
+                : snapshot?.data?.inMilliseconds?.toDouble())
+            : 0;
   }
 }

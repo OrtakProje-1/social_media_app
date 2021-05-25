@@ -8,7 +8,8 @@ class CustomElevatedButton extends StatelessWidget {
   final double radius;
   final Color onPrimary;
   final Color primary;
-  const CustomElevatedButton({Key key,Color primary,Color onPrimary,this.radius=22,this.icon,this.isRight=false,this.label,this.onPressed}) 
+  final Color shadowColor;
+  const CustomElevatedButton({Key key,this.shadowColor,Color primary,Color onPrimary,this.radius=22,this.icon,this.isRight=false,this.label,this.onPressed}) 
   :  this.primary=primary ?? Colors.white,
      this.onPrimary=onPrimary ?? Colors.red,super(key:key);
 
@@ -19,6 +20,7 @@ class CustomElevatedButton extends StatelessWidget {
         onPressed: onPressed,
         clipBehavior: Clip.hardEdge,
         style: ElevatedButton.styleFrom(
+          shadowColor: shadowColor,
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(radius)),
             onPrimary:onPrimary,

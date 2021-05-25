@@ -39,18 +39,16 @@ class _SignUpScreenState extends State<SignUpScreen> with TextFieldMixin{
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     UserBlock userBlock = Provider.of<UserBlock>(context);
-    UsersBlock usersBlock = Provider.of<UsersBlock>(context);
     return Scaffold(
       appBar: AppBar(
         title: Text("Kayıt ol".toUpperCase(),
             textAlign: TextAlign.center,
             style: TextStyle(
-                color: Colors.black,
                 fontWeight: FontWeight.bold,
                 fontSize: 28.0)),
-        elevation: 1,
+        elevation: 0,
+        backgroundColor: Colors.transparent,
         centerTitle: true,
-        backgroundColor: Colors.white,
         actions: [
           if (result && imagePath != null) ...[
             ClipRRect(
@@ -60,68 +58,67 @@ class _SignUpScreenState extends State<SignUpScreen> with TextFieldMixin{
           ]
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.only(top: 8),
-        child: Builder(builder: (context) {
-          return Stack(
-            children: <Widget>[
-              Positioned(
-                top: 0,
-                left: 0,
-                right: 0,
-                child: Center(
-                  child: AnimatedContainer(
-                    duration: Duration(milliseconds: 400),
-                    child: Transform.rotate(
-                      angle: math.pi,
-                      child: WaveWidget(
-                        isLoop: true,
-                        waveAmplitude: 3,
-                        waveFrequency: size.width < 700 ? 5 : 8,
-                        backgroundColor: Colors.white,
-                        config: CustomConfig(
-                          gradients: [
-                            [
-                              Colors.red.shade900.withOpacity(0.8),
-                              Color(0xFF0004F1)
-                            ],
-                            [
-                              Colors.red.shade700.withOpacity(0.6),
-                              Color(0xDD0004F1)
-                            ],
-                            [
-                              Colors.red.shade500.withOpacity(0.4),
-                              Color(0xBB0004F1)
-                            ],
-                            [
-                              Colors.red.shade300.withOpacity(0.2),
-                              Color(0x990004F1)
-                            ],
-                            // [Colors.red, Color(0xAAF44336)],
-                            // [Colors.orange, Color(0x66FF9800)],
-                            // [Colors.red[800], Color(0x77E57373)],
-                            // [Colors.yellow, Color(0x55FFEB3B)],
+      body: Builder(builder: (context) {
+        return Stack(
+          children: <Widget>[
+            Positioned(
+              top: 0,
+              left: 0,
+              right: 0,
+              child: Center(
+                child: AnimatedContainer(
+                  duration: Duration(milliseconds: 400),
+                  child: Transform.rotate(
+                    angle: math.pi,
+                    child: WaveWidget(
+                      isLoop: true,
+                      waveAmplitude: 3,
+                      waveFrequency: size.width < 700 ? 5 : 8,
+                      config: CustomConfig(
+                        gradients: [
+                          [
+                            Colors.red.shade900.withOpacity(0.8),
+                            Color(0xFF0004F1)
                           ],
-                          durations: [15000, 19440, 10800, 34000],
-                          heightPercentages: [0.20, 0.23, 0.25, 0.30],
-                          blur: MaskFilter.blur(BlurStyle.outer, 20),
-                          gradientBegin: Alignment.bottomLeft,
-                          gradientEnd: Alignment.topRight,
-                        ),
-                        size: size,
-                        //size:Size(size.width>700?400:size.width/2+100,size.width>700?400:size.width/2+100),
+                          [
+                            Colors.red.shade700.withOpacity(0.6),
+                            Color(0xDD0004F1)
+                          ],
+                          [
+                            Colors.red.shade500.withOpacity(0.4),
+                            Color(0xBB0004F1)
+                          ],
+                          [
+                            Colors.red.shade300.withOpacity(0.2),
+                            Color(0x990004F1)
+                          ],
+                          // [Colors.red, Color(0xAAF44336)],
+                          // [Colors.orange, Color(0x66FF9800)],
+                          // [Colors.red[800], Color(0x77E57373)],
+                          // [Colors.yellow, Color(0x55FFEB3B)],
+                        ],
+                        durations: [15000, 19440, 10800, 34000],
+                        heightPercentages: [0.20, 0.23, 0.25, 0.30],
+                        blur: MaskFilter.blur(BlurStyle.outer, 20),
+                        gradientBegin: Alignment.bottomLeft,
+                        gradientEnd: Alignment.topRight,
                       ),
+                      size: size,
+                      //size:Size(size.width>700?400:size.width/2+100,size.width>700?400:size.width/2+100),
                     ),
                   ),
                 ),
               ),
-              ListView(
-                physics: BouncingScrollPhysics(),
-                children: <Widget>[
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Swiper(
+            ),
+            ListView(
+              physics: BouncingScrollPhysics(),
+              children: <Widget>[
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Padding(
+                      padding: const EdgeInsets.only(top: 10),
+                      child: Swiper(
                         onIndexChanged: (i){
                           avatarIndex=i;
                         },
@@ -133,118 +130,114 @@ class _SignUpScreenState extends State<SignUpScreen> with TextFieldMixin{
                         controller: _swiperController,
                         itemBuilder: (c, i) {
                           return ScreenshotWidget(
-                            size: 100,
                             controller: controllers[i],
                             url:"https://avatars.dicebear.com/api/avataaars/:seed$i.svg");
                         },
                       ),
-                      buildTextField(
-                        size: size,
-                        hintText: "Kullanıcı Adı",
-                        prefixIcon: Icon(
-                          Icons.person_outline_rounded,
-                          color: Colors.black26,
-                        ),
-                        suffixIcon: Icon(
-                          Icons.check_circle,
-                          color: Colors.black26,
-                        ),
+                    ),
+                    buildTextField(
+                      size: size,
+                      context: context,
+                      hintText: "Kullanıcı Adı",
+                      prefixIcon: Icon(
+                        Icons.person_outline_rounded,
                       ),
-                      buildTextField(
-                        size: size,
-                        hintText: "E-mail",
-                        prefixIcon: Icon(
-                          Icons.alternate_email_rounded,
-                          color: Colors.black26,
-                        ),
-                        suffixIcon: Icon(
-                          Icons.check_circle,
-                          color: Colors.black26,
-                        ),
+                      suffixIcon: Icon(
+                        Icons.check_circle,
                       ),
-                      buildTextField(
-                        size:size,
-                        hintText: "Şifre",
-                        prefixIcon: Icon(
-                          Icons.lock_outline_rounded,
-                          color: Colors.black26,
-                        ),
+                    ),
+                    buildTextField(
+                      size: size,
+                      context: context,
+                      hintText: "E-mail",
+                      prefixIcon: Icon(
+                        Icons.alternate_email_rounded,
                       ),
-                      buildTextField(
-                        size:size,
-                        hintText: "Şifre Tekrar",
-                        prefixIcon: Icon(
-                          Icons.lock_outline_rounded,
-                          color: Colors.black26,
-                        ),
+                      suffixIcon: Icon(
+                        Icons.check_circle,
                       ),
-                      Container(
-                        width: 200,
-                        padding: EdgeInsets.all(30.0),
-                        child: RawMaterialButton(
-                          padding: EdgeInsets.symmetric(vertical: 16.0),
-                          fillColor: Colors.pink,
-                          onPressed: () async {
-                            print(avatarIndex);
-                            try {
-                              Directory temporaryDir =
-                                  await getTemporaryDirectory();
-                              String path = await controllers[avatarIndex].captureAndSave(
-                                  temporaryDir.path,
-                                  fileName: "${DateTime.now()}.png");
-                              print(path);
-                              setState(() {
-                                result = true;
-                                imagePath = path;
-                              });
-                            } catch (e) {
-                              print(e);
-                            }
-                          },
-                          elevation: 11,
-                          shape: RoundedRectangleBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(40.0))),
-                          child: Text("Kayıt Ol",
-                              style: TextStyle(color: Colors.white70,fontWeight: FontWeight.bold)),
-                        ),
+                    ),
+                    buildTextField(
+                      size:size,
+                      context: context,
+                      hintText: "Şifre",
+                      prefixIcon: Icon(
+                        Icons.lock_outline_rounded,
                       ),
+                    ),
+                    buildTextField(
+                      size:size,
+                      context: context,
+                      hintText: "Şifre Tekrar",
+                      prefixIcon: Icon(
+                        Icons.lock_outline_rounded,
+                      ),
+                    ),
+                    Container(
+                      width: 200,
+                      padding: EdgeInsets.all(30.0),
+                      child: RawMaterialButton(
+                        padding: EdgeInsets.symmetric(vertical: 16.0),
+                        fillColor: Colors.pink,
+                        onPressed: () async {
+                          print(avatarIndex);
+                          try {
+                            Directory temporaryDir =
+                                await getTemporaryDirectory();
+                            String path = await controllers[avatarIndex].captureAndSave(
+                                temporaryDir.path,
+                                fileName: "${DateTime.now()}.png");
+                            print(path);
+                            setState(() {
+                              result = true;
+                              imagePath = path;
+                            });
+                          } catch (e) {
+                            print(e);
+                          }
+                        },
+                        elevation: 11,
+                        shape: RoundedRectangleBorder(
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(40.0))),
+                        child: Text("Kayıt Ol",
+                            style: TextStyle(color: Colors.white70,fontWeight: FontWeight.bold)),
+                      ),
+                    ),
+                  ],
+                ),
+                Align(
+                  alignment: Alignment.bottomCenter,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: <Widget>[
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          Text("Hesabın var mı?"),
+                          TextButton(
+                            child: Text(
+                              "Giriş yap".toUpperCase(),
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold),
+                            ),
+                            onPressed: () async {
+                              bool result = await Navigator.maybePop(context);
+                              if (!result) {
+                                Navigate.pushPage(context, LoginPage());
+                              }
+                            },
+                          )
+                        ],
+                      )
                     ],
                   ),
-                  Align(
-                    alignment: Alignment.bottomCenter,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: <Widget>[
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: <Widget>[
-                            Text("Hesabın var mı?"),
-                            TextButton(
-                              child: Text(
-                                "Giriş yap".toUpperCase(),
-                                style: TextStyle(
-                                    color: Colors.indigo,
-                                    fontWeight: FontWeight.bold),
-                              ),
-                              onPressed: () async {
-                                bool result = await Navigator.maybePop(context);
-                                if (!result) {
-                                  Navigate.pushPage(context, LoginPage());
-                                }
-                              },
-                            )
-                          ],
-                        )
-                      ],
-                    ),
-                  )
-                ],
-              ),
-            ],
-          );
-        }),
-      ),
+                )
+              ],
+            ),
+          ],
+        );
+      }),
     );
   }
 

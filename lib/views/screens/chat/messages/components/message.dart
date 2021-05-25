@@ -31,7 +31,7 @@ class Message extends StatelessWidget {
         case ChatMessageType.text:
           return TextMessage(message: message);
         case ChatMessageType.audio:
-          return AudioMessage(message: message);
+          return AudioMessage(message: message,key: PageStorageKey(message.audio.ref,));
         case ChatMessageType.video:
           return VideoMessage();
         case ChatMessageType.image:
@@ -42,7 +42,7 @@ class Message extends StatelessWidget {
     }
 
     return Container(
-      color: isSelected ? Colors.grey.shade200 : Colors.transparent,
+      color: isSelected ? Colors.grey.shade200.withOpacity(0.2) : Colors.transparent,
       padding: EdgeInsets.symmetric(horizontal: kDefaultPadding/2,vertical: 4),
       child: Row(
         mainAxisAlignment:

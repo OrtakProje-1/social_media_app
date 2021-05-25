@@ -10,6 +10,7 @@ import 'package:fluttericon/typicons_icons.dart';
 import 'package:provider/provider.dart';
 import 'package:social_media_app/mixins/picker_mixin.dart';
 import 'package:social_media_app/models/Post.dart';
+import 'package:social_media_app/models/media_reference.dart';
 import 'package:social_media_app/models/my_user.dart';
 import 'package:social_media_app/providers/postsBlock.dart';
 import 'package:social_media_app/providers/profileBlock.dart';
@@ -327,34 +328,23 @@ class _MainScreenState extends State<MainScreen>
                           DateTime time = DateTime.now();
 
                           if (message.text.length > 0) {
-                            List<String> imagesUrl = [];
+                            List<MediaReference> imagesRef = [];
                             if (images.isNotEmpty) {
-                              images.asMap().forEach((key, value) async {
-                                UploadTask task = storageBlock.imagesRef
-                                    .child("${userBlock.user.uid}")
-                                    .child(
-                                        "${time.millisecondsSinceEpoch}-$key.${value.name.split(".").last}")
-                                    .putFile(
-                                        File(value.path),
-                                        SettableMetadata(
-                                            contentType:
-                                                'image/${value.name.split(".").last}'));
+                              images.asMap().forEach((index, value) async {
                                 setState(() {
                                   state = ButtonState.loading;
                                 });
-
-                                await task.then((s) async {
-                                  print("FullPath= " + s.metadata.fullPath);
-                                  String url = await s.ref.getDownloadURL();
-                                  imagesUrl.add(url);
-                                  setState(() {
-                                    indicatorValue =
-                                        (imagesUrl.length / images?.length)
-                                            .toDouble();
-                                  });
-                                  if (imagesUrl.length == images.length) {
+                                  MediaReference ref= await storageBlock.uploadImage(
+                                    file: File(value.path),
+                                    index: index,
+                                    timeStamp: time.millisecondsSinceEpoch.toString(),
+                                    ext: StorageBlock.fileExt(value.path),
+                                    userUid: userBlock.user.uid
+                                  );
+                                imagesRef.add(ref);
+                                if (imagesRef.length == images.length) {
                                     bool result = await sendPost(
-                                        imagesUrl,
+                                        imagesRef,
                                         message.text,
                                         userBlock,
                                         postsBlock);
@@ -368,11 +358,11 @@ class _MainScreenState extends State<MainScreen>
                                       });
                                     }
                                     await Future.delayed(
-                                        Duration(milliseconds: 400), () {
+                                        Duration(milliseconds: 500), () {
                                       Navigator.pop(context);
                                     });
                                   }
-                                });
+                                
                               });
                             } else {
                               bool result = await sendPost(null,
@@ -443,7 +433,7 @@ class _MainScreenState extends State<MainScreen>
     }
   }
 
-  Future<bool> sendPost(List<String> imagesUrl, String msg, UserBlock userBlock,
+  Future<bool> sendPost(List<MediaReference> imagesRef, String msg, UserBlock userBlock,
       PostsBlock postsBlock) async {
     Post post = Post(
         senderUid: userBlock.user.uid,
@@ -451,7 +441,7 @@ class _MainScreenState extends State<MainScreen>
         postTime: DateTime.now().millisecondsSinceEpoch.toString(),
         userName: userBlock.user.displayName,
         userPhotoUrl: userBlock.user.photoURL,
-        images: imagesUrl);
+        images: imagesRef);
     return await postsBlock.addPost(post);
   }
 

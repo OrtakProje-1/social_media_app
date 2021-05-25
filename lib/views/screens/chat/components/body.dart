@@ -73,7 +73,7 @@ class _BodyState extends State<Body> {
                       child: Container(
                         decoration:BoxDecoration(
                         borderRadius:BorderRadius.circular(12),
-                        color:  Colors.grey[850],//Color(0xff292d32),
+                        color:Colors.grey[850],//Color(0xff292d32),
                        
                         boxShadow: [
                           BoxShadow(

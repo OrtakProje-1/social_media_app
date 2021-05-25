@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:social_media_app/models/media_reference.dart';
+
 enum ChatMessageType { text, audio, image, video,file }
 enum MessageStatus { not_sent, not_view, viewed }
 
@@ -10,10 +12,10 @@ class ChatMessage {
   final String senderUid;
   final int messageTime;
   final bool isRemoved;
-  final List<String> images;
-  final String audio;
-  final String video;
-  final String file;
+  final List<MediaReference> images;
+  final MediaReference audio;
+  final MediaReference video;
+  final MediaReference file;
 
   ChatMessage({
     this.text,
@@ -36,10 +38,10 @@ class ChatMessage {
     bool senderUid,
     int messageTime,
     bool isRemoved,
-    List<String> images,
-    String video,
-    String audio,
-    String file,
+    List<MediaReference> images,
+    MediaReference video,
+    MediaReference audio,
+    MediaReference file,
   }) {
     return ChatMessage(
       text: text ?? this.text,
@@ -63,10 +65,10 @@ class ChatMessage {
       'senderUid': senderUid,
       'messageTime': messageTime,
       'isRemoved': isRemoved,
-      'audio': audio,
-      'video': video,
-      'images': images,
-      'file': file
+      if(audio!=null) 'audio': audio.toMap(),
+      if(video!=null) 'video': video.toMap(),
+      if(images!=null) 'images': images.map((e) =>e.toMap()).toList(),
+      if(file!=null) 'file': file.toMap()
     };
   }
 
@@ -78,10 +80,10 @@ class ChatMessage {
       senderUid: map['senderUid'],
       messageTime: map["messageTime"],
       isRemoved: map['isRemoved'],
-      video: map['video']??null,
-      audio: map['audio']??null,
-      images: map['images'] !=null ? (map['images']as List<dynamic>).map((e) =>e.toString()).toList() : null,
-      file: map['file']??null,
+      video: map['video']!=null ? MediaReference.fromMap(map['video']):null,
+      audio: map['audio']!=null ? MediaReference.fromMap(map['audio']):null,
+      images: map['images'] !=null ? (map['images']as List<dynamic>).map((e) =>MediaReference.fromMap(e)).toList() : null,
+      file: map['file']!=null ? MediaReference.fromMap(map['audio']):null,
     );
   }
 

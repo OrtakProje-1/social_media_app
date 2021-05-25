@@ -23,7 +23,7 @@ class ExtendedImageView extends StatelessWidget {
         scrollDirection: Axis.horizontal,
         children: message.images
             .map((e) => ExtendedImage.network(
-                  e,
+                  e.downloadURL,
                   mode: ExtendedImageMode.gesture,
                 ))
             .toList(),

@@ -8,10 +8,13 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:social_media_app/mixins/picker_mixin.dart';
 import 'package:social_media_app/models/Post.dart';
+import 'package:social_media_app/models/media_reference.dart';
 import 'package:social_media_app/providers/postsBlock.dart';
 import 'package:social_media_app/providers/storageBlock.dart';
 import 'package:social_media_app/providers/userBlock.dart';
 import 'package:social_media_app/providers/usersBlock.dart';
+import 'package:social_media_app/util/const.dart';
+import 'package:social_media_app/views/screens/detail_screens/widgets/send_button.dart';
 import 'package:social_media_app/views/screens/main_screen/widgets/BuildImageListWidget.dart';
 import 'package:social_media_app/views/screens/main_screen/widgets/build_audio_widget.dart';
 import 'package:social_media_app/views/screens/main_screen/widgets/build_video_widget.dart';
@@ -74,7 +77,7 @@ class _PostScreenState extends State<PostScreen>
                   ),
                   Divider(
                     height: 1,
-                    color: Colors.red.shade300.withOpacity(0.5),
+                    color: kPrimaryColor,
                   ),
                   StreamBuilder<QuerySnapshot>(
                     stream: postsBlock
@@ -118,7 +121,7 @@ class _PostScreenState extends State<PostScreen>
               ),
             ),
             Divider(
-              color: Colors.red.shade300.withOpacity(0.5),
+              color: kPrimaryColor,
               height: 1,
             ),
             if (videos.isNotEmpty)
@@ -170,8 +173,9 @@ class _PostScreenState extends State<PostScreen>
                     CustomElevatedButton(
                       icon: Icons.image_outlined,
                       label: "Resim",
-                      onPrimary: Colors.red.shade300,
-                      primary: Colors.white,
+                      onPrimary: Colors.white,
+                      primary: recMesColor,
+                      shadowColor: Colors.transparent,
                       onPressed: videos?.isNotEmpty || audios?.isNotEmpty
                           ? null
                           : () async {
@@ -182,12 +186,13 @@ class _PostScreenState extends State<PostScreen>
                                 images = newImages ?? [];
                               });
                             },
-                      radius: 8,
+                      radius: 33,
                     ),
                     CustomElevatedButton(
                       icon: Icons.video_call_outlined,
-                      onPrimary: Colors.red.shade300,
-                      primary: Colors.white,
+                      onPrimary: Colors.white,
+                      primary: recMesColor,
+                      shadowColor: Colors.transparent,
                       label: "Video",
                       onPressed: images?.isNotEmpty || audios?.isNotEmpty
                           ? null
@@ -198,12 +203,13 @@ class _PostScreenState extends State<PostScreen>
                                 videos = video ?? [];
                               });
                             },
-                      radius: 8,
+                      radius:33,
                     ),
                     CustomElevatedButton(
                       icon: Icons.audiotrack_outlined,
-                      onPrimary: Colors.red.shade300,
-                      primary: Colors.white,
+                      onPrimary: Colors.white,
+                      primary: recMesColor,
+                      shadowColor: Colors.transparent,
                       label: "Ses",
                       onPressed: images?.isNotEmpty || videos?.isNotEmpty
                           ? null
@@ -214,7 +220,7 @@ class _PostScreenState extends State<PostScreen>
                                 audios = audio ?? [];
                               });
                             },
-                      radius: 8,
+                      radius: 33,
                     ),
                   ],
                 ),
@@ -230,40 +236,50 @@ class _PostScreenState extends State<PostScreen>
                   Positioned(
                     top: 0,
                     bottom: 0,
-                    left: 0,
+                    left: 5,
                     child: Transform.rotate(
                       angle: pi / 4 * animationController.value,
-                      child: TransparantButton(
-                        icon: Icon(
-                          Icons.add,
-                          color: Colors.red.shade300,
+                      child: Container(
+                        width: 45,
+                        child: TextButton(
+                          child: Icon(
+                            Icons.add,
+                            color: kPrimaryColor,
+                          ),
+                          onPressed: () {
+                            if (animationController.status ==
+                                AnimationStatus.completed) {
+                              showPickerButtons = false;
+                              animationController.reverse();
+                            } else {
+                              showPickerButtons = true;
+                              animationController.forward();
+                            }
+                          },
+                          style: ElevatedButton.styleFrom(
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(90)),
+                        primary: recMesColor,
+                        elevation: 0,
+                        shadowColor: Colors.transparent,
+                        onPrimary: kPrimaryColor.withOpacity(0.6)),
                         ),
-                        onPressed: () {
-                          if (animationController.status ==
-                              AnimationStatus.completed) {
-                            showPickerButtons = false;
-                            animationController.reverse();
-                          } else {
-                            showPickerButtons = true;
-                            animationController.forward();
-                          }
-                        },
                       ),
                     ),
                   ),
                   AnimatedPositioned(
                     duration: Duration(milliseconds: 400),
-                    left: 45,
+                    left: 55,
                     top: 0,
                     bottom: 0,
-                    right: isThereData() ? 45 : 0,
+                    right: isThereData() ? 55 : 0,
                     child: Container(
-                      padding: EdgeInsets.all(5),
+                      padding: EdgeInsets.symmetric(horizontal: 15,vertical: 5),
                       decoration: BoxDecoration(
-                          color: Color(0xA9D6D6D6),
-                          borderRadius: BorderRadius.circular(8)),
+                          color:recMesColor,
+                          borderRadius: BorderRadius.circular(45)),
                       child: TextField(
-                        cursorColor: Colors.red.shade300,
+                        cursorColor: Theme.of(context).textTheme.bodyText1.color,
                         cursorRadius: Radius.circular(22),
                         cursorWidth: 1.5,
                         controller: message,
@@ -294,34 +310,31 @@ class _PostScreenState extends State<PostScreen>
                   AnimatedPositioned(
                     duration: Duration(milliseconds: 400),
                     top: 0,
-                    bottom: isThereData() ? 0 : -45,
-                    right: isThereData() ? 0 : -45,
-                    child: TransparantButton(
-                      icon: Icon(
-                        Icons.send_rounded,
-                        color: Colors.red.shade300,
-                      ),
+                    bottom: 0,
+                    //bottom: isThereData() ? 0 : -55,
+                    right: isThereData() ? 5 : -55,
+                    child: SendButton(
+                      iconColor: kPrimaryColor,
                       onPressed: () async {
-                        List<String> imagesUrl = [];
+                        List<MediaReference> imagesRef = [];
                         if (images.isNotEmpty) {
                           print("images null değil");
                           DateTime time = DateTime.now();
                           images.asMap().forEach((index, value) async {
-                            String url = await storageBlock.uploadImage(
+                            MediaReference ref = await storageBlock.uploadImage(
                               userUid: userBlock.user.uid,
                               file: File(value.path),
                               index: index,
                               timeStamp: time.millisecondsSinceEpoch.toString(),
                               ext: StorageBlock.fileExt(value.name),
                             );
-                            print(url);
-                            if (url != null) {
-                              print(url);
-                              imagesUrl.add(url);
-                              if (imagesUrl.length == images.length) {
+                            if (ref != null) {
+                              print(ref.downloadURL);
+                              imagesRef.add(ref);
+                              if (imagesRef.length == images.length) {
                                 print("imagesUrl.length == images.lenght");
                                 Post comment = Post(
-                                    images: imagesUrl,
+                                    images: imagesRef,
                                     msg: message.text,
                                     likes: [],
                                     postTime: DateTime.now()
@@ -338,7 +351,7 @@ class _PostScreenState extends State<PostScreen>
                           });
                         } else {
                           Post comment = Post(
-                              images: imagesUrl,
+                              images: imagesRef,
                               msg: message.text,
                               likes: [],
                               postTime: DateTime.now()

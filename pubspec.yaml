@@ -112,6 +112,7 @@ dependencies:
 
   #dosya seçmek için gereklid
   file_picker: ^3.0.1
+  images_picker: ^1.2.4
 
   #çoklu resimlerde kaydırma efekti için
   smooth_page_indicator: ^0.3.0-nullsafety.0

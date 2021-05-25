@@ -24,8 +24,8 @@ class _ScreenshotWidgetState extends State<ScreenshotWidget> {
         color: Colors.primaries[2],
         boxShadow: [
           BoxShadow(
-            blurRadius: 4,
-            spreadRadius: 4,
+            blurRadius: 3,
+            spreadRadius: 1,
             color: Colors.grey.shade300
           ),
         ],

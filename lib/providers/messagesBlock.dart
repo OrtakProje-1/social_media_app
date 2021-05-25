@@ -1,9 +1,13 @@
 import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:provider/provider.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:social_media_app/database/firebase_yardimci.dart';
 import 'package:social_media_app/models/my_user.dart';
+import 'package:social_media_app/providers/storageBlock.dart';
+import 'package:social_media_app/providers/userBlock.dart';
 import 'package:social_media_app/views/screens/chat/models/chat.dart';
 import 'package:social_media_app/views/screens/chat/models/chat_message.dart';
 
@@ -51,11 +55,63 @@ class MessagesBlock {
         .snapshots();
   }
 
-  Future<void> deleteMessage(QueryDocumentSnapshot doc) async {
+  Future<void> deleteMessage(QueryDocumentSnapshot doc,BuildContext context) async {
+    ChatMessage message= ChatMessage.fromMap(doc.data());
+    await _deleteMedia(message,context);
     await doc.reference.set({
       "text": "Bu mesaj silindi...",
       "isRemoved": true,
+      "images":null,
+      "messageType":0
     }, SetOptions(merge: true));
+    
+  }
+
+  Future<void> _deleteMedia(ChatMessage mes,BuildContext context)async{
+    await _deleteMessageImages(mes,context);
+    await _deleteMessageVideo(mes,context);
+    await _deleteMessageAudio(mes,context);
+    await _deleteMessageFile(mes,context);
+  }
+
+  Future<void> _deleteMessageImages(ChatMessage mes,BuildContext context)async{
+    if(mes.images!=null){
+      if(mes.images.isNotEmpty){
+        StorageBlock storageBlock=Provider.of<StorageBlock>(context,listen: false);
+        UserBlock userBlock=Provider.of<UserBlock>(context,listen: false);
+        mes.images.forEach((image)async{
+          print("resim siliniyor = "+image.ref);
+          await storageBlock.deleteImage(userBlock.user.uid,image.ref);
+        });
+      }
+    }
+  }
+  Future<void> _deleteMessageVideo(ChatMessage mes,BuildContext context)async{
+    if(mes.video!=null){
+        StorageBlock storageBlock=Provider.of<StorageBlock>(context,listen: false);
+        UserBlock userBlock=Provider.of<UserBlock>(context,listen: false);
+        print("resim siliniyor = "+mes.video.ref);
+        await storageBlock.deleteVideo(userBlock.user.uid,mes.video.ref);
+        
+    }
+  }
+  Future<void> _deleteMessageAudio(ChatMessage mes,BuildContext context)async{
+    if(mes.audio!=null){
+        StorageBlock storageBlock=Provider.of<StorageBlock>(context,listen: false);
+        UserBlock userBlock=Provider.of<UserBlock>(context,listen: false);
+        print("resim siliniyor = "+mes.audio.ref);
+        await storageBlock.deleteAudio(userBlock.user.uid,mes.audio.ref);
+    }
+  }
+  Future<void> _deleteMessageFile(ChatMessage mes,BuildContext context)async{
+    if(mes.file!=null){
+        StorageBlock storageBlock=Provider.of<StorageBlock>(context,listen: false);
+        UserBlock userBlock=Provider.of<UserBlock>(context,listen: false);
+        
+          print("dosya siliniyor = "+mes.file.ref);
+          await storageBlock.deleteFile(userBlock.user.uid,mes.file.ref);
+        
+    }
   }
 
   Future<void> addMessage(

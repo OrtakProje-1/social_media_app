@@ -1,21 +1,25 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:images_picker/images_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:social_media_app/mixins/picker_mixin.dart';
+import 'package:social_media_app/models/media_reference.dart';
 import 'package:social_media_app/models/my_user.dart';
 import 'package:social_media_app/providers/messagesBlock.dart';
+import 'package:social_media_app/providers/storageBlock.dart';
 import 'package:social_media_app/providers/userBlock.dart';
 import 'package:social_media_app/providers/usersBlock.dart';
 
 import 'package:social_media_app/util/const.dart';
 import 'package:social_media_app/util/router.dart';
-import 'package:social_media_app/views/screens/chat/models/chat.dart';
 import 'package:social_media_app/views/screens/chat/models/chat_message.dart';
 import 'package:social_media_app/views/screens/chat/models/sender_media_message.dart';
 import 'package:social_media_app/views/screens/detail_screens/images_details.dart';
 import 'package:social_media_app/views/screens/detail_screens/widgets/send_button.dart';
+import 'package:social_media_app/views/screens/main_screen/widgets/build_audio_widget.dart';
 
 class ChatInputField extends StatefulWidget {
   const ChatInputField({Key key, this.rUid, this.noMessage = false})
@@ -74,8 +78,7 @@ class _ChatInputFieldState extends State<ChatInputField> with PickerMixin {
                         print(fType.type.toString() +
                             " " +
                             fType.files.length.toString());
-                        SenderMediaMessage senderMessage =
-                            await getFilesDetailsScreen(fType, usersBlock);
+                        SenderMediaMessage senderMessage =await getFilesDetailsScreen(fType, usersBlock, userBlock.user.uid);
                         if (senderMessage != null) {
                           print("mesaj= " +
                               senderMessage.message +
@@ -88,8 +91,7 @@ class _ChatInputFieldState extends State<ChatInputField> with PickerMixin {
                             ChatMessage(
                               isRemoved: false,
                               messageStatus: MessageStatus.not_view,
-                              messageTime:
-                                  DateTime.now().millisecondsSinceEpoch,
+                              messageTime: DateTime.now().millisecondsSinceEpoch,
                               messageType: senderMessage.type,
                               senderUid: userBlock.user.uid,
                               text: senderMessage.message,
@@ -103,10 +105,9 @@ class _ChatInputFieldState extends State<ChatInputField> with PickerMixin {
                                   senderMessage.type == ChatMessageType.image
                                       ? senderMessage.urls
                                       : null,
-                              file:
-                                  senderMessage.type == ChatMessageType.file
-                                      ? senderMessage.urls[0]
-                                      : null,
+                              file: senderMessage.type == ChatMessageType.file
+                                  ? senderMessage.urls[0]
+                                  : null,
                             ),
                           );
                         }
@@ -115,7 +116,7 @@ class _ChatInputFieldState extends State<ChatInputField> with PickerMixin {
                     style: ElevatedButton.styleFrom(
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(90)),
-                        primary: Colors.white,
+                        primary: recMesColor,
                         elevation: 0,
                         onPrimary: kPrimaryColor.withOpacity(0.6)),
                   ),
@@ -136,7 +137,8 @@ class _ChatInputFieldState extends State<ChatInputField> with PickerMixin {
                           child: TextField(
                             controller: message,
                             cursorRadius: Radius.circular(8),
-                            cursorColor: Colors.black87,
+                            cursorColor:
+                                Theme.of(context).textTheme.bodyText1.color,
                             cursorWidth: 1.5,
                             decoration: InputDecoration(
                               hintText: "Mesajınız...",
@@ -153,7 +155,7 @@ class _ChatInputFieldState extends State<ChatInputField> with PickerMixin {
                 ),
                 SendButton(
                   iconColor: kPrimaryColor,
-                   onPressed: () async {
+                  onPressed: () async {
                     if (!loading) if (message.text.length > 0) {
                       if (mounted) {
                         setState(() {
@@ -187,7 +189,7 @@ class _ChatInputFieldState extends State<ChatInputField> with PickerMixin {
                 ),
                 // TextButton(
                 //   child: Icon(Icons.send_rounded, color: kPrimaryColor),
-                 
+
                 //   style: ElevatedButton.styleFrom(
                 //       shape: RoundedRectangleBorder(
                 //           borderRadius: BorderRadius.circular(90)),
@@ -203,20 +205,125 @@ class _ChatInputFieldState extends State<ChatInputField> with PickerMixin {
     );
   }
 
-  Future<SenderMediaMessage> getFilesDetailsScreen(
-      FilesTyper filesTyper, UsersBlock usersBlock) async {
+  Future<SenderMediaMessage> getFilesDetailsScreen(FilesTyper filesTyper, UsersBlock usersBlock, String myUid) async {
+    MyUser receiver = usersBlock.getUserFromUid(widget.rUid);
     switch (filesTyper.type) {
       case ChatMessageType.image:
         return await Navigate.pushPage<SenderMediaMessage>(
             context,
             ImagesDetail(
               files: filesTyper.files,
-              receiver: usersBlock.getUserFromUid(widget.rUid),
+              receiver: receiver,
             ));
+        break;
+      case ChatMessageType.audio:
+        if (filesTyper.files.isNotEmpty) {
+          MediaReference mediaRef = await getAudioModalBottomSheet(filesTyper, receiver, myUid);
+          return SenderMediaMessage(type: ChatMessageType.audio,message:"",urls: [mediaRef]);
+        } else
+          return null;
         break;
       default:
         return null;
     }
+  }
+
+  Future<MediaReference> getAudioModalBottomSheet(FilesTyper filesTyper, MyUser receiver, String myUid) async {
+    bool loading=false;
+    return await showModalBottomSheet<MediaReference>(
+        context: context,
+        isDismissible: false,
+        backgroundColor: Colors.transparent,
+        builder: (c) {
+          return Container(
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12),
+                color: Colors.grey[850]),
+            margin: EdgeInsets.all(8),
+            height: 200,
+            child: StatefulBuilder(builder: (context, setState) {
+              return Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: Column(
+                  children: [
+                    RichText(
+                      text: TextSpan(
+                        children: [
+                          TextSpan(
+                              text: "'${filesTyper.files[0].name}' ",
+                              style: TextStyle(fontWeight: FontWeight.bold)),
+                          TextSpan(
+                              text: " ${receiver.displayName} ",
+                              style: TextStyle(fontWeight: FontWeight.bold)),
+                          TextSpan(text: "kişisine gönderilsin mi?"),
+                        ],
+                      ),
+                    ),
+                    BuildAudioWidget(
+                      audios: filesTyper.files,
+                      size: MediaQuery.of(context).size,
+                    ),
+                    Expanded(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          Expanded(
+                            child: TextButton(
+                              onPressed: () {
+                                Navigator.pop(context);
+                              },
+                              child: Text("İptal Et"),
+                              style: TextButton.styleFrom(
+                                  primary: Colors.white,
+                                  shadowColor: Colors.transparent,
+                                  backgroundColor: recMesColor,
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(33))),
+                            ),
+                          ),
+                          SizedBox(
+                            width: 8,
+                          ),
+                          Expanded(
+                            child: TextButton(
+                              onPressed: () async {
+                                if (!loading) {
+                                  setState((){
+                                    loading=true;
+                                  });
+                                  MediaReference mediaRef =await Provider.of<StorageBlock>(context,listen: false).uploadAudio(
+                                    index: 0,
+                                    timeStamp: DateTime.now()
+                                        .millisecondsSinceEpoch
+                                        .toString(),
+                                    ext: StorageBlock.fileExt(
+                                        filesTyper.files[0].path),
+                                    file: File(filesTyper.files[0].path),
+                                    userUid: myUid,
+                                  );
+                                  Navigator.pop(context, mediaRef);
+                                }
+                              },
+                              child:Text(loading ? "Gönderiliyor..." : "Gönder"),
+                              style: TextButton.styleFrom(
+                                  primary: Colors.white,
+                                  shadowColor: Colors.transparent,
+                                  backgroundColor: recMesColor,
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(33))),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    // TextButton(onPressed:(){}, child: Text("Göder")),
+                  ],
+                ),
+              );
+            }),
+          );
+        });
   }
 
   FutureOr<FilesTyper> showModal() async {
@@ -226,11 +333,12 @@ class _ChatInputFieldState extends State<ChatInputField> with PickerMixin {
       builder: (c) {
         return Container(
           width: double.maxFinite,
-          margin: EdgeInsets.symmetric(horizontal: 10),
+          margin: EdgeInsets.all(8),
           height: 250,
           decoration: BoxDecoration(
-              color: Colors.black,
-              borderRadius: BorderRadius.vertical(top: Radius.circular(15))),
+            color: Colors.grey[850],
+            borderRadius: BorderRadius.circular(15),
+          ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
@@ -271,7 +379,24 @@ class _ChatInputFieldState extends State<ChatInputField> with PickerMixin {
                       },
                     ),
                     dosyaTipleri("Kamera", Icons.camera_alt_outlined,
-                        imagePicker: true, onPressed: () {}),
+                        imagePicker: true, onPressed: () async {
+                      List<Media> images = await getImgesPickerCamera();
+                      List<PlatformFile> imagesPlat;
+                      if (images != null) {
+                        imagesPlat = images
+                            .map((e) => PlatformFile(
+                                size: e.size.toInt(),
+                                path: e.thumbPath,
+                                name: e.path))
+                            .toList();
+                        Navigator.pop(
+                            context,
+                            FilesTyper(
+                                files: imagesPlat,
+                                type: ChatMessageType.image));
+                      }
+                      Navigator.pop(context);
+                    }),
                     dosyaTipleri("Ses", Icons.headset_outlined,
                         onPressed: () async {
                       List<PlatformFile> files = await getAudioPicker();
@@ -330,9 +455,11 @@ class _ChatInputFieldState extends State<ChatInputField> with PickerMixin {
       children: <Widget>[
         Container(
           color: Colors.transparent,
+          height: 55,
+          width: 55,
           child: ElevatedButton(
             style: ElevatedButton.styleFrom(
-              primary: Colors.black,
+              primary: Colors.grey[850],
               elevation: 0,
               shadowColor: kPrimaryColor.withOpacity(0.6),
               shape: RoundedRectangleBorder(

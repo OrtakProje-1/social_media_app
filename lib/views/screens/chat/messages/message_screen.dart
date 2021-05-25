@@ -130,7 +130,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
                 }
               }
               selectedMessage.forEach((element) async {
-                await messagesBlock.deleteMessage(element);
+                await messagesBlock.deleteMessage(element,context);
                 selectedMessage.remove(element);
               });
 

@@ -154,7 +154,7 @@ class _PostItemState extends State<PostItem> {
                           widget.post.images.isNotEmpty) ...[
                         if (widget.post.images.length == 1) ...[
                           kIsWeb
-                              ? getWebImage(widget.post.images[0])
+                              ? getWebImage(widget.post.images[0].downloadURL)
                               : Container(
                                   height: 200,
                                   decoration: BoxDecoration(
@@ -167,7 +167,7 @@ class _PostItemState extends State<PostItem> {
                                     image: DecorationImage(
                                       fit: BoxFit.cover,
                                       image: CachedNetworkImageProvider(
-                                          widget.post.images[0]),
+                                          widget.post.images[0].downloadURL),
                                     ),
                                   ),
                                 ),
@@ -187,7 +187,7 @@ class _PostItemState extends State<PostItem> {
                                         borderRadius: BorderRadius.circular(12),
                                         image: DecorationImage(
                                           image: CachedNetworkImageProvider(
-                                              widget.post.images[index],
+                                              widget.post.images[index].downloadURL,
                                               errorListener: () {
                                             print(
                                                 "resim yüklenirken hata oluştu");
@@ -307,36 +307,38 @@ class _PostItemState extends State<PostItem> {
       {IconData icon, VoidCallback onPressed, Color color, int value}) {
     value ??= Random().nextInt(2999);
     return Expanded(
-      child: TextButton(
-        style: TextButton.styleFrom(
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(45)),
-          padding: EdgeInsets.all(0),
-          textStyle: TextStyle(color: Colors.black),
-          primary: Colors.black,
-        ),
-        onPressed: onPressed != null ? onPressed : null,
-        child: Container(
-          margin: EdgeInsets.symmetric(horizontal: 3, vertical: 3),
-          decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(45),
-              border: Border.all(
-                  color: Constants.bottombarBackgroundColor.withOpacity(0.1),
-                  width: 1),
-              color: Colors.grey.shade200.withOpacity(0.2)),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
-            child: Row(
-              children: [
-                SizedBox(
-                  width: 8,
-                ),
-                Icon(
-                  icon,
-                  color: color,
-                ),
-                Expanded(child: Center(child: Text(value.toString(),style: TextStyle(color: Theme.of(context).textTheme.bodyText1.color,fontWeight: FontWeight.bold),))),
-              ],
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 3, vertical: 3),
+        child: TextButton(
+          style: TextButton.styleFrom(
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(45)),
+            padding: EdgeInsets.all(0),
+            textStyle: TextStyle(color: Colors.black),
+            primary: Colors.white30,
+          ),
+          onPressed: onPressed != null ? onPressed : null,
+          child: Container(
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(45),
+                border: Border.all(
+                    color:Colors.white24,
+                    width: 1),
+                color: Colors.grey.shade700.withOpacity(0.2)),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+              child: Row(
+                children: [
+                  SizedBox(
+                    width: 8,
+                  ),
+                  Icon(
+                    icon,
+                    color: color,
+                  ),
+                  Expanded(child: Center(child: Text(value.toString(),style: TextStyle(color: Theme.of(context).textTheme.bodyText1.color,fontWeight: FontWeight.bold),))),
+                ],
+              ),
             ),
           ),
         ),

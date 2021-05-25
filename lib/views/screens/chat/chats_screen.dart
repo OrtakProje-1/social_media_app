@@ -73,7 +73,7 @@ class _ChatsScreenState extends State<ChatsScreen> {
       ),
       actions: [
        IconButton(
-         icon: Icon(Icons.add,color:Colors.black87,),
+         icon: Icon(Icons.add),
          onPressed: (){
            Navigate.pushPage(context,NewMessageScreen());
          },

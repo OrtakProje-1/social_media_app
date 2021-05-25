@@ -17,6 +17,7 @@ import 'package:social_media_app/views/screens/main_screen/main_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:social_media_app/views/screens/no_internet_screen.dart';
 import 'package:social_media_app/views/screens/splash_screen.dart/splash_screen.dart';
+import 'package:social_media_app/util/extensions.dart';
 
 class MyApp extends StatelessWidget {
   @override

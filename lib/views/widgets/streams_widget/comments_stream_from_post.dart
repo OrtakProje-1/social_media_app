@@ -14,7 +14,7 @@ class CommentsStream extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     PostsBlock postsBlock=Provider.of<PostsBlock>(context);
-    return StreamBuilder(
+    return StreamBuilder<QuerySnapshot>(
       stream: postsBlock.commentsStream(post),
       builder: builder,
     );
