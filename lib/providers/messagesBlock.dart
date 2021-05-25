@@ -1,3 +1,5 @@
+
+
 import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -17,16 +19,16 @@ class MessagesBlock {
     init();
   }
 
-  FirebaseFirestore _firestore;
-  BehaviorSubject<List<Chat>> lastMessagesStream;
-  StreamSubscription lastMessagesSubscription;
+  FirebaseFirestore? _firestore;
+  BehaviorSubject<List<Chat>>? lastMessagesStream;
+  StreamSubscription? lastMessagesSubscription;
 
   init() {
     lastMessagesStream = BehaviorSubject.seeded([]);
   }
 
   clearData() {
-    lastMessagesStream.add([]);
+    lastMessagesStream!.add([]);
     lastMessagesSubscription?.cancel();
   }
 
@@ -35,18 +37,18 @@ class MessagesBlock {
       List<Chat> lastMessages = event.docs
           .map((e) => Chat.fromMap(e.data()).copyWith(docRef: e.reference))
           .toList();
-      lastMessagesStream.add(lastMessages);
+      lastMessagesStream!.add(lastMessages);
     });
   }
 
   CollectionReference get messagesReference =>
-      _firestore.collection("Messages");
+      _firestore!.collection("Messages");
   CollectionReference get lastMessagesReference =>
-      _firestore.collection("LastMessages");
+      _firestore!.collection("LastMessages");
   CollectionReference messagesColReference(String docId) =>
       messagesReference.doc(docId).collection("messages");
 
-  Stream<QuerySnapshot> getMessageStream(String uid1, String uid2) {
+  Stream<QuerySnapshot> getMessageStream(String uid1, String? uid2) {
     String reference = getDoc(uid1, uid2);
     return messagesReference
         .doc(reference)
@@ -76,12 +78,12 @@ class MessagesBlock {
 
   Future<void> _deleteMessageImages(ChatMessage mes,BuildContext context)async{
     if(mes.images!=null){
-      if(mes.images.isNotEmpty){
+      if(mes.images!.isNotEmpty){
         StorageBlock storageBlock=Provider.of<StorageBlock>(context,listen: false);
         UserBlock userBlock=Provider.of<UserBlock>(context,listen: false);
-        mes.images.forEach((image)async{
-          print("resim siliniyor = "+image.ref);
-          await storageBlock.deleteImage(userBlock.user.uid,image.ref);
+        mes.images!.forEach((image)async{
+          print("resim siliniyor = "+image!.ref!);
+          await storageBlock.deleteImage(userBlock.user!.uid,image.ref!);
         });
       }
     }
@@ -90,8 +92,8 @@ class MessagesBlock {
     if(mes.video!=null){
         StorageBlock storageBlock=Provider.of<StorageBlock>(context,listen: false);
         UserBlock userBlock=Provider.of<UserBlock>(context,listen: false);
-        print("resim siliniyor = "+mes.video.ref);
-        await storageBlock.deleteVideo(userBlock.user.uid,mes.video.ref);
+        print("resim siliniyor = "+mes.video!.ref!);
+        await storageBlock.deleteVideo(userBlock.user!.uid,mes.video!.ref!);
         
     }
   }
@@ -99,8 +101,8 @@ class MessagesBlock {
     if(mes.audio!=null){
         StorageBlock storageBlock=Provider.of<StorageBlock>(context,listen: false);
         UserBlock userBlock=Provider.of<UserBlock>(context,listen: false);
-        print("resim siliniyor = "+mes.audio.ref);
-        await storageBlock.deleteAudio(userBlock.user.uid,mes.audio.ref);
+        print("resim siliniyor = "+mes.audio!.ref!);
+        await storageBlock.deleteAudio(userBlock.user!.uid,mes.audio!.ref!);
     }
   }
   Future<void> _deleteMessageFile(ChatMessage mes,BuildContext context)async{
@@ -108,8 +110,8 @@ class MessagesBlock {
         StorageBlock storageBlock=Provider.of<StorageBlock>(context,listen: false);
         UserBlock userBlock=Provider.of<UserBlock>(context,listen: false);
         
-          print("dosya siliniyor = "+mes.file.ref);
-          await storageBlock.deleteFile(userBlock.user.uid,mes.file.ref);
+          print("dosya siliniyor = "+mes.file!.ref!);
+          await storageBlock.deleteFile(userBlock.user!.uid,mes.file!.ref!);
         
     }
   }
@@ -125,7 +127,7 @@ class MessagesBlock {
     return lastMessagesReference.doc(myUid).collection("messages").snapshots();
   }
 
-  Future<void> setChatCard(String myUid, String receiverUid, Chat chat) async {
+  Future<void> setChatCard(String? myUid, String? receiverUid, Chat chat) async {
     await lastMessagesReference
         .doc(myUid)
         .collection("messages")
@@ -134,7 +136,7 @@ class MessagesBlock {
   }
 
   Future<void> updateChatCard(
-      String myUid, String receiverUid, Chat chat) async {
+      String? myUid, String? receiverUid, Chat chat) async {
     await lastMessagesReference
         .doc(myUid)
         .collection("messages")
@@ -144,11 +146,11 @@ class MessagesBlock {
 
   Future<void> updateChat(
       bool noMessage, MyUser my, MyUser rec, ChatMessage message) async {
-    String myMesaj;
-    String recMesaj;
+    String? myMesaj;
+    String? recMesaj;
     int time = DateTime.now().millisecondsSinceEpoch;
     if (message.text != null) {
-      if (message.text.isNotEmpty) {
+      if (message.text!.isNotEmpty) {
         myMesaj = message.text;
         recMesaj = message.text;
       } else {
@@ -206,33 +208,33 @@ class MessagesBlock {
     }
   }
 
-  String getMesajFromType(ChatMessageType type, {MyUser my, bool isRec=false}) {
+  String getMesajFromType(ChatMessageType? type, {MyUser? my, bool isRec=false}) {
     switch (type) {
       case ChatMessageType.image:
         return isRec
-            ? "${my.displayName} size bir resim gönderdi."
+            ? "${my!.displayName} size bir resim gönderdi."
             : "resim 📷";
         break;
       case ChatMessageType.audio:
-        return isRec ? "${my.displayName} size bir ses gönderdi." : "ses";
+        return isRec ? "${my!.displayName} size bir ses gönderdi." : "ses";
         break;
       case ChatMessageType.file:
-        return isRec ? "${my.displayName} size bir dosya gönderdi." : "dosya";
+        return isRec ? "${my!.displayName} size bir dosya gönderdi." : "dosya";
         break;
       default:
-        return isRec ? "${my.displayName} size bir video gönderdi." : "video";
+        return isRec ? "${my!.displayName} size bir video gönderdi." : "video";
     }
   }
 
-  String getDoc(String uid1, String uid2) {
-    List<String> uids = [uid1, uid2];
+  String getDoc(String? uid1, String? uid2) {
+    List<String?> uids = [uid1, uid2];
     uids.sort();
     return uids.join("_");
   }
 
   void dispose() {
-    lastMessagesStream.close();
-    lastMessagesSubscription.cancel();
+    lastMessagesStream!.close();
+    lastMessagesSubscription!.cancel();
   }
 }
 /*

@@ -1,3 +1,5 @@
+
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:social_media_app/models/Post.dart';
@@ -18,9 +20,9 @@ class PostsBlock {
     posts=BehaviorSubject.seeded([]);
   }
 
-  FirebaseFirestore _instance;
-  NotificationBlock _notificationBlock;
-  BehaviorSubject<List<Post>> posts;
+  late FirebaseFirestore _instance;
+  late NotificationBlock _notificationBlock;
+  BehaviorSubject<List<Post>>? posts;
 
   CollectionReference get postsReference => _instance.collection("Posts");
   Stream<QuerySnapshot> get streamPosts => _instance
@@ -28,7 +30,7 @@ class PostsBlock {
       .orderBy("postTime", descending: true)
       .snapshots(); //orderBy("postTime",descending:false);
 
-  Future<QuerySnapshot> getFriendsPost(List<String> uids)async{
+  Future<QuerySnapshot> getFriendsPost(List<String?> uids)async{
     return await postsReference.where("senderUid",whereIn: uids ).get();
   }
 
@@ -37,7 +39,7 @@ class PostsBlock {
   }
 
   DocumentReference postReference(Post post) {
-    return postsReference.doc(post.senderUid + "_" + post.postTime);
+    return postsReference.doc(post.senderUid! + "_" + post.postTime!);
   }
 
   CollectionReference commentReference(Post post) {
@@ -67,10 +69,10 @@ class PostsBlock {
   }
 
   Future<void> addComment(Post comment, Post parentPost,UsersBlock usersBlock) async {
-    MyUser receiver=usersBlock.getUserFromUid(parentPost.senderUid);
+    MyUser receiver=usersBlock.getUserFromUid(parentPost.senderUid)!;
     await postReference(parentPost)
         .collection("comments")
-        .doc(comment.senderUid + "_" + comment.postTime)
+        .doc(comment.senderUid! + "_" + comment.postTime!)
         .set(comment.toMap())
         .catchError((e) {
       print("addComment de hata oluştu");
@@ -95,12 +97,12 @@ class PostsBlock {
     //}
   }
 
-  Future<void> updateLike(bool newValue, Post post,String likerUid,UsersBlock usersBlock) async {
-    List<String> updatedLikes = post.likes ?? [];
-    MyUser liker=usersBlock.getUserFromUid(likerUid);
-    MyUser receiverUser=usersBlock.getUserFromUid(post.senderUid);
+  Future<void> updateLike(bool newValue, Post post,String? likerUid,UsersBlock usersBlock) async {
+    List<String?> updatedLikes = post.likes ?? [];
+    MyUser? liker=usersBlock.getUserFromUid(likerUid);
+    MyUser? receiverUser=usersBlock.getUserFromUid(post.senderUid);
     if (newValue) {
-      updatedLikes.add(liker.uid);
+      updatedLikes.add(liker!.uid);
      /*if(post.senderUid!=liker.uid)*/ await _notificationBlock.addNotification(
           post.senderUid,
           MyNotification(
@@ -112,13 +114,13 @@ class PostsBlock {
                 uid: liker.uid,
               ),
               nReceiver: NReceiver(
-                rToken: receiverUser.token,
+                rToken: receiverUser!.token,
                 rUid: receiverUser.uid,
               ),
               nTime: DateTime.now().millisecondsSinceEpoch.toString(),
               nType: NType.LIKE));
     } else {
-      updatedLikes.remove(liker.uid);
+      updatedLikes.remove(liker!.uid);
     }
     updatePost(post..likes = updatedLikes);
   }
@@ -126,7 +128,7 @@ class PostsBlock {
   Future<bool> deletePost(Post deletePost) async {
     try {
       await postsReference
-          .doc(deletePost.senderUid + "_" + deletePost.postTime)
+          .doc(deletePost.senderUid! + "_" + deletePost.postTime!)
           .delete();
     } catch (e) {
       print("Post silmede hata oluştu hata= " + e.toString());
@@ -135,17 +137,17 @@ class PostsBlock {
     return true;
   }
 
-  Future<void> fetchPosts(List<String> uids)async{
+  Future<void> fetchPosts(List<String?> uids)async{
     QuerySnapshot query= await getFriendsPost(uids);
     List<Post> myPost= query.docs.map((e) =>Post.fromMap(e.data())).toList();
-    posts.add(myPost);
+    posts!.add(myPost);
   }
 
   void clearDatas(){
-    posts.add([]);
+    posts!.add([]);
   }
 
   void dispose(){
-    posts.close();
+    posts!.close();
   }
 }

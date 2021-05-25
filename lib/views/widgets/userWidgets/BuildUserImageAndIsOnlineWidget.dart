@@ -1,3 +1,5 @@
+
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:social_media_app/models/my_user.dart';
@@ -5,16 +7,16 @@ import 'package:social_media_app/providers/usersBlock.dart';
 import 'package:social_media_app/util/const.dart';
 
 class BuildUserImageAndIsOnlineWidget extends StatelessWidget {
-  final UsersBlock usersBlock;
-  final MyUser user;
+  final UsersBlock? usersBlock;
+  final MyUser? user;
   final double width;
   BuildUserImageAndIsOnlineWidget(
-      {Key key, this.usersBlock, String uid, this.width = 40})
+      {Key? key, required UsersBlock this.usersBlock, String? uid, this.width = 40})
       : user = usersBlock.getUserFromUid(uid),
         super(key: key);
 
   BuildUserImageAndIsOnlineWidget.fromUser(
-      {Key key, this.user, this.width = 40})
+      {Key? key, this.user, this.width = 40})
       : this.usersBlock = null,
         super(key: key);
 
@@ -27,12 +29,12 @@ class BuildUserImageAndIsOnlineWidget extends StatelessWidget {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
         image: DecorationImage(
-          image: CachedNetworkImageProvider(user.photoURL),
+          image: CachedNetworkImageProvider(user!.photoURL!),
         ),
       ),
       child: Stack(
         children: [
-          if (user.isOnline)
+          if (user!.isOnline!)
             Positioned(
               right: -3,
               bottom: 1,

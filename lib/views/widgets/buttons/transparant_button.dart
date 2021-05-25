@@ -1,10 +1,12 @@
+
+
 import 'package:flutter/material.dart';
 
 class TransparantButton extends StatelessWidget {
-  final Icon icon;
-  final VoidCallback onPressed;
+  final Icon? icon;
+  final VoidCallback? onPressed;
   final double iconSize;
-  TransparantButton({Key key, this.icon, this.onPressed,this.iconSize=24})
+  TransparantButton({Key? key, this.icon, this.onPressed,this.iconSize=24})
       : super(key: key);
 
   @override
@@ -17,7 +19,7 @@ class TransparantButton extends StatelessWidget {
       focusColor: Colors.transparent,
       highlightColor: Colors.transparent,
       splashColor: Colors.transparent,
-      icon: icon,
+      icon: icon!,
       onPressed: onPressed,
     );
   }

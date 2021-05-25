@@ -1,36 +1,38 @@
+
+
 import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class Chat {
-  final String name;
-  final String lastMessage;
-  final String image;
-  final String rUid;
-  final String senderUid;
-  final int time;
-  final DocumentReference docRef;
+  final String? name;
+  final String? lastMessage;
+  final String? image;
+  final String? rUid;
+  final String? senderUid;
+  final int? time;
+  final DocumentReference? docRef;
   Chat({
-    @required this.name,
+    required this.name,
     this.docRef,
-    @required this.senderUid,
-    @required this.lastMessage,
-    @required this.image,
-    @required this.rUid,
-    @required this.time,
+    required this.senderUid,
+    required this.lastMessage,
+    required this.image,
+    required this.rUid,
+    required this.time,
   });
 
   Chat copyWith({
-    String name,
-    String rUid,
-    String senderUid,
-    String lastMessage,
-    String image,
-    int time,
-    bool isActive,
-    int unReadCount,
-    DocumentReference docRef,
+    String? name,
+    String? rUid,
+    String? senderUid,
+    String? lastMessage,
+    String? image,
+    int? time,
+    bool? isActive,
+    int? unReadCount,
+    DocumentReference? docRef,
   }) {
 
     return Chat(

@@ -1,3 +1,5 @@
+
+
 import 'package:flutter/cupertino.dart';
 import 'package:provider/provider.dart';
 import 'package:social_media_app/models/my_user.dart';
@@ -9,14 +11,14 @@ import 'package:social_media_app/providers/usersBlock.dart';
 
 class GetDatas{
 
-  static GetDatas _instance;
+  static GetDatas? _instance;
   
   factory GetDatas(){
     if(_instance==null){
       GetDatas._();
-      return _instance;
+      return _instance!;
     }
-    return _instance;
+    return _instance!;
   }
 
   GetDatas._(){
@@ -31,7 +33,7 @@ class GetDatas{
     if(isSignOut) getClearAllDatas(profileBlock,postsBlock,notificationBlock,messagesBlock);
     await messagesBlock.fetchLastMessages(uid);
     await profileBlock.fetchDatas(uid);
-    await postsBlock.fetchPosts(profileBlock.friendsUid.valueWrapper.value);
+    await postsBlock.fetchPosts(profileBlock.friendsUid!.valueWrapper!.value);
     await notificationBlock.fetchNotifications(uid);
   }
 

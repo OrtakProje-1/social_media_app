@@ -1,3 +1,5 @@
+
+
 import 'package:extended_image/extended_image.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -6,8 +8,8 @@ import 'package:social_media_app/util/const.dart';
 import 'package:social_media_app/views/widgets/bottom_appbar_notched_shape.dart';
 
 class ImageEditorPage extends StatefulWidget {
-  final PlatformFile image;
-  ImageEditorPage({Key key, this.image}) : super(key: key);
+  final PlatformFile? image;
+  ImageEditorPage({Key? key, this.image}) : super(key: key);
 
   @override
   _ImageEditorPageState createState() => _ImageEditorPageState();
@@ -19,7 +21,7 @@ class _ImageEditorPageState extends State<ImageEditorPage> {
   GlobalKey<ExtendedImageGestureState> gestureKey =
       GlobalKey<ExtendedImageGestureState>();
 
-  double aspectRatio;
+  double? aspectRatio;
 
   final List<AspectRatioItem> _aspectRatios = <AspectRatioItem>[
     AspectRatioItem(text: 'Standart', value: CropAspectRatios.custom),
@@ -32,7 +34,7 @@ class _ImageEditorPageState extends State<ImageEditorPage> {
 
   @override
   Widget build(BuildContext context) {
-    String path = widget.image.path;
+    String path = widget.image!.path!;
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
@@ -80,13 +82,13 @@ class _ImageEditorPageState extends State<ImageEditorPage> {
           children: [
             IconButton(
               onPressed: () {
-                editorKey.currentState.flip();
+                editorKey.currentState!.flip();
               },
               icon: Icon(Icons.flip),
             ),
             IconButton(
               onPressed: () async {
-                double ratio = await showModalBottomSheet(
+                double? ratio = await showModalBottomSheet(
                     backgroundColor: Colors.grey.shade800,
                     context: context,
                     builder: (c) {
@@ -105,7 +107,7 @@ class _ImageEditorPageState extends State<ImageEditorPage> {
                                       child: Container(
                                         width: double.maxFinite,
                                         child: Text(
-                                          e.text,
+                                          e.text!,
                                           style: TextStyle(
                                               color: aspectRatio == e.value
                                                   ? Colors.blue
@@ -127,14 +129,14 @@ class _ImageEditorPageState extends State<ImageEditorPage> {
             SizedBox(),
             IconButton(
               onPressed: () {
-                editorKey.currentState.rotate(right: false);
+                editorKey.currentState!.rotate(right: false);
               },
               icon: Icon(Icons.rotate_90_degrees_ccw_rounded),
             ),
             
             IconButton(
               onPressed: () {
-                editorKey.currentState.reset();
+                editorKey.currentState!.reset();
               },
               icon: Icon(Icons.restore),
             ),
@@ -655,14 +657,14 @@ class _ImageEditorPageState extends State<ImageEditorPage> {
 // }
 
 class AspectRatioItem {
-  final String text;
-  final double value;
+  final String? text;
+  final double? value;
   AspectRatioItem({this.text, this.value});
 }
 
 class CropAspectRatios {
   /// no aspect ratio for crop
-  static const double custom = null;
+  static const double? custom = null;
 
   /// the same as aspect ratio of image
   /// [cropAspectRatio] is not more than 0.0, it's original

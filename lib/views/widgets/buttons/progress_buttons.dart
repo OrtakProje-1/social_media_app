@@ -1,17 +1,19 @@
+
+
 import 'package:flutter/material.dart';
 import 'package:progress_state_button/iconed_button.dart';
 import 'package:progress_state_button/progress_button.dart';
 
 class CustomProgressButton extends StatelessWidget {
-  final ButtonState state;
-  final VoidCallback onPressed;
+  final ButtonState? state;
+  final VoidCallback? onPressed;
   final String loadingText;
   final String successText;
   final String errorText;
   final String idleText;
-  final double value;
+  final double? value;
   const CustomProgressButton({
-    Key key,
+    Key? key,
     this.state,
     this.onPressed,
     this.errorText="Hata Oluştu",

@@ -1,15 +1,17 @@
+
+
 import 'package:flutter/material.dart';
 
 class CustomElevatedButton extends StatelessWidget {
-  final String label;
-  final IconData icon;
+  final String? label;
+  final IconData? icon;
   final bool isRight;
-  final VoidCallback onPressed;
+  final VoidCallback? onPressed;
   final double radius;
   final Color onPrimary;
   final Color primary;
-  final Color shadowColor;
-  const CustomElevatedButton({Key key,this.shadowColor,Color primary,Color onPrimary,this.radius=22,this.icon,this.isRight=false,this.label,this.onPressed}) 
+  final Color? shadowColor;
+  const CustomElevatedButton({Key? key,this.shadowColor,Color? primary,Color? onPrimary,this.radius=22,this.icon,this.isRight=false,this.label,this.onPressed}) 
   :  this.primary=primary ?? Colors.white,
      this.onPrimary=onPrimary ?? Colors.red,super(key:key);
 
@@ -30,7 +32,7 @@ class CustomElevatedButton extends StatelessWidget {
           child: Row(
             children: [
               Text(
-                label,
+                label!,
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
               Spacer(),

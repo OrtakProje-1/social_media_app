@@ -1,3 +1,5 @@
+
+
 import 'dart:io';
 import 'dart:ui';
 import 'dart:math' as math;
@@ -43,9 +45,9 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen>
     with SingleTickerProviderStateMixin, PickerMixin {
-  PageController _pageController;
-  ScrollController _scrollController;
-  AnimationController _controller;
+  PageController? _pageController;
+  ScrollController? _scrollController;
+  AnimationController? _controller;
   int _page = 2;
 
   @override
@@ -69,7 +71,7 @@ class _MainScreenState extends State<MainScreen>
             controller: _scrollController,
           ),
           ProfileScreen(
-            user: MyUser.fromUser(userBlock.user,token:userBlock.token),
+            user: MyUser.fromUser(userBlock.user!,token:userBlock.token),
           ),
         ],
       ),
@@ -93,7 +95,7 @@ class _MainScreenState extends State<MainScreen>
                 },
               ),
               BuildBadgeWidget(
-                stream:  profileBlock.notification(userBlock.user.uid).where("isRead",isEqualTo:false).snapshots(),
+                stream:  profileBlock.notification(userBlock.user!.uid).where("isRead",isEqualTo:false).snapshots(),
                 widget: buildNotificationButton(),
               ),
               Spacer(),
@@ -192,8 +194,8 @@ class _MainScreenState extends State<MainScreen>
 
   Future<void> closeCircularMenu() async {
     if (_controller != null) {
-      if (_controller.status == AnimationStatus.completed) {
-        await _controller.reverse();
+      if (_controller!.status == AnimationStatus.completed) {
+        await _controller!.reverse();
       }
     }
   }
@@ -203,10 +205,10 @@ class _MainScreenState extends State<MainScreen>
     Size size = MediaQuery.of(context).size;
     TextEditingController message = TextEditingController();
     List<PlatformFile> images = [];
-    List<PlatformFile> audios = [];
-    List<PlatformFile> videos = [];
+    List<PlatformFile>? audios = [];
+    List<PlatformFile>? videos = [];
     ButtonState state = ButtonState.idle;
-    double indicatorValue;
+    double? indicatorValue;
     showModalBottomSheet(
       elevation: 0,
       context: context,
@@ -286,17 +288,17 @@ class _MainScreenState extends State<MainScreen>
                               radius: 8,
                               onPressed: () async {
                                 if (mode == PostMode.IMAGE) {
-                                  List<PlatformFile> newImages =
+                                  List<PlatformFile>? newImages =
                                       await getImagePicker();
                                   newImages?.forEach((e) {
                                     if (!images.contains(e)) images.add(e);
                                   });
                                 } else if (mode == PostMode.AUDIO) {
-                                  List<PlatformFile> audio =
+                                  List<PlatformFile>? audio =
                                       await getAudioPicker();
                                   audios = audio;
                                 } else {
-                                  List<PlatformFile> video = await getVideoPicker();
+                                  List<PlatformFile>? video = await getVideoPicker();
                                   videos = video;
                                 }
                                 setState(() {});
@@ -311,7 +313,7 @@ class _MainScreenState extends State<MainScreen>
                                   images.removeAt(index);
                                 });
                               }),
-                        if (videos.isNotEmpty)
+                        if (videos!.isNotEmpty)
                           BuildVideoWidget(
                               size: size,
                               videos: videos,
@@ -335,11 +337,11 @@ class _MainScreenState extends State<MainScreen>
                                   state = ButtonState.loading;
                                 });
                                   MediaReference ref= await storageBlock.uploadImage(
-                                    file: File(value.path),
+                                    file: File(value.path!),
                                     index: index,
                                     timeStamp: time.millisecondsSinceEpoch.toString(),
-                                    ext: StorageBlock.fileExt(value.path),
-                                    userUid: userBlock.user.uid
+                                    ext: StorageBlock.fileExt(value.path!),
+                                    userUid: userBlock.user!.uid
                                   );
                                 imagesRef.add(ref);
                                 if (imagesRef.length == images.length) {
@@ -433,19 +435,19 @@ class _MainScreenState extends State<MainScreen>
     }
   }
 
-  Future<bool> sendPost(List<MediaReference> imagesRef, String msg, UserBlock userBlock,
+  Future<bool> sendPost(List<MediaReference>? imagesRef, String msg, UserBlock userBlock,
       PostsBlock postsBlock) async {
     Post post = Post(
-        senderUid: userBlock.user.uid,
+        senderUid: userBlock.user!.uid,
         msg: msg,
         postTime: DateTime.now().millisecondsSinceEpoch.toString(),
-        userName: userBlock.user.displayName,
-        userPhotoUrl: userBlock.user.photoURL,
+        userName: userBlock.user!.displayName,
+        userPhotoUrl: userBlock.user!.photoURL,
         images: imagesRef);
     return await postsBlock.addPost(post);
   }
 
-  OutlineInputBorder getFormBorder({Color color}) {
+  OutlineInputBorder getFormBorder({Color? color}) {
     if (color == null) color = Constants.iconColor;
     return OutlineInputBorder(
         gapPadding: 2,
@@ -463,7 +465,7 @@ class _MainScreenState extends State<MainScreen>
 
   void navigationTapped(int page) async {
     await closeCircularMenu();
-    _pageController.jumpToPage(page);
+    _pageController!.jumpToPage(page);
   }
 
   @override
@@ -477,7 +479,7 @@ class _MainScreenState extends State<MainScreen>
   @override
   void dispose() {
     super.dispose();
-    _pageController.dispose();
+    _pageController!.dispose();
   }
 
   void onPageChanged(int page) {

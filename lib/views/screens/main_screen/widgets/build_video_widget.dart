@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:math';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:social_media_app/util/router.dart';
@@ -9,22 +8,22 @@ import 'package:video_player/video_player.dart';
 
 class BuildVideoWidget extends StatefulWidget {
   const BuildVideoWidget({
-    Key key,
-    @required this.size,
-    @required this.videos,
-    @required this.onPressedDeleteButton,
+    Key? key,
+    required this.size,
+    required this.videos,
+    required this.onPressedDeleteButton,
   }) : super(key: key);
 
   final Size size;
   final ValueChanged<int> onPressedDeleteButton;
-  final List<PlatformFile> videos;
+  final List<PlatformFile>? videos;
 
   @override
   _BuildVideoWidgetState createState() => _BuildVideoWidgetState();
 }
 
 class _BuildVideoWidgetState extends State<BuildVideoWidget> {
-  VideoPlayerController _controller;
+  VideoPlayerController? _controller;
   @override
   void initState() {
     print("videowidget initstate");
@@ -33,8 +32,8 @@ class _BuildVideoWidgetState extends State<BuildVideoWidget> {
   }
 
   void initialize(){
-    if(widget.videos?.isNotEmpty)  _controller = VideoPlayerController.file(
-      File(widget.videos[0]?.path),
+    if(widget.videos!.isNotEmpty)  _controller = VideoPlayerController.file(
+      File(widget.videos![0].path!),
     )..initialize().then((value) => setState(() {}));
   }
 
@@ -42,7 +41,7 @@ class _BuildVideoWidgetState extends State<BuildVideoWidget> {
   void didUpdateWidget (BuildVideoWidget oldWidget){
     super.didUpdateWidget(oldWidget);
     if(oldWidget.videos!=widget.videos){
-    _controller.dispose();
+    _controller!.dispose();
     _controller=null;
     initialize();
     }
@@ -61,13 +60,13 @@ class _BuildVideoWidgetState extends State<BuildVideoWidget> {
       ),
       child: Center(
         child: AspectRatio(
-          aspectRatio: _controller?.value?.aspectRatio,
+          aspectRatio: _controller!.value.aspectRatio,
           child: Stack(
             children: [
               GestureDetector(
-                child: VideoPlayer(_controller),
+                child: VideoPlayer(_controller!),
                 onTap: (){
-                  Navigate.pushPageDialog(context,FullScreenVideoPlayer(source: widget.videos[0].path,));
+                  Navigate.pushPageDialog(context,FullScreenVideoPlayer(source: widget.videos![0].path,));
                 },
               ),
               BuildDeleteButton(

@@ -1,3 +1,5 @@
+
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -13,22 +15,22 @@ import 'package:social_media_app/views/widgets/animations/type_write.dart';
 import 'package:provider/provider.dart';
 
 class SplashScreen extends StatefulWidget {
-  SplashScreen({Key key}) : super(key: key);
+  SplashScreen({Key? key}) : super(key: key);
 
   @override
   _SplashScreenState createState() => _SplashScreenState();
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-  GetDatas getDatas;
+  late GetDatas getDatas;
   @override
   void initState() { 
     super.initState();
     getDatas=GetDatas();
     if(FirebaseAuth.instance.currentUser!=null){
-      getAllData(FirebaseAuth.instance.currentUser);
+      getAllData(FirebaseAuth.instance.currentUser!);
     }
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+    WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
       Future.delayed(Duration(seconds: 3),()async{
         if(FirebaseAuth.instance.currentUser!=null){
           

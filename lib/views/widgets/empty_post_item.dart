@@ -1,3 +1,5 @@
+
+
 import 'dart:math';
 
 import 'package:flutter/foundation.dart';
@@ -9,7 +11,7 @@ import 'package:fluttericon/typicons_icons.dart';
 
 class EmptyPostItem extends StatefulWidget {
 
-  EmptyPostItem({Key key}) : super(key: key);
+  EmptyPostItem({Key? key}) : super(key: key);
   @override
   _EmptyPostItemState createState() => _EmptyPostItemState();
 }
@@ -126,7 +128,7 @@ class _EmptyPostItemState extends State<EmptyPostItem> {
   }
 
   Expanded buildPostAction(
-      {IconData icon, VoidCallback onPressed, Color color,int value}) {
+      {IconData? icon, VoidCallback? onPressed, Color? color,int? value}) {
         value ??= Random().nextInt(2999);
     return Expanded(
       child: TextButton(

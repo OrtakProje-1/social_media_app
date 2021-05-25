@@ -17,7 +17,6 @@ import 'package:social_media_app/views/screens/main_screen/main_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:social_media_app/views/screens/no_internet_screen.dart';
 import 'package:social_media_app/views/screens/splash_screen.dart/splash_screen.dart';
-import 'package:social_media_app/util/extensions.dart';
 
 class MyApp extends StatelessWidget {
   @override
@@ -95,7 +94,7 @@ class MyApp extends StatelessWidget {
 
   Widget getHomeScreen(
       UserBlock block, UsersBlock usersBlock, ProfileBlock profileBlock) {
-    User user = FirebaseAuth.instance.currentUser;
+    User? user = FirebaseAuth.instance.currentUser;
     if (user == null) {
       return LoginPage();
     } else {
@@ -117,8 +116,8 @@ class MyApp extends StatelessWidget {
 }
 
 class AppLifecycleWidget extends StatefulWidget {
-  final Widget child;
-  const AppLifecycleWidget({Key key, this.child}) : super(key: key);
+  final Widget? child;
+  const AppLifecycleWidget({Key? key, this.child}) : super(key: key);
 
   @override
   _AppLifecycleWidgetState createState() => _AppLifecycleWidgetState();
@@ -129,7 +128,7 @@ class _AppLifecycleWidgetState extends State<AppLifecycleWidget>
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addObserver(this);
+    WidgetsBinding.instance!.addObserver(this);
   }
 
   @override
@@ -139,10 +138,10 @@ class _AppLifecycleWidgetState extends State<AppLifecycleWidget>
     UserBlock userBlock = context.read<UserBlock>();
     switch (state) {
       case AppLifecycleState.resumed:
-        profileBlock.updateUserisOnline(userBlock.user.uid, true);
+        profileBlock.updateUserisOnline(userBlock.user!.uid, true);
         break;
       case AppLifecycleState.paused:
-        profileBlock.updateUserisOnline(userBlock.user.uid, false);
+        profileBlock.updateUserisOnline(userBlock.user!.uid, false);
         break;
       default:
         break;
@@ -151,12 +150,12 @@ class _AppLifecycleWidgetState extends State<AppLifecycleWidget>
 
   @override
   void dispose() {
-    WidgetsBinding.instance.removeObserver(this);
+    WidgetsBinding.instance!.removeObserver(this);
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return widget.child;
+    return widget.child!;
   }
 }

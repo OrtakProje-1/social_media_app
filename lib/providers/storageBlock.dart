@@ -1,3 +1,5 @@
+
+
 import 'dart:async';
 import 'dart:io';
 
@@ -10,10 +12,10 @@ class StorageBlock {
     _reference = _storage.ref();
   }
 
-  Reference _reference;
-  FirebaseStorage _storage;
+  Reference? _reference;
+  late FirebaseStorage _storage;
 
-  Reference get reference => _reference;
+  Reference? get reference => _reference;
 
   Reference get imagesRef {
     return _storage.ref().child("images");
@@ -31,7 +33,7 @@ class StorageBlock {
     return _storage.ref().child("files");
   }
 
-  Future<MediaReference> uploadImage({File file, String userUid, int index,String timeStamp,String ext})async{
+  Future<MediaReference> uploadImage({required File file, required String userUid, int? index,String? timeStamp,String? ext})async{
     String ref="$timeStamp-$index.$ext";
     UploadTask task = imagesRef
         .child(userUid)
@@ -42,7 +44,7 @@ class StorageBlock {
     return MediaReference(downloadURL: downloadURL,ref: ref);
   }
 
-  Future<MediaReference> uploadAudio({File file, String userUid, int index,String timeStamp,String ext})async{
+  Future<MediaReference> uploadAudio({required File file, required String userUid, int? index,String? timeStamp,String? ext})async{
     String ref="$timeStamp-$index.$ext";
     UploadTask task = audiosRef
         .child(userUid)
@@ -53,7 +55,7 @@ class StorageBlock {
     return MediaReference(ref:ref, downloadURL: downloadURL);
   }
 
-  Future<MediaReference> uploadVideo({File file, String userUid, int index,String timeStamp,String ext})async{
+  Future<MediaReference> uploadVideo({required File file, required String userUid, int? index,String? timeStamp,String? ext})async{
     String ref="$timeStamp-$index.$ext";
     UploadTask task = videosRef
         .child(userUid)

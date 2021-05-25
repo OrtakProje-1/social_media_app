@@ -1,19 +1,21 @@
+
+
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
 
 class MediaReference {
-  final String ref;
-  final String downloadURL;
+  final String? ref;
+  final String? downloadURL;
   MediaReference({
-    @required this.ref,
-    @required this.downloadURL,
+    required this.ref,
+    required this.downloadURL,
   });
 
 
   MediaReference copyWith({
-    String ref,
-    String downloadURL,
+    String? ref,
+    String? downloadURL,
   }) {
     return MediaReference(
       ref: ref ?? this.ref,

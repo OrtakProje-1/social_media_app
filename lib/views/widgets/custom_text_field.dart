@@ -1,18 +1,20 @@
+
+
 import 'package:flutter/material.dart';
 
 class CustomTextField extends StatelessWidget {
-  final String initialValue;
-  final bool enabled;
-  final String hintText;
-  final TextInputType textInputType;
-  final TextEditingController controller;
-  final TextInputAction textInputAction;
-  final FocusNode focusNode, nextFocusNode;
-  final VoidCallback submitAction;
+  final String? initialValue;
+  final bool? enabled;
+  final String? hintText;
+  final TextInputType? textInputType;
+  final TextEditingController? controller;
+  final TextInputAction? textInputAction;
+  final FocusNode? focusNode, nextFocusNode;
+  final VoidCallback? submitAction;
   final bool obscureText;
-  final FormFieldValidator<String> validateFunction;
-  final void Function(String) onSaved, onChange;
-  final Key key;
+  final FormFieldValidator<String>? validateFunction;
+  final void Function(String?)? onSaved, onChange;
+  final Key? key;
 
 
   CustomTextField({
@@ -52,10 +54,10 @@ class CustomTextField extends StatelessWidget {
         focusNode: focusNode,
         onFieldSubmitted: (String term) {
           if (nextFocusNode != null) {
-            focusNode.unfocus();
+            focusNode!.unfocus();
             FocusScope.of(context).requestFocus(nextFocusNode);
           } else {
-            submitAction();
+            submitAction!();
           }
         },
         decoration: InputDecoration(

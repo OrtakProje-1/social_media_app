@@ -1,3 +1,5 @@
+
+
 import 'dart:async';
 import 'dart:io';
 
@@ -23,23 +25,23 @@ import 'package:social_media_app/views/screens/detail_screens/widgets/send_butto
 import 'package:social_media_app/views/screens/detail_screens/widgets/textfield_widget.dart';
 
 class ImagesDetail extends StatefulWidget {
-  final List<PlatformFile> files;
-  final MyUser receiver;
-  ImagesDetail({Key key, this.files, this.receiver}) : super(key: key);
+  final List<PlatformFile>? files;
+  final MyUser? receiver;
+  ImagesDetail({Key? key, this.files, this.receiver}) : super(key: key);
 
   @override
   _ImagesDetailState createState() => _ImagesDetailState(files: files);
 }
 
 class _ImagesDetailState extends State<ImagesDetail> with PickerMixin {
-  List<PlatformFile> files;
+  List<PlatformFile>? files;
   int selectIndex = 0;
-  PageController _pageController;
-  ScrollController _scrollController;
-  BehaviorSubject<double> shadow;
+  PageController? _pageController;
+  ScrollController? _scrollController;
+  BehaviorSubject<double>? shadow;
   List<MediaReference> downloadsRef = [];
   TextEditingController _message = TextEditingController();
-  BehaviorSubject<double> loadingProgress;
+  BehaviorSubject<double>? loadingProgress;
 
   _ImagesDetailState({this.files});
 
@@ -62,7 +64,7 @@ class _ImagesDetailState extends State<ImagesDetail> with PickerMixin {
             bottom: 0,
             child: ExtendedImageGesturePageView.builder(
               controller: _pageController,
-              itemCount: files.length,
+              itemCount: files!.length,
               onPageChanged: (i) {
                 setState(() {
                   selectIndex = i;
@@ -70,8 +72,8 @@ class _ImagesDetailState extends State<ImagesDetail> with PickerMixin {
               },
               itemBuilder: (c, i) {
                 return ExtendedImage.file(
-                  File(files[i].path),
-                  key: Key(files[i].path),
+                  File(files![i].path!),
+                  key: Key(files![i].path!),
                   mode: ExtendedImageMode.gesture,
                   initGestureConfigHandler: (d) {
                     return GestureConfig(
@@ -102,7 +104,7 @@ class _ImagesDetailState extends State<ImagesDetail> with PickerMixin {
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(8),
                       image: DecorationImage(
-                        image:CachedNetworkImageProvider(widget.receiver.photoURL),
+                        image:CachedNetworkImageProvider(widget.receiver!.photoURL!),
                       ),
                     ),
                   ),
@@ -111,7 +113,7 @@ class _ImagesDetailState extends State<ImagesDetail> with PickerMixin {
                     width: 8,
                   ),
                   Text(
-                    widget.receiver.displayName,
+                    widget.receiver!.displayName!,
                     style: TextStyle(color: Colors.white),
                   ),
                 ],
@@ -124,16 +126,16 @@ class _ImagesDetailState extends State<ImagesDetail> with PickerMixin {
                   ),
                   onPressed: () {
                     Navigate.pushPage(
-                        context, ImageEditorPage(image: files[selectIndex]));
+                        context, ImageEditorPage(image: files![selectIndex]));
                   },
                 ),
                 IconButton(
                   icon: Icon(Icons.delete_outline, color: Colors.white),
                   onPressed: () {
-                    if (files.length == 1) {
+                    if (files!.length == 1) {
                       Navigator.pop(context);
                     } else {
-                      files.removeAt(selectIndex);
+                      files!.removeAt(selectIndex);
                       setState(() {
                         selectIndex > 1 ? selectIndex-- : selectIndex = 0;
                       });
@@ -173,11 +175,11 @@ class _ImagesDetailState extends State<ImagesDetail> with PickerMixin {
                                 child: InkWell(
                                   onTap: () async {
                                     List<PlatformFile> newImages =
-                                        await getImagePicker();
+                                        await (getImagePicker() as FutureOr<List<PlatformFile>>);
                                     newImages.forEach((element) {
-                                      if (!files
+                                      if (!files!
                                           .any((e) => e.path == element.path)) {
-                                        files.add(element);
+                                        files!.add(element);
                                       }
                                     });
                                     setState(() {});
@@ -207,9 +209,9 @@ class _ImagesDetailState extends State<ImagesDetail> with PickerMixin {
                                       padding: EdgeInsets.only(
                                           top: 5,
                                           bottom: 5,
-                                          left: (snapshot.data > 0) ? 5 : 0),
+                                          left: (snapshot.data! > 0) ? 5 : 0),
                                       child: AnimatedOpacity(
-                                        opacity: snapshot.data > 0 ? 1 : 0,
+                                        opacity: snapshot.data! > 0 ? 1 : 0,
                                         duration: Duration(milliseconds: 300),
                                         child: Container(
                                           width: 3,
@@ -236,28 +238,28 @@ class _ImagesDetailState extends State<ImagesDetail> with PickerMixin {
                                   controller: _scrollController,
                                   padding: EdgeInsets.all(5),
                                   scrollDirection: Axis.horizontal,
-                                  itemCount: files.length,
+                                  itemCount: files!.length,
                                   itemBuilder: (c, i) {
-                                    PlatformFile file = files[i];
+                                    PlatformFile file = files![i];
                                     return GestureDetector(
                                       onTap: () async {
                                         setState(() {
                                           selectIndex = i;
                                         });
-                                        await _pageController.animateToPage(
+                                        await _pageController!.animateToPage(
                                             selectIndex,
                                             duration:
                                                 Duration(milliseconds: 400),
                                             curve: Curves.linear);
                                       },
                                       child: ImageDismissibleWidget(
-                                        file: files[i],
+                                        file: files![i],
                                         isSelected: selectIndex == i,
                                         onDismissed: (d) {
-                                          if (files.length == 1) {
+                                          if (files!.length == 1) {
                                             Navigator.pop(context);
                                           } else {
-                                            files.removeAt(i);
+                                            files!.removeAt(i);
                                             setState(() {});
                                           }
                                         },
@@ -282,21 +284,21 @@ class _ImagesDetailState extends State<ImagesDetail> with PickerMixin {
                             DateTime.now().millisecondsSinceEpoch.toString();
                         showLoadingDialog();
                        
-                        files.asMap().forEach((index, value) async {
+                        files!.asMap().forEach((index, value) async {
                           MediaReference ref = await storageBlock.uploadImage(
                               index: index,
-                              ext: StorageBlock.fileExt(value.path),
-                              file: File(value.path),
+                              ext: StorageBlock.fileExt(value.path!),
+                              file: File(value.path!),
                               timeStamp: time,
-                              userUid: userBlock.user.uid);
-                          print("downloadurl= " + ref.downloadURL);
+                              userUid: userBlock.user!.uid);
+                          print("downloadurl= " + ref.downloadURL!);
                           downloadsRef.add(ref);
-                          double val=(downloadsRef.length/files.length);
-                          loadingProgress.add(val>=1?1:val);
+                          double val=(downloadsRef.length/files!.length);
+                          loadingProgress!.add(val>=1?1:val);
                           if(val>=1){
                             Navigator.pop(context);
                           }
-                          if (downloadsRef.length == files.length) {
+                          if (downloadsRef.length == files!.length) {
                             SenderMediaMessage senderMessage =
                                 SenderMediaMessage(
                                     type: ChatMessageType.image,
@@ -334,7 +336,7 @@ class _ImagesDetailState extends State<ImagesDetail> with PickerMixin {
                 children: [
                   CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Colors.white),),
                   SizedBox(width: 10,),
-                  Text("Resimler Yükleniyor ( %${(snapshot.data*100).toInt()} )",style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold)),
+                  Text("Resimler Yükleniyor ( %${(snapshot.data!*100).toInt()} )",style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold)),
                 ],
               );
             }
@@ -347,11 +349,11 @@ class _ImagesDetailState extends State<ImagesDetail> with PickerMixin {
   void getShadow() {
     double shad;
     try {
-      shad = _scrollController?.offset?.toInt() <= 0 ? 0 : 8;
+      shad = _scrollController!.offset.toInt() <= 0 ? 0 : 8;
     } catch (e) {
       shad = 0;
     }
-    shadow.add(shad);
+    shadow!.add(shad);
   }
 
   @override
@@ -359,7 +361,7 @@ class _ImagesDetailState extends State<ImagesDetail> with PickerMixin {
     super.initState();
     _pageController = PageController(initialPage: 0);
     _scrollController = ScrollController();
-    _scrollController.addListener(() {
+    _scrollController!.addListener(() {
       getShadow();
     });
     loadingProgress=BehaviorSubject.seeded(0);
@@ -368,8 +370,8 @@ class _ImagesDetailState extends State<ImagesDetail> with PickerMixin {
 
   @override
   void dispose() {
-    shadow.close();
-    loadingProgress.close();
+    shadow!.close();
+    loadingProgress!.close();
     super.dispose();
   }
 }

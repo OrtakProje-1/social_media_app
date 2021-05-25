@@ -1,17 +1,17 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class FirebaseYardimci{
-  static FirebaseYardimci _instance;
-  FirebaseFirestore _firestore;
+  static FirebaseYardimci? _instance;
+  FirebaseFirestore? _firestore;
 
-  FirebaseFirestore get firestore=>_firestore;
+  FirebaseFirestore? get firestore=>_firestore;
 
   factory FirebaseYardimci(){
     if(_instance==null){
       FirebaseYardimci._init();
-      return _instance;
+      return _instance!;
     }else{
-      return _instance;
+      return _instance!;
     }
   }
 

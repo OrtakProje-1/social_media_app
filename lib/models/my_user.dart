@@ -1,9 +1,8 @@
-import 'package:flutter/cupertino.dart';
 import 'package:social_media_app/util/extensions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class MyUser {
-  String displayName,
+  String? displayName,
       email,
       phoneNumber,
       photoURL,
@@ -11,13 +10,13 @@ class MyUser {
       tenantId,
       uid,
       token;
-  bool emailVerified, isAnonymous, isOnline;
-  UserMetadata metadata;
-  List<UserInfo> providerData;
+  bool? emailVerified, isAnonymous, isOnline;
+  UserMetadata? metadata;
+  List<UserInfo>? providerData;
 
   MyUser(
       {
-      @required this.token,
+      required this.token,
       this.displayName,
       this.email,
       this.emailVerified,
@@ -54,7 +53,7 @@ class MyUser {
     this.isOnline = map["isOnline"] ?? false;
   }
 
-  MyUser.fromUser(User user, {bool isOnline = true,@required String token}) {
+  MyUser.fromUser(User user, {bool isOnline = true,required String? token}) {
     this.displayName = user.displayName;
     this.email = user.email;
     this.phoneNumber = user.phoneNumber;
@@ -79,7 +78,7 @@ class MyUser {
     map["metadata"] = this.metadata?.toMap();
     map["phoneNumber"] = this.phoneNumber;
     map["photoURL"] = this.photoURL;
-    map["providerData"] = this.providerData?.map((e) => e.toMap())?.toList();
+    map["providerData"] = this.providerData?.map((e) => e.toMap()).toList();
     map["refreshToken"] = this.refreshToken;
     map["tenantId"] = this.tenantId;
     map["uid"] = this.uid;

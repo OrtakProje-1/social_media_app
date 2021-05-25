@@ -1,3 +1,5 @@
+
+
 import 'dart:convert';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -15,7 +17,7 @@ final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
-  print(message.notification.title);
+  print(message.notification!.title);
   print('Handling a background message ${message.messageId}');
   await initializeNotification();
   showNotification(message);
@@ -25,16 +27,16 @@ void showNotification(RemoteMessage message) {
   Map<String, dynamic> data = message.data;
   NSender sender = NSender.fromMap(data["nSender"]);
   NType nType = NType.values[data["nType"]];
-  RemoteNotification notification = message.notification;
+  RemoteNotification? notification = message.notification;
  if(!kIsWeb){
    print("bildirim oluşturuluyor");
     NotificationDetails notificationDetails =
       NotificationDetails(android: androidNotificationDetails);
   flutterLocalNotificationsPlugin.show(notification.hashCode,
-      notification.title, notification.body, notificationDetails,
+      notification!.title, notification.body, notificationDetails,
       payload: JsonEncoder().convert(data));
  }else{
-   print("Web de mesaj= "+notification.title);
+   print("Web de mesaj= "+notification!.title!);
  }
 }
 
@@ -48,8 +50,8 @@ AndroidNotificationDetails androidNotificationDetails =
   priority: Priority.high,
 );
 
-Future<void> selectNotification(String s) async {
-  print("Bildirim seçildi payload= " + s?.toString());
+Future<void> selectNotification(String? s) async {
+  print("Bildirim seçildi payload= " + s!.toString());
 }
 
 const AndroidNotificationChannel channel = AndroidNotificationChannel(

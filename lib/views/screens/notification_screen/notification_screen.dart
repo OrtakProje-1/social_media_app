@@ -1,3 +1,5 @@
+
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -11,7 +13,7 @@ import 'package:social_media_app/views/screens/notification_screen/widgets/build
 import 'package:social_media_app/views/screens/notification_screen/widgets/empty_notifications.dart';
 
 class NotificationsScreen extends StatefulWidget {
-  NotificationsScreen({Key key}) : super(key: key);
+  NotificationsScreen({Key? key}) : super(key: key);
 
   @override
   _NotificationsScreenState createState() => _NotificationsScreenState();
@@ -20,7 +22,7 @@ class NotificationsScreen extends StatefulWidget {
 class _NotificationsScreenState extends State<NotificationsScreen> {
   List<String> elemans = ["Hepsi", "Arkadaşlık", "Favori", "Yorum", "Kayıt"];
 
-  Stream<QuerySnapshot> stream;
+  Stream<QuerySnapshot>? stream;
   int pValue =0;
   @override
   Widget build(BuildContext context) {
@@ -64,7 +66,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   Stream<QuerySnapshot> getAllStream(
       ProfileBlock profileBlock, UserBlock userBlock) {
     return profileBlock
-        .notification(userBlock.user.uid)
+        .notification(userBlock.user!.uid)
         .orderBy("nTime", descending: true)
         .snapshots();
   }
@@ -72,7 +74,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   Stream<QuerySnapshot> getStreamUnRead(
       NType type, ProfileBlock profileBlock, UserBlock userBlock) {
     return profileBlock
-        .notification(userBlock.user.uid)
+        .notification(userBlock.user!.uid)
         .where("nType", isEqualTo: type.index)
         .where("isRead", isEqualTo: false)
         .snapshots();
@@ -81,28 +83,28 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   Stream<QuerySnapshot> getStream(
       NType type, ProfileBlock profileBlock, UserBlock userBlock) {
     return profileBlock
-        .notification(userBlock.user.uid)
+        .notification(userBlock.user!.uid)
         .where("nType", isEqualTo: type.index)
         .snapshots();
   }
 
   Widget bodyy(UserBlock userBlock, ProfileBlock profileBlock,
-      Stream<QuerySnapshot> stream) {
+      Stream<QuerySnapshot>? stream) {
     return StreamBuilder<QuerySnapshot>(
       stream: stream,
       builder: (c, snap) {
         if (snap.hasData) {
-          if (snap.data.docs.isNotEmpty) {
-            List<QueryDocumentSnapshot> notify = snap.data.docs;
+          if (snap.data!.docs.isNotEmpty) {
+            List<QueryDocumentSnapshot> notify = snap.data!.docs;
             return ListView.builder(
               physics: BouncingScrollPhysics(),
               padding: EdgeInsets.symmetric(horizontal: 8),
-              itemCount: snap.data.size,
+              itemCount: snap.data!.size,
               itemBuilder: (c, i) {
                 return NotificationItem(
                   notification: MyNotification.fromMap(notify[i].data()),
                   index: i,
-                  nextNotification: i <= snap.data.size - 2
+                  nextNotification: i <= snap.data!.size - 2
                       ? MyNotification.fromMap(notify[i + 1].data())
                       : null,
                 );

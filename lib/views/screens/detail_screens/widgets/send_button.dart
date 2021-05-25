@@ -1,11 +1,13 @@
+
+
 import 'package:flutter/material.dart';
 import 'package:social_media_app/util/const.dart';
 
 class SendButton extends StatelessWidget {
-  final VoidCallback onPressed;
+  final VoidCallback? onPressed;
   final Color iconColor;
-  final Color backgroundColor;
-  const SendButton({Key key, this.onPressed,this.backgroundColor,this.iconColor=Colors.black}) : super(key: key);
+  final Color? backgroundColor;
+  const SendButton({Key? key, this.onPressed,this.backgroundColor,this.iconColor=Colors.black}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

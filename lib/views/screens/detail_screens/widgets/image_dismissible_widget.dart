@@ -1,3 +1,5 @@
+
+
 import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
@@ -5,11 +7,11 @@ import 'package:flutter/material.dart';
 import 'package:social_media_app/util/const.dart';
 
 class ImageDismissibleWidget extends StatelessWidget {
-  final ValueChanged<DismissDirection> onDismissed;
-  final bool isSelected;
-  final PlatformFile file;
+  final ValueChanged<DismissDirection>? onDismissed;
+  final bool? isSelected;
+  final PlatformFile? file;
   const ImageDismissibleWidget(
-      {Key key, this.onDismissed, this.isSelected, this.file})
+      {Key? key, this.onDismissed, this.isSelected, this.file})
       : super(key: key);
 
   @override
@@ -25,19 +27,19 @@ class ImageDismissibleWidget extends StatelessWidget {
         ),
       ),
       onDismissed: onDismissed,
-      key: Key(file.path),
+      key: Key(file!.path!),
       child: Container(
         width: 50,
         margin: EdgeInsets.symmetric(horizontal: 5),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(6),
           border: Border.all(
-            color: isSelected
+            color: isSelected!
                 ? kPrimaryColor.withOpacity(0.9)
                 : Colors.transparent,
           ),
           image: DecorationImage(
-              fit: BoxFit.cover, image: FileImage(File(file.path))),
+              fit: BoxFit.cover, image: FileImage(File(file!.path!))),
         ),
       ),
     );

@@ -1,3 +1,5 @@
+
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -39,8 +41,8 @@ extension UserExtension on User{
 }
 
 extension UserProviderData on UserInfo{
-   Map<String,String> toMap(){
-    Map<String,String> map=Map<String,String>();
+   Map<String,String?> toMap(){
+    Map<String,String?> map=Map<String,String?>();
     map["displayName"]=this.displayName;
     map["email"]=this.email;
     map["phoneNumber"]=this.phoneNumber;

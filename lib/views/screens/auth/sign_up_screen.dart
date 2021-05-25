@@ -1,3 +1,5 @@
+
+
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -24,9 +26,9 @@ class SignUpScreen extends StatefulWidget {
 
 class _SignUpScreenState extends State<SignUpScreen> with TextFieldMixin{
   int avatarIndex = 0;
-  SwiperController _swiperController;
+  SwiperController? _swiperController;
   bool result = false;
-  String imagePath;
+  String? imagePath;
   List<ScreenshotController> controllers=List.generate(100, (index) => ScreenshotController());
 
   @override
@@ -53,7 +55,7 @@ class _SignUpScreenState extends State<SignUpScreen> with TextFieldMixin{
           if (result && imagePath != null) ...[
             ClipRRect(
               borderRadius: BorderRadius.circular(90),
-              child: Image.file(File(imagePath)),
+              child: Image.file(File(imagePath!)),
             ),
           ]
         ],
@@ -184,7 +186,7 @@ class _SignUpScreenState extends State<SignUpScreen> with TextFieldMixin{
                           try {
                             Directory temporaryDir =
                                 await getTemporaryDirectory();
-                            String path = await controllers[avatarIndex].captureAndSave(
+                            String? path = await controllers[avatarIndex].captureAndSave(
                                 temporaryDir.path,
                                 fileName: "${DateTime.now()}.png");
                             print(path);

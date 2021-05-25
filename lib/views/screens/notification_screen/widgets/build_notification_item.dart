@@ -1,3 +1,5 @@
+
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -16,11 +18,11 @@ import 'package:social_media_app/views/widgets/userWidgets/BuildUserImageAndIsOn
 import 'package:flutter_slidable/flutter_slidable.dart';
 
 class NotificationItem extends StatelessWidget {
-  final MyNotification notification;
-  final MyNotification nextNotification;
-  final int index;
+  final MyNotification? notification;
+  final MyNotification? nextNotification;
+  final int? index;
    NotificationItem({
-    Key key,
+    Key? key,
     this.notification,
     this.index,
     this.nextNotification,
@@ -28,14 +30,14 @@ class NotificationItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print(notification.nType);
-    bool isFriend = notification.nType == NType.FRIEND;
+    print(notification!.nType);
+    bool isFriend = notification!.nType == NType.FRIEND;
     SlidableController _controller = SlidableController();
     NotificationBlock notificationBlock = NotificationBlock();
     UsersBlock usersBlock = Provider.of<UsersBlock>(context);
     UserBlock userBlock = Provider.of<UserBlock>(context);
     ProfileBlock profileBlock = Provider.of<ProfileBlock>(context);
-    MyUser me=MyUser.fromUser(userBlock.user,token:userBlock.token);
+    MyUser me=MyUser.fromUser(userBlock.user!,token:userBlock.token);
     return Container(
       child: Slidable(
         actionPane: SlidableDrawerActionPane(),
@@ -48,9 +50,9 @@ class NotificationItem extends StatelessWidget {
                 color: Colors.red.shade600),
             child: TextButton(
               onPressed: () async {
-                _controller.activeState.close();
+                _controller.activeState!.close();
                 await notificationBlock.deleteNotification(
-                    notification.nReceiver.rUid, notification);
+                    notification!.nReceiver!.rUid, notification!);
               },
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -75,12 +77,12 @@ class NotificationItem extends StatelessWidget {
                 color: Colors.green.shade600),
             child: TextButton(
               onPressed: () async {
-                if (!notification.isRead) {
+                if (!notification!.isRead!) {
                   await notificationBlock.updateNotification(
-                      notification.nReceiver.rUid,
-                      notification..isRead = true);
+                      notification!.nReceiver!.rUid,
+                      notification!..isRead = true);
                 }
-                _controller.activeState.close();
+                _controller.activeState!.close();
               },
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -106,33 +108,33 @@ class NotificationItem extends StatelessWidget {
             color: Colors.white,
             boxShadow: [
               BoxShadow(
-                color: notification.isRead
+                color: notification!.isRead!
                     ? Colors.grey.shade400
                     : Colors.pink.shade300,
-                blurRadius: notification.isRead ? 4 : 6,
+                blurRadius: notification!.isRead! ? 4 : 6,
               ),
             ],
           ),
           child: ListTile(
             isThreeLine: isFriend ? true : false,
             leading:CircleAvatar(
-              backgroundImage: CachedNetworkImageProvider(notification.nSender.photoURL),
+              backgroundImage: CachedNetworkImageProvider(notification!.nSender!.photoURL!),
             ),
-            title: Text(notification.nMessage),
+            title: Text(notification!.nMessage!),
             subtitle: getSubTitle(isFriend,profileBlock,notification,me),
            // leading:getReadIcon(notification.nType), 
             onTap: () async {
               await notificationBlock.updateNotification(
-                  userBlock.user.uid,
-                  notification..isRead = !notification.isRead);
-              if (notification.post != null) {
+                  userBlock.user!.uid,
+                  notification!..isRead = !notification!.isRead!);
+              if (notification!.post != null) {
                 Navigate.pushPage(
                     context,
                     PostScreen(
-                      post: notification.post,
+                      post: notification!.post,
                     ));
-              } if(notification.nType==NType.FRIEND&&notification.friend!=null){
-                Navigate.pushPage(context,ProfileScreen(user: notification.friend,));
+              } if(notification!.nType==NType.FRIEND&&notification!.friend!=null){
+                Navigate.pushPage(context,ProfileScreen(user: notification!.friend,));
               }
             },
           ),
@@ -158,23 +160,23 @@ class NotificationItem extends StatelessWidget {
     );
   }
 
-  Widget getSubTitle(bool isFriend,ProfileBlock profileBlock,MyNotification notification,MyUser me,) {
+  Widget getSubTitle(bool isFriend,ProfileBlock profileBlock,MyNotification? notification,MyUser me,) {
     return !isFriend
         ? Text(TimeElapsed.fromDateTime(
-            DateTime.fromMillisecondsSinceEpoch(int.parse(notification.nTime))))
+            DateTime.fromMillisecondsSinceEpoch(int.parse(notification!.nTime!))))
         : Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(TimeElapsed.fromDateTime(DateTime.fromMillisecondsSinceEpoch(
-                  int.parse(notification.nTime)))),
+                  int.parse(notification!.nTime!)))),
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   TextButton(
                     onPressed: () async{
-                      MyUser friend=notification.friend;
+                      MyUser? friend=notification.friend;
                       if(friend!=null){
                         NotificationBlock notificationBlock=NotificationBlock();
                         await profileBlock.addFriend(me, friend);
@@ -221,9 +223,9 @@ class NotificationItem extends StatelessWidget {
 
   Color getNotificationColor(MyNotification not) {
     if (not == null) {
-      return getNotificationColor(notification);
+      return getNotificationColor(notification!);
     }
-    return not.isRead ? Colors.blue.shade200 : Colors.pink.shade200;
+    return not.isRead! ? Colors.blue.shade200 : Colors.pink.shade200;
   }
 }
 /*

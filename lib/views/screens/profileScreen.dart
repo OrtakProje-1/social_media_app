@@ -1,3 +1,5 @@
+
+
 import 'dart:developer' as dev;
 import 'dart:math';
 
@@ -19,11 +21,11 @@ import 'package:social_media_app/views/widgets/buttons/custom_elevated_button.da
 import 'package:social_media_app/views/widgets/buttons/profile_blur_button.dart';
 
 typedef Builder = Widget Function(
-    {int index, int length, Post post, String userUid});
+    {int? index, int? length, Post? post, String? userUid});
 
 class ProfileScreen extends StatefulWidget {
-  final MyUser user;
-  ProfileScreen({Key key, @required this.user}) : super(key: key);
+  final MyUser? user;
+  ProfileScreen({Key? key, required this.user}) : super(key: key);
 
   @override
   _ProfileScreenState createState() => _ProfileScreenState();
@@ -38,9 +40,9 @@ class _ProfileScreenState extends State<ProfileScreen> with BuildPostItemList {
     PostsBlock postsBlock = Provider.of<PostsBlock>(context);
     UserBlock userBlock = Provider.of<UserBlock>(context);
     ProfileBlock profileBlock = Provider.of<ProfileBlock>(context);
-    bool isMee=widget.user.uid == userBlock.user.uid;
-    bool isRequest=profileBlock.isRequest(widget.user.uid);
-    bool isFriend=profileBlock.isFriend(widget.user.uid);
+    bool isMee=widget.user!.uid == userBlock.user!.uid;
+    bool isRequest=profileBlock.isRequest(widget.user!.uid);
+    bool isFriend=profileBlock.isFriend(widget.user!.uid);
     return Scaffold(
       body: CustomScrollView(
         physics: BouncingScrollPhysics(),
@@ -86,10 +88,10 @@ class _ProfileScreenState extends State<ProfileScreen> with BuildPostItemList {
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(18),
                         image: DecorationImage(
-                            image: widget.user.photoURL != null
+                            image: (widget.user!.photoURL != null
                                 ? CachedNetworkImageProvider(
-                                    widget.user.photoURL)
-                                : AssetImage("assets/images/cm7.jpeg"),
+                                    widget.user!.photoURL!)
+                                : AssetImage("assets/images/cm7.jpeg")) as ImageProvider<Object>,
                             fit: BoxFit.cover),
                       ),
                     ),
@@ -138,7 +140,7 @@ class _ProfileScreenState extends State<ProfileScreen> with BuildPostItemList {
                   child: Padding(
                     padding: const EdgeInsets.only(top: 7),
                     child: Text(
-                      widget.user?.displayName?.toString(),
+                      widget.user!.displayName!.toString(),
                       style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
                     ),
                   ),
@@ -262,15 +264,15 @@ class _ProfileScreenState extends State<ProfileScreen> with BuildPostItemList {
             ),
           ),
           if (index == 0) ...[
-            getMyPosts(postsBlock, widget.user.uid, buildPostItemList),
+            getMyPosts(postsBlock, widget.user!.uid, buildPostItemList),
           ],
           if (index == 1)
             StreamBuilder<List<MyUser>>(
               stream: profileBlock.friends,
-              initialData: profileBlock.friends.valueWrapper.value,
+              initialData: profileBlock.friends!.valueWrapper!.value,
               builder: (c, snap) {
-                if (snap.hasData) if (snap.data.length != 0) {
-                  List<MyUser> friends = snap.data;
+                if (snap.hasData) if (snap.data!.length != 0) {
+                  List<MyUser> friends = snap.data!;
                   return SliverList(
                     delegate: SliverChildBuilderDelegate(
                       (c, i) {
@@ -328,8 +330,8 @@ class _ProfileScreenState extends State<ProfileScreen> with BuildPostItemList {
 }
 
 Widget getMyPosts(
-    PostsBlock postsBlock, String uid, Builder buildPostItemList) {
-  List<Post> posts = postsBlock.posts.valueWrapper.value
+    PostsBlock postsBlock, String? uid, Builder buildPostItemList) {
+  List<Post> posts = postsBlock.posts!.valueWrapper!.value
       .where((post) => post.senderUid == uid)
       .toList();
   if (posts != null) {

@@ -1,3 +1,5 @@
+
+
 import 'dart:async';
 
 import 'package:firebase_auth/firebase_auth.dart';
@@ -10,20 +12,20 @@ import 'package:social_media_app/util/const.dart';
 import 'package:social_media_app/views/screens/chat/models/chat_message.dart';
 
 class AudioMessage extends StatefulWidget {
-  final ChatMessage message;
+  final ChatMessage? message;
 
-  const AudioMessage({Key key, this.message}) : super(key: key);
+  const AudioMessage({Key? key, this.message}) : super(key: key);
 
   @override
   _AudioMessageState createState() => _AudioMessageState();
 }
 
 class _AudioMessageState extends State<AudioMessage> {
-  AudioPlayer _player;
+  late AudioPlayer _player;
   double millisecond = 0;
   bool sliderScroll = false;
   double scrollSliderValue = 0;
-  StreamSubscription<PlaybackEvent> eventStream;
+  StreamSubscription<PlaybackEvent>? eventStream;
 
   @override
   void initState() {
@@ -40,11 +42,11 @@ class _AudioMessageState extends State<AudioMessage> {
   }
 
   initPlayer() async {
-    Duration dur = await _player.setAudioSource(
-      AudioSource.uri(Uri.parse(widget.message.audio.downloadURL)),
+    Duration? dur = await _player.setAudioSource(
+      AudioSource.uri(Uri.parse(widget.message!.audio!.downloadURL!)),
     );
   if(mounted)  setState(() {
-      millisecond = dur.inMilliseconds.toDouble();
+      millisecond = dur!.inMilliseconds.toDouble();
     });
     listenPlayer();
   }
@@ -67,6 +69,7 @@ class _AudioMessageState extends State<AudioMessage> {
   @override
   void dispose() {
     eventStream?.cancel();
+    _player.dispose();
     super.dispose();
   }
 
@@ -75,13 +78,13 @@ class _AudioMessageState extends State<AudioMessage> {
   @override
   Widget build(BuildContext context) {
     UserBlock userBlock = Provider.of<UserBlock>(context);
-    User my = userBlock.user;
+    User my = userBlock.user!;
     return Container(
       width: MediaQuery.of(context).size.width * 0.60,
       padding: EdgeInsets.all(kDefaultPadding * 0.4),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(8),
-        color: getMessageColor(widget.message.senderUid, userBlock.user.uid),
+        color: getMessageColor(widget.message!.senderUid, userBlock.user!.uid),
       ),
       child: Row(
         children: [
@@ -90,7 +93,7 @@ class _AudioMessageState extends State<AudioMessage> {
             height: 40,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(8),
-              color: getMessageTextColor(widget.message.senderUid, my.uid)
+              color: getMessageTextColor(widget.message!.senderUid, my.uid)
                   .withOpacity(0.4),
             ),
             child: Center(
@@ -118,7 +121,7 @@ class _AudioMessageState extends State<AudioMessage> {
               child: Icon(
                 isPlaying ? Icons.pause_rounded : Icons.play_arrow_rounded,
                 size: 30,
-                color: getMessageTextColor(widget.message.senderUid, my.uid),
+                color: getMessageTextColor(widget.message!.senderUid, my.uid),
               ),
             ),
           ),
@@ -140,13 +143,13 @@ class _AudioMessageState extends State<AudioMessage> {
                         ),
                       ),
                       child: Slider(
-                        value: getValue(pos),
+                        value: getValue(pos)!,
                         max: millisecond,
                         min: 0,
                         activeColor: getMessageTextColor(
-                            widget.message.senderUid, my.uid),
+                            widget.message!.senderUid, my.uid),
                         inactiveColor: getMessageTextColor(
-                                widget.message.senderUid, my.uid)
+                                widget.message!.senderUid, my.uid)
                             .withOpacity(0.3),
                         onChanged: (i) {
                          if(mounted) setState(() {
@@ -179,13 +182,13 @@ class _AudioMessageState extends State<AudioMessage> {
     );
   }
 
-  double getValue(AsyncSnapshot<Duration> snapshot) {
+  double? getValue(AsyncSnapshot<Duration> snapshot) {
     return sliderScroll
         ? scrollSliderValue
         : snapshot.hasData
-            ? (snapshot.data.inMilliseconds.toDouble() >= millisecond
+            ? (snapshot.data!.inMilliseconds.toDouble() >= millisecond
                 ? millisecond
-                : snapshot?.data?.inMilliseconds?.toDouble())
+                : snapshot.data!.inMilliseconds.toDouble())
             : 0;
   }
 }

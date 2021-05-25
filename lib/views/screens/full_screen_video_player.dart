@@ -1,3 +1,5 @@
+
+
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -5,9 +7,9 @@ import 'package:video_viewer/domain/bloc/controller.dart';
 import 'package:video_viewer/video_viewer.dart';
 
 class FullScreenVideoPlayer extends StatefulWidget {
-  final String source;
+  final String? source;
   final bool isFile;
-  FullScreenVideoPlayer({Key key, this.isFile = true, this.source})
+  FullScreenVideoPlayer({Key? key, this.isFile = true, this.source})
       : super(key: key);
 
   @override
@@ -34,8 +36,8 @@ class _FullScreenVideoPlayerState extends State<FullScreenVideoPlayer> {
           source: {
             "video": VideoSource(
               video: widget.isFile
-                  ? VideoPlayerController.file(File(widget.source))
-                  : VideoPlayerController.network(widget.source),
+                  ? VideoPlayerController.file(File(widget.source!))
+                  : VideoPlayerController.network(widget.source!),
             ),
           },
           looping: true,

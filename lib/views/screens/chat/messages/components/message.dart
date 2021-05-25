@@ -1,3 +1,5 @@
+
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:provider/provider.dart';
 import 'package:social_media_app/models/my_user.dart';
@@ -13,9 +15,9 @@ import 'video_message.dart';
 
 class Message extends StatelessWidget {
   const Message({
-    Key key,
+    Key? key,
     this.isSelected=false,
-    @required this.message,
+    required this.message,
   }) : super(key: key);
 
   final ChatMessage message;
@@ -24,14 +26,14 @@ class Message extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     UserBlock userBlock=Provider.of<UserBlock>(context);
-    bool isMee=message.senderUid==userBlock.user.uid;
-    MyUser receiver=Provider.of<UsersBlock>(context).getUserFromUid(message.senderUid);
+    bool isMee=message.senderUid==userBlock.user!.uid;
+    MyUser? receiver=Provider.of<UsersBlock>(context).getUserFromUid(message.senderUid);
     Widget messageContaint(ChatMessage message) {
       switch (message.messageType) {
         case ChatMessageType.text:
           return TextMessage(message: message);
         case ChatMessageType.audio:
-          return AudioMessage(message: message,key: PageStorageKey(message.audio.ref,));
+          return AudioMessage(message: message,key: PageStorageKey(message.audio!.ref,));
         case ChatMessageType.video:
           return VideoMessage();
         case ChatMessageType.image:
@@ -51,20 +53,20 @@ class Message extends StatelessWidget {
           if (!isMee) ...[
             CircleAvatar(
               radius: 12,
-              backgroundImage:CachedNetworkImageProvider(receiver.photoURL),
+              backgroundImage:CachedNetworkImageProvider(receiver!.photoURL!),
             ),
             SizedBox(width: kDefaultPadding / 2),
           ],
           Row(
             children: [
               if(isMee)...[
-                Text(getTime(message.messageTime)),
+                Text(getTime(message.messageTime!)),
                 SizedBox(width: 5,)
               ],
               messageContaint(message),
               if(!isMee) ...[
                 SizedBox(width: 5,),
-                Text(getTime(message.messageTime)),
+                Text(getTime(message.messageTime!)),
               ],
             ],
           ),
@@ -80,17 +82,17 @@ class Message extends StatelessWidget {
 }
 
 class MessageStatusDot extends StatelessWidget {
-  final MessageStatus status;
+  final MessageStatus? status;
 
-  const MessageStatusDot({Key key, this.status}) : super(key: key);
+  const MessageStatusDot({Key? key, this.status}) : super(key: key);
   @override
   Widget build(BuildContext context) {
-    Color dotColor(MessageStatus status) {
+    Color dotColor(MessageStatus? status) {
       switch (status) {
         case MessageStatus.not_sent:
           return kErrorColor;
         case MessageStatus.not_view:
-          return Theme.of(context).textTheme.bodyText1.color.withOpacity(0.1);
+          return Theme.of(context).textTheme.bodyText1!.color!.withOpacity(0.1);
         case MessageStatus.viewed:
           return kPrimaryColor;
         default:

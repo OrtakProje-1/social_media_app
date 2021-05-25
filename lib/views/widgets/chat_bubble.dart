@@ -1,21 +1,23 @@
+
+
 import 'dart:math';
 
 import 'package:flutter/material.dart';
 
 class ChatBubble extends StatefulWidget {
-  final String message, time, username, type, replyText, replyName;
-  final bool isMe, isGroup, isReply;
+  final String? message, time, username, type, replyText, replyName;
+  final bool? isMe, isGroup, isReply;
 
   ChatBubble(
-      {@required this.message,
-      @required this.time,
-      @required this.isMe,
-      @required this.isGroup,
-      @required this.username,
-      @required this.type,
-      @required this.replyText,
-      @required this.isReply,
-      @required this.replyName});
+      {required this.message,
+      required this.time,
+      required this.isMe,
+      required this.isGroup,
+      required this.username,
+      required this.type,
+      required this.replyText,
+      required this.isReply,
+      required this.replyName});
 
   @override
   _ChatBubbleState createState() => _ChatBubbleState();
@@ -26,8 +28,8 @@ class _ChatBubbleState extends State<ChatBubble> {
   static Random random = Random();
   int rNum = random.nextInt(18);
 
-  Color chatBubbleColor() {
-    if (widget.isMe) {
+  Color? chatBubbleColor() {
+    if (widget.isMe!) {
       return Theme.of(context).accentColor;
     } else {
       if (Theme.of(context).brightness == Brightness.dark) {
@@ -38,7 +40,7 @@ class _ChatBubbleState extends State<ChatBubble> {
     }
   }
 
-  Color chatBubbleReplyColor() {
+  Color? chatBubbleReplyColor() {
     if (Theme.of(context).brightness == Brightness.dark) {
       return Colors.grey[600];
     } else {
@@ -49,8 +51,8 @@ class _ChatBubbleState extends State<ChatBubble> {
   @override
   Widget build(BuildContext context) {
     final align =
-        widget.isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start;
-    final radius = widget.isMe
+        widget.isMe! ? CrossAxisAlignment.end : CrossAxisAlignment.start;
+    final radius = widget.isMe!
         ? BorderRadius.only(
             topLeft: Radius.circular(5.0),
             bottomLeft: Radius.circular(5.0),
@@ -79,14 +81,14 @@ class _ChatBubbleState extends State<ChatBubble> {
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
-              widget.isMe
+              widget.isMe!
                   ? SizedBox()
-                  : widget.isGroup
+                  : widget.isGroup!
                       ? Padding(
                           padding: EdgeInsets.only(right: 48.0),
                           child: Container(
                             child: Text(
-                              widget.username,
+                              widget.username!,
                               style: TextStyle(
                                 fontSize: 13,
                                 color: colors[rNum],
@@ -98,12 +100,12 @@ class _ChatBubbleState extends State<ChatBubble> {
                           ),
                         )
                       : SizedBox(),
-              widget.isGroup
-                  ? widget.isMe
+              widget.isGroup!
+                  ? widget.isMe!
                       ? SizedBox()
                       : SizedBox(height: 5)
                   : SizedBox(),
-              widget.isReply
+              widget.isReply!
                   ? Container(
                       decoration: BoxDecoration(
                         color: chatBubbleReplyColor(),
@@ -121,7 +123,7 @@ class _ChatBubbleState extends State<ChatBubble> {
                           children: <Widget>[
                             Container(
                               child: Text(
-                                widget.isMe ? "You" : widget.replyName,
+                                widget.isMe! ? "You" : widget.replyName!,
                                 style: TextStyle(
                                   color: Theme.of(context).accentColor,
                                   fontWeight: FontWeight.bold,
@@ -135,10 +137,10 @@ class _ChatBubbleState extends State<ChatBubble> {
                             SizedBox(height: 2.0),
                             Container(
                               child: Text(
-                                widget.replyText,
+                                widget.replyText!,
                                 style: TextStyle(
                                   color:
-                                      Theme.of(context).textTheme.headline6.color,
+                                      Theme.of(context).textTheme.headline6!.color,
                                   fontSize: 10.0,
                                 ),
                                 maxLines: 2,
@@ -150,27 +152,27 @@ class _ChatBubbleState extends State<ChatBubble> {
                       ),
                     )
                   : SizedBox(width: 2.0),
-              widget.isReply ? SizedBox(height: 5) : SizedBox(),
+              widget.isReply! ? SizedBox(height: 5) : SizedBox(),
               Padding(
                 padding: EdgeInsets.all(widget.type == "text" ? 5 : 0),
                 child: widget.type == "text"
-                    ? !widget.isReply
+                    ? !widget.isReply!
                         ? Text(
-                            widget.message,
+                            widget.message!,
                             style: TextStyle(
-                              color: widget.isMe
+                              color: widget.isMe!
                                   ? Colors.white
-                                  : Theme.of(context).textTheme.headline6.color,
+                                  : Theme.of(context).textTheme.headline6!.color,
                             ),
                           )
                         : Container(
                             alignment: Alignment.centerLeft,
                             child: Text(
-                              widget.message,
+                              widget.message!,
                               style: TextStyle(
-                                color: widget.isMe
+                                color: widget.isMe!
                                     ? Colors.white
-                                    : Theme.of(context).textTheme.headline6.color,
+                                    : Theme.of(context).textTheme.headline6!.color,
                               ),
                             ),
                           )
@@ -185,13 +187,13 @@ class _ChatBubbleState extends State<ChatBubble> {
           ),
         ),
         Padding(
-          padding: widget.isMe
+          padding: widget.isMe!
               ? EdgeInsets.only(right: 10, bottom: 10.0)
               : EdgeInsets.only(left: 10, bottom: 10.0),
           child: Text(
-            widget.time,
+            widget.time!,
             style: TextStyle(
-              color: Theme.of(context).textTheme.headline6.color,
+              color: Theme.of(context).textTheme.headline6!.color,
               fontSize: 10.0,
             ),
           ),

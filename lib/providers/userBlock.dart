@@ -1,3 +1,7 @@
+
+
+import 'dart:async';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
@@ -22,13 +26,13 @@ class UserBlock {
   void init()async{
   }
 
-  User _user;
-  String _token;
+  User? _user;
+  String? _token;
 
-  String get token=>_token;
-  User get user => _user;
+  String? get token=>_token;
+  User? get user => _user;
 
-  set user(User newUser){
+  set user(User? newUser){
     _user = newUser;
   }
 
@@ -41,7 +45,7 @@ class UserBlock {
   }
 
   Future<void> userOffline(BuildContext context)async{
-   await Provider.of<ProfileBlock>(context,listen: false).updateUserisOnline(user.uid,false);
+   await Provider.of<ProfileBlock>(context,listen: false).updateUserisOnline(user!.uid,false);
   }
 
   void dispose() {}
@@ -59,12 +63,12 @@ class UserBlock {
         googleProvider.setCustomParameters({'login_hint': 'user@example.com'});
         UserCredential userCredential =
             await _auth.signInWithPopup(googleProvider);
-        final user = userCredential.user;
+        final user = userCredential.user!;
         // ScaffoldMessenger.of(ctx).showSnackBar(SnackBar(
         //   content: Text(
         //       'Sign In ${user.uid} with Google name= ${user.displayName},${user.email}'),
         // ));
-        bool isSavedUser = usersBlock.users.valueWrapper.value
+        bool isSavedUser = usersBlock.users.valueWrapper!.value
             .any((element) => element.uid == user.uid);
         if (!isSavedUser) {
           usersBlock.addUser(MyUser.fromUser(user,token:token));
@@ -72,19 +76,19 @@ class UserBlock {
         await GetDatas().getAllDatas(context,user.uid,isSignOut: true);
         Navigate.pushPageReplacement(context, MainScreen());
       } else {
-        final GoogleSignInAccount googleUser = await GoogleSignIn().signIn();
+        final GoogleSignInAccount googleUser = await (GoogleSignIn().signIn() as FutureOr<GoogleSignInAccount>);
         final GoogleSignInAuthentication googleAuth =
             await googleUser.authentication;
         final GoogleAuthCredential googleAuthCredential =
             GoogleAuthProvider.credential(
           accessToken: googleAuth.accessToken,
           idToken: googleAuth.idToken,
-        );
+        ) as GoogleAuthCredential;
         userCredential = await _auth.signInWithCredential(googleAuthCredential);
 
-        final user = userCredential.user;
+        final user = userCredential.user!;
         this.user = user;
-        bool isSavedUser = usersBlock.users.valueWrapper.value
+        bool isSavedUser = usersBlock.users.valueWrapper!.value
             .any((element) => element.uid == user.uid);
         if (!isSavedUser) {
           usersBlock.addUser(MyUser.fromUser(user,token: token));

@@ -1,3 +1,5 @@
+
+
 import 'dart:math';
 
 import 'package:cached_network_image/cached_network_image.dart';
@@ -19,14 +21,14 @@ import 'package:social_media_app/views/widgets/userWidgets/BuildUserImageAndIsOn
 import 'package:social_media_app/views/widgets/web_image.dart';
 
 class PostItem extends StatefulWidget {
-  final Post post;
+  final Post? post;
   final String img;
-  final String userUid;
+  final String? userUid;
   final bool isComment;
   final bool thisIsShowScreen;
 
   PostItem(
-      {Key key,
+      {Key? key,
       this.isComment = false,
       this.post,
       this.img = "assets/images/cm8.jpeg",
@@ -38,8 +40,8 @@ class PostItem extends StatefulWidget {
 }
 
 class _PostItemState extends State<PostItem> {
-  PageController _controller;
-  bool likePost;
+  PageController? _controller;
+  late bool likePost;
 
   bool showComments = false;
 
@@ -48,9 +50,9 @@ class _PostItemState extends State<PostItem> {
     super.initState();
     _controller = PageController();
     if (widget.post?.likes != null) {
-      if (widget.post.likes.isNotEmpty) {
+      if (widget.post!.likes!.isNotEmpty) {
         likePost =
-            widget.post.likes.any((element) => element == widget.userUid);
+            widget.post!.likes!.any((element) => element == widget.userUid);
       } else {
         likePost = false;
       }
@@ -73,20 +75,20 @@ class _PostItemState extends State<PostItem> {
               dense: true,
               leading: BuildUserImageAndIsOnlineWidget(
                 usersBlock: usersBlock,
-                uid: widget.post.senderUid,
+                uid: widget.post!.senderUid,
               ),
               contentPadding: EdgeInsets.all(0),
               focusColor: Constants.iconColor,
               horizontalTitleGap: kIsWeb ? 10 : 5,
               hoverColor: Constants.iconColor,
               title: Text(
-                "${widget.post.userName}",
+                "${widget.post!.userName}",
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                 ),
               ),
               subtitle: Text(
-                "${TimeElapsed.fromDateTime(DateTime.fromMillisecondsSinceEpoch(int.parse(widget.post.postTime)))}",
+                "${TimeElapsed.fromDateTime(DateTime.fromMillisecondsSinceEpoch(int.parse(widget.post!.postTime!)))}",
                 style: TextStyle(
                   fontWeight: FontWeight.w300,
                   fontSize: 11,
@@ -103,7 +105,7 @@ class _PostItemState extends State<PostItem> {
                   return [1]
                       .map((e) => PopupMenuItem(
                             height: 30,
-                            enabled: widget.post.senderUid == widget.userUid,
+                            enabled: widget.post!.senderUid == widget.userUid,
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.start,
                               children: [
@@ -122,8 +124,8 @@ class _PostItemState extends State<PostItem> {
                 },
                 onSelected: (int i) {
                   if (i == 1) {
-                    if (widget.post.senderUid == widget.userUid) {
-                      postsBlock.deletePost(widget.post);
+                    if (widget.post!.senderUid == widget.userUid) {
+                      postsBlock.deletePost(widget.post!);
                     }
                   }
                 },
@@ -141,45 +143,45 @@ class _PostItemState extends State<PostItem> {
                 builder: (context, comments) {
                   return Column(
                     children: [
-                      if (widget.post.msg != null && widget.post.msg != "")
+                      if (widget.post!.msg != null && widget.post!.msg != "")
                         Container(
                             width: double.maxFinite,
                             margin: EdgeInsets.symmetric(
                                 horizontal: 10, vertical: 4),
                             child: Text(
-                              widget.post.msg,
+                              widget.post!.msg!,
                               textAlign: TextAlign.left,
                             )),
-                      if (widget.post.images != null &&
-                          widget.post.images.isNotEmpty) ...[
-                        if (widget.post.images.length == 1) ...[
+                      if (widget.post!.images != null &&
+                          widget.post!.images!.isNotEmpty) ...[
+                        if (widget.post!.images!.length == 1) ...[
                           kIsWeb
-                              ? getWebImage(widget.post.images[0].downloadURL)
+                              ? getWebImage(widget.post!.images![0].downloadURL!)
                               : Container(
                                   height: 200,
                                   decoration: BoxDecoration(
                                     color: Colors.grey,
                                     borderRadius: BorderRadius.circular(
-                                        widget.post.msg == null ||
-                                                widget.post.msg == ""
+                                        widget.post!.msg == null ||
+                                                widget.post!.msg == ""
                                             ? 22
                                             : 12),
                                     image: DecorationImage(
                                       fit: BoxFit.cover,
                                       image: CachedNetworkImageProvider(
-                                          widget.post.images[0].downloadURL),
+                                          widget.post!.images![0].downloadURL!),
                                     ),
                                   ),
                                 ),
                         ],
-                        if (widget.post.images.length > 1) ...[
+                        if (widget.post!.images!.length > 1) ...[
                           AspectRatio(
                             aspectRatio: 10 / 6,
                             child: Stack(
                               children: [
                                 PageView.builder(
                                   controller: _controller,
-                                  itemCount: widget.post.images.length,
+                                  itemCount: widget.post!.images!.length,
                                   itemBuilder:
                                       (BuildContext context, int index) {
                                     return Container(
@@ -187,7 +189,7 @@ class _PostItemState extends State<PostItem> {
                                         borderRadius: BorderRadius.circular(12),
                                         image: DecorationImage(
                                           image: CachedNetworkImageProvider(
-                                              widget.post.images[index].downloadURL,
+                                              widget.post!.images![index].downloadURL!,
                                               errorListener: () {
                                             print(
                                                 "resim yüklenirken hata oluştu");
@@ -203,8 +205,8 @@ class _PostItemState extends State<PostItem> {
                                   right: 0,
                                   child: Center(
                                     child: SmoothPageIndicator(
-                                      controller: _controller,
-                                      count: widget.post.images.length,
+                                      controller: _controller!,
+                                      count: widget.post!.images!.length,
                                       effect: ScrollingDotsEffect(
                                           activeDotScale: 1.3,
                                           dotColor: Colors.white60,
@@ -229,18 +231,18 @@ class _PostItemState extends State<PostItem> {
                               buildPostAction(
                                   icon: Typicons.heart,
                                   color: likePost ? Colors.red.shade300 : Colors.white,
-                                  value: widget.post.likes?.length,
+                                  value: widget.post!.likes?.length,
                                   onPressed: () async {
                                     if (likePost) {
                                       await postsBlock.updateLike(
                                           false,
-                                          widget.post,
+                                          widget.post!,
                                           widget.userUid,
                                           usersBlock);
                                     } else {
                                       await postsBlock.updateLike(
                                           true,
-                                          widget.post,
+                                          widget.post!,
                                           widget.userUid,
                                           usersBlock);
                                     }
@@ -250,7 +252,7 @@ class _PostItemState extends State<PostItem> {
                                   }),
                               buildPostAction(
                                   value: comments.hasData
-                                      ? comments.data.docs?.length ?? 0
+                                      ? comments.data!.docs.length
                                       : 0,
                                   icon: Linecons.comment,
                                   color: Colors.white,
@@ -265,7 +267,7 @@ class _PostItemState extends State<PostItem> {
                               // Spacer(),
                               buildPostAction(
                                 icon: Typicons.bookmark,
-                                value: widget.post.savedPostCount.length,
+                                value: widget.post!.savedPostCount!.length,
                                 color: Colors.white,
                                 onPressed: () {},
                               )
@@ -304,7 +306,7 @@ class _PostItemState extends State<PostItem> {
   }
 
   Expanded buildPostAction(
-      {IconData icon, VoidCallback onPressed, Color color, int value}) {
+      {IconData? icon, VoidCallback? onPressed, Color? color, int? value}) {
     value ??= Random().nextInt(2999);
     return Expanded(
       child: Padding(
@@ -336,7 +338,7 @@ class _PostItemState extends State<PostItem> {
                     icon,
                     color: color,
                   ),
-                  Expanded(child: Center(child: Text(value.toString(),style: TextStyle(color: Theme.of(context).textTheme.bodyText1.color,fontWeight: FontWeight.bold),))),
+                  Expanded(child: Center(child: Text(value.toString(),style: TextStyle(color: Theme.of(context).textTheme.bodyText1!.color,fontWeight: FontWeight.bold),))),
                 ],
               ),
             ),

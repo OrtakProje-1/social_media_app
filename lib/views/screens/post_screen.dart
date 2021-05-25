@@ -1,3 +1,5 @@
+
+
 import 'dart:io';
 import 'dart:math';
 import 'dart:ui';
@@ -23,8 +25,8 @@ import 'package:social_media_app/views/widgets/buttons/transparant_button.dart';
 import 'package:social_media_app/views/widgets/post_item.dart';
 
 class PostScreen extends StatefulWidget {
-  final Post post;
-  PostScreen({Key key, this.post}) : super(key: key);
+  final Post? post;
+  PostScreen({Key? key, this.post}) : super(key: key);
 
   @override
   _PostScreenState createState() => _PostScreenState();
@@ -32,7 +34,7 @@ class PostScreen extends StatefulWidget {
 
 class _PostScreenState extends State<PostScreen>
     with SingleTickerProviderStateMixin, PickerMixin {
-  AnimationController animationController;
+  late AnimationController animationController;
   TextEditingController message = TextEditingController();
   bool showPickerButtons = false;
   List<PlatformFile> images = [];
@@ -59,7 +61,7 @@ class _PostScreenState extends State<PostScreen>
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: Text(widget.post.userName),
+        title: Text(widget.post!.userName!),
       ),
       body: SafeArea(
         child: Column(
@@ -72,7 +74,7 @@ class _PostScreenState extends State<PostScreen>
                   PostItem(
                     img: "assets/images/cm7.jpg",
                     post: widget.post,
-                    userUid: userBlock.user.uid,
+                    userUid: userBlock.user!.uid,
                     thisIsShowScreen: true,
                   ),
                   Divider(
@@ -81,14 +83,14 @@ class _PostScreenState extends State<PostScreen>
                   ),
                   StreamBuilder<QuerySnapshot>(
                     stream: postsBlock
-                        .postReference(widget.post)
+                        .postReference(widget.post!)
                         .collection("comments")
                         .orderBy("postTime",descending: true)
                         .snapshots(),
                     builder: (c, comments) {
                       if (comments.hasData) {
-                        if (comments.data.docs.isNotEmpty) {
-                          List<QueryDocumentSnapshot> docs = comments.data.docs;
+                        if (comments.data!.docs.isNotEmpty) {
+                          List<QueryDocumentSnapshot> docs = comments.data!.docs;
                           return Column(
                             children: docs
                                 .asMap()
@@ -176,11 +178,11 @@ class _PostScreenState extends State<PostScreen>
                       onPrimary: Colors.white,
                       primary: recMesColor,
                       shadowColor: Colors.transparent,
-                      onPressed: videos?.isNotEmpty || audios?.isNotEmpty
+                      onPressed: videos.isNotEmpty || audios.isNotEmpty
                           ? null
                           : () async {
                               closePickerButtonsAndAnimation();
-                              List<PlatformFile> newImages =
+                              List<PlatformFile>? newImages =
                                   await getImagePicker();
                               setState(() {
                                 images = newImages ?? [];
@@ -194,11 +196,11 @@ class _PostScreenState extends State<PostScreen>
                       primary: recMesColor,
                       shadowColor: Colors.transparent,
                       label: "Video",
-                      onPressed: images?.isNotEmpty || audios?.isNotEmpty
+                      onPressed: images.isNotEmpty || audios.isNotEmpty
                           ? null
                           : () async {
                               closePickerButtonsAndAnimation();
-                              List<PlatformFile> video = await getVideoPicker();
+                              List<PlatformFile>? video = await getVideoPicker();
                               setState(() {
                                 videos = video ?? [];
                               });
@@ -211,11 +213,11 @@ class _PostScreenState extends State<PostScreen>
                       primary: recMesColor,
                       shadowColor: Colors.transparent,
                       label: "Ses",
-                      onPressed: images?.isNotEmpty || videos?.isNotEmpty
+                      onPressed: images.isNotEmpty || videos.isNotEmpty
                           ? null
                           : () async {
                               closePickerButtonsAndAnimation();
-                              List<PlatformFile> audio = await getAudioPicker();
+                              List<PlatformFile>? audio = await getAudioPicker();
                               setState(() {
                                 audios = audio ?? [];
                               });
@@ -279,7 +281,7 @@ class _PostScreenState extends State<PostScreen>
                           color:recMesColor,
                           borderRadius: BorderRadius.circular(45)),
                       child: TextField(
-                        cursorColor: Theme.of(context).textTheme.bodyText1.color,
+                        cursorColor: Theme.of(context).textTheme.bodyText1!.color,
                         cursorRadius: Radius.circular(22),
                         cursorWidth: 1.5,
                         controller: message,
@@ -322,11 +324,11 @@ class _PostScreenState extends State<PostScreen>
                           DateTime time = DateTime.now();
                           images.asMap().forEach((index, value) async {
                             MediaReference ref = await storageBlock.uploadImage(
-                              userUid: userBlock.user.uid,
-                              file: File(value.path),
+                              userUid: userBlock.user!.uid,
+                              file: File(value.path!),
                               index: index,
                               timeStamp: time.millisecondsSinceEpoch.toString(),
-                              ext: StorageBlock.fileExt(value.name),
+                              ext: StorageBlock.fileExt(value.name!),
                             );
                             if (ref != null) {
                               print(ref.downloadURL);
@@ -340,10 +342,10 @@ class _PostScreenState extends State<PostScreen>
                                     postTime: DateTime.now()
                                         .millisecondsSinceEpoch
                                         .toString(),
-                                    senderUid: userBlock.user.uid,
-                                    userName: userBlock.user.displayName,
-                                    userPhotoUrl: userBlock.user.photoURL);
-                                await postsBlock.addComment(comment, widget.post,usersBlock);
+                                    senderUid: userBlock.user!.uid,
+                                    userName: userBlock.user!.displayName,
+                                    userPhotoUrl: userBlock.user!.photoURL);
+                                await postsBlock.addComment(comment, widget.post!,usersBlock);
                                 clearDatas();
                               }
                               print("imagesUrl.length != images.lenght");
@@ -357,11 +359,11 @@ class _PostScreenState extends State<PostScreen>
                               postTime: DateTime.now()
                                   .millisecondsSinceEpoch
                                   .toString(),
-                              senderUid: userBlock.user.uid,
-                              userName: userBlock.user.displayName,
+                              senderUid: userBlock.user!.uid,
+                              userName: userBlock.user!.displayName,
                               savedPostCount: [],
-                              userPhotoUrl: userBlock.user.photoURL);
-                          await postsBlock.addComment(comment, widget.post,usersBlock);
+                              userPhotoUrl: userBlock.user!.photoURL);
+                          await postsBlock.addComment(comment, widget.post!,usersBlock);
                           clearDatas();
                           //updatePOST
                         }
@@ -399,7 +401,7 @@ class _PostScreenState extends State<PostScreen>
         ),
       ),
       child: PostItem(
-        userUid: userBlock.user.uid,
+        userUid: userBlock.user!.uid,
         post: post,
         isComment: true,
       ),

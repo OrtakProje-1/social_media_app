@@ -1,7 +1,9 @@
+
+
 class NReceiver{
   
-  String rToken;
-  String rUid;
+  String? rToken;
+  String? rUid;
   NReceiver({this.rToken="",this.rUid});
 
   NReceiver.fromMap(Map<String,dynamic>map){

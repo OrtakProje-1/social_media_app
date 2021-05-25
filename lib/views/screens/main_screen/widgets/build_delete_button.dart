@@ -1,3 +1,5 @@
+
+
 import 'dart:math';
 
 import 'package:flutter/material.dart';
@@ -6,8 +8,8 @@ import 'package:social_media_app/views/widgets/blurWidget.dart';
 import 'package:social_media_app/views/widgets/buttons/transparant_button.dart';
 
 class BuildDeleteButton extends StatelessWidget {
-  final VoidCallback onPressed;
-  const BuildDeleteButton({Key key,this.onPressed}) : super(key: key);
+  final VoidCallback? onPressed;
+  const BuildDeleteButton({Key? key,this.onPressed}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

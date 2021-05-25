@@ -1,7 +1,9 @@
+
+
 class NSender{
-  String name;
-  String photoURL;
-  String uid;
+  String? name;
+  String? photoURL;
+  String? uid;
   NSender({this.name="",this.photoURL,this.uid});
   NSender.fromMap(Map<String,dynamic>map){
     this.name=map["displayName"];

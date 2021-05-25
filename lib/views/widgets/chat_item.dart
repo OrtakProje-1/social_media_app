@@ -1,24 +1,26 @@
+
+
 import 'package:flutter/material.dart';
 import 'package:social_media_app/views/screens/chat/conversation.dart';
 
 
 class ChatItem extends StatefulWidget {
 
-  final String dp;
-  final String name;
-  final String time;
-  final String msg;
-  final bool isOnline;
-  final int counter;
+  final String? dp;
+  final String? name;
+  final String? time;
+  final String? msg;
+  final bool? isOnline;
+  final int? counter;
 
   ChatItem({
-    Key key,
-    @required this.dp,
-    @required this.name,
-    @required this.time,
-    @required this.msg,
-    @required this.isOnline,
-    @required this.counter,
+    Key? key,
+    required this.dp,
+    required this.name,
+    required this.time,
+    required this.msg,
+    required this.isOnline,
+    required this.counter,
   }) : super(key: key);
 
   @override
@@ -54,7 +56,7 @@ class _ChatItemState extends State<ChatItem> {
                 child: Center(
                   child: Container(
                     decoration: BoxDecoration(
-                      color: widget.isOnline
+                      color: widget.isOnline!
                           ?Colors.greenAccent
                           :Colors.grey,
                       borderRadius: BorderRadius.circular(6),

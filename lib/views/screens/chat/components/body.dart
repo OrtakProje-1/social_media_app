@@ -1,3 +1,5 @@
+
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:rxdart/rxdart.dart';
@@ -14,16 +16,16 @@ import 'package:social_media_app/views/widgets/userWidgets/BuildUserImageAndIsOn
 import 'chat_card.dart';
 
 class Body extends StatefulWidget {
-  final ScrollController scrollController;
-  Body({Key key, this.scrollController}) : super(key: key);
+  final ScrollController? scrollController;
+  Body({Key? key, this.scrollController}) : super(key: key);
 
   @override
   _BodyState createState() => _BodyState();
 }
 
 class _BodyState extends State<Body> {
-  ScrollController _scrollController;
-  BehaviorSubject<double> shadow;
+  ScrollController? _scrollController;
+  late BehaviorSubject<double> shadow;
   TextEditingController searchUser = TextEditingController();
 
   @override
@@ -31,7 +33,7 @@ class _BodyState extends State<Body> {
     super.initState();
     _scrollController = ScrollController();
     shadow = BehaviorSubject.seeded(0);
-    _scrollController.addListener(() {
+    _scrollController!.addListener(() {
       getShadow();
     });
   }
@@ -44,7 +46,7 @@ class _BodyState extends State<Body> {
     UserBlock userBlock = Provider.of<UserBlock>(context);
     return StreamBuilder<List<Chat>>(
         stream: messagesBlock.lastMessagesStream,
-        initialData:messagesBlock.lastMessagesStream.value,
+        initialData:messagesBlock.lastMessagesStream!.value,
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
             return Center(
@@ -55,7 +57,7 @@ class _BodyState extends State<Body> {
           List<Chat> chats = snapshot.data??[];
           List<Chat> filteredChat=chats;
           if(chats.isNotEmpty&&searchUser.text.isNotEmpty){
-            filteredChat=chats.where((e) =>e.name.toLowerCase().contains(searchUser.text.toLowerCase())).toList();
+            filteredChat=chats.where((e) =>e.name!.toLowerCase().contains(searchUser.text.toLowerCase())).toList();
           }
           return ListView.builder(
             controller: widget.scrollController,
@@ -96,7 +98,7 @@ class _BodyState extends State<Body> {
                               setState(() {});
                             },
                             cursorRadius: Radius.circular(8),
-                            cursorColor:Theme.of(context).textTheme.bodyText1.color,
+                            cursorColor:Theme.of(context).textTheme.bodyText1!.color,
                             cursorWidth: 1.5,
                             decoration: InputDecoration(
                                 hintText: "Kimi arıyorsun...",
@@ -117,12 +119,12 @@ class _BodyState extends State<Body> {
                           left: kDefaultPadding / 2, bottom: 15, top: 15),
                       child: StreamBuilder<List<MyUser>>(
                         stream: profileBlock.friends,
-                        initialData: profileBlock.friends.valueWrapper.value,
+                        initialData: profileBlock.friends!.valueWrapper!.value,
                         builder: (c, snap) {
-                          List<MyUser> onlineUsers = snap.data.where((e) => e.isOnline).toList();
+                          List<MyUser> onlineUsers = snap.data!.where((e) => e.isOnline!).toList();
                           List<MyUser> filteredUser=onlineUsers;
                           if(onlineUsers.isNotEmpty&&searchUser.text.isNotEmpty){
-                            filteredUser=onlineUsers.where((e) => e.displayName.toLowerCase().contains(searchUser.text.toLowerCase())).toList();
+                            filteredUser=onlineUsers.where((e) => e.displayName!.toLowerCase().contains(searchUser.text.toLowerCase())).toList();
                           }
                           return (filteredUser.isNotEmpty)
                               ? ListView.builder(
@@ -168,7 +170,7 @@ class _BodyState extends State<Body> {
                   Navigate.pushPage(
                       context,
                       MessagesScreen(
-                        user: usersBlock.getUserFromUid(filteredChat[index - 1].senderUid==userBlock.user.uid ? filteredChat[index - 1].rUid : filteredChat[index - 1].senderUid),
+                        user: usersBlock.getUserFromUid(filteredChat[index - 1].senderUid==userBlock.user!.uid ? filteredChat[index - 1].rUid : filteredChat[index - 1].senderUid),
                       ));
                 },
               );
@@ -180,7 +182,7 @@ class _BodyState extends State<Body> {
   void getShadow() {
     double shad;
     try {
-      shad = _scrollController?.offset?.toInt() <= 0 ? 0 : 8;
+      shad = _scrollController!.offset.toInt() <= 0 ? 0 : 8;
     } catch (e) {
       shad = 0;
     }

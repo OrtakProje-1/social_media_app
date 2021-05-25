@@ -1,3 +1,5 @@
+
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -10,7 +12,7 @@ import 'package:social_media_app/views/screens/profileScreen.dart';
 import 'package:social_media_app/views/widgets/userWidgets/BuildUserImageAndIsOnlineWidget.dart';
 
 class FriendsScreen extends StatefulWidget {
-  FriendsScreen({Key key}) : super(key: key);
+  FriendsScreen({Key? key}) : super(key: key);
 
   @override
   _FriendsScreenState createState() => _FriendsScreenState();
@@ -22,7 +24,7 @@ class _FriendsScreenState extends State<FriendsScreen> {
     ProfileBlock profileBlock = Provider.of<ProfileBlock>(context);
     UserBlock userBlock = Provider.of<UserBlock>(context);
     UsersBlock usersBlock = Provider.of<UsersBlock>(context);
-    MyUser me = usersBlock.getUserFromUid(userBlock.user.uid);
+    MyUser? me = usersBlock.getUserFromUid(userBlock.user!.uid);
     return Container(
       height:60,
       decoration: BoxDecoration(
@@ -34,10 +36,10 @@ class _FriendsScreenState extends State<FriendsScreen> {
       ),
       width: double.infinity,
       child: StreamBuilder<QuerySnapshot>(
-        stream: profileBlock.streamFriends(userBlock.user.uid),
+        stream: profileBlock.streamFriends(userBlock.user!.uid),
         builder: (c, snapshot) {
           if (snapshot.hasData) {
-            QuerySnapshot usersQuery = snapshot.data;
+            QuerySnapshot usersQuery = snapshot.data!;
             List<MyUser> users =
                 usersQuery.docs.map((e) => MyUser.fromMap(e.data())).toList();
             if (users.isEmpty||users==null) {
@@ -52,7 +54,7 @@ class _FriendsScreenState extends State<FriendsScreen> {
                   return BuildFriendsItem(user:me);
                 }
                 MyUser user = users[i-1];
-                if (user.uid == userBlock.user.uid) {
+                if (user.uid == userBlock.user!.uid) {
                   return SizedBox();
                 }
                 return GestureDetector(
@@ -78,11 +80,11 @@ class _FriendsScreenState extends State<FriendsScreen> {
 
 class BuildFriendsItem extends StatelessWidget {
   const BuildFriendsItem({
-    Key key,
-    @required this.user,
+    Key? key,
+    required this.user,
   }) : super(key: key);
 
-  final MyUser user;
+  final MyUser? user;
 
   @override
   Widget build(BuildContext context) {

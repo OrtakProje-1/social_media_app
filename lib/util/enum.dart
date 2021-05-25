@@ -1,2 +1,4 @@
+
+
 enum FormMode{LOGIN, REGISTER, FORGOT_PASSWORD}
 enum PostMode{IMAGE,VIDEO,AUDIO}

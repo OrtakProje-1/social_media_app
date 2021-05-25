@@ -1,3 +1,5 @@
+
+
 enum NType{
   COMMENT,LIKE,FRIEND,SAVED,
 }

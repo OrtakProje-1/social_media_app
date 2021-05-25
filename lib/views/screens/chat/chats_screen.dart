@@ -1,3 +1,5 @@
+
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -17,15 +19,15 @@ class ChatsScreen extends StatefulWidget {
 }
 
 class _ChatsScreenState extends State<ChatsScreen> {
-  ScrollController _scrollController;
-  BehaviorSubject<double> elevation;
+  ScrollController? _scrollController;
+  BehaviorSubject<double>? elevation;
 
   @override
   void initState() {
     super.initState();
     _scrollController = ScrollController();
     elevation = BehaviorSubject<double>.seeded(0);
-    _scrollController.addListener(() {
+    _scrollController!.addListener(() {
       getElevation();
     });
   }
@@ -41,7 +43,7 @@ class _ChatsScreenState extends State<ChatsScreen> {
             initialData: 0,
             stream: elevation,
             builder: (context, snapshot) {
-              return buildAppBar(snapshot.data, profileBlock.friends.value,userBlock);
+              return buildAppBar(snapshot.data, profileBlock.friends!.value,userBlock);
             }),
       ),
       body: Body(
@@ -50,7 +52,7 @@ class _ChatsScreenState extends State<ChatsScreen> {
     );
   }
 
-  AppBar buildAppBar(double elevation, List<MyUser> friends,UserBlock userBlock) {
+  AppBar buildAppBar(double? elevation, List<MyUser>? friends,UserBlock userBlock) {
     return AppBar(
       automaticallyImplyLeading: false,
       elevation: elevation,
@@ -62,7 +64,7 @@ class _ChatsScreenState extends State<ChatsScreen> {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(8),
               image: DecorationImage(
-                image: CachedNetworkImageProvider(userBlock.user.photoURL),
+                image: CachedNetworkImageProvider(userBlock.user!.photoURL!),
               ),
             ),
           ),
@@ -85,10 +87,10 @@ class _ChatsScreenState extends State<ChatsScreen> {
   void getElevation() {
     double elev;
     try {
-      elev = _scrollController?.offset?.toInt() <= 0 ? 0 : 8;
+      elev = _scrollController!.offset.toInt() <= 0 ? 0 : 8;
     } catch (e) {
       elev = 0;
     }
-    elevation.add(elev);
+    elevation!.add(elev);
   }
 }

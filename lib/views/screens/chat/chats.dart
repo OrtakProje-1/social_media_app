@@ -1,3 +1,5 @@
+
+
 import 'package:flutter/material.dart';
 import 'package:social_media_app/views/widgets/chat_item.dart';
 import 'package:social_media_app/util/data.dart';
@@ -9,7 +11,7 @@ class Chats extends StatefulWidget {
 
 class _ChatsState extends State<Chats>
     with SingleTickerProviderStateMixin, AutomaticKeepAliveClientMixin {
-  TabController _tabController;
+  TabController? _tabController;
 
   @override
   void initState() {

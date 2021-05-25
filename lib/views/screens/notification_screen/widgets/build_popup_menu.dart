@@ -1,3 +1,5 @@
+
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -6,9 +8,9 @@ import 'package:social_media_app/providers/userBlock.dart';
 import 'package:social_media_app/views/screens/notification_screen/enum/notification_type.dart';
 
 class BuildPopupMenu extends StatelessWidget {
-  final ValueChanged<int> onSelected;
+  final ValueChanged<int>? onSelected;
   final int value;
-  BuildPopupMenu({Key key,this.onSelected,this.value=0}) : super(key: key);
+  BuildPopupMenu({Key? key,this.onSelected,this.value=0}) : super(key: key);
   final List<String> elemans = [
     "Hepsi",
     "Arkadaşlık",
@@ -42,7 +44,7 @@ class BuildPopupMenu extends StatelessWidget {
                     builder: (c, s) {
                       if (s.hasData)
                         return Text(
-                          s.data.size.toString(),
+                          s.data!.size.toString(),
                           style: TextStyle(color: Colors.red.shade300,fontWeight: FontWeight.bold),
                         );
                       return Text("-",style: TextStyle(color: Colors.red.shade300,fontWeight: FontWeight.bold),);
@@ -53,7 +55,7 @@ class BuildPopupMenu extends StatelessWidget {
           ),
         );
       },
-      onSelected:(i)=>onSelected(i),
+      onSelected:(dynamic i)=>onSelected!(i),
     );
   }
 
@@ -68,7 +70,7 @@ class BuildPopupMenu extends StatelessWidget {
   Stream<QuerySnapshot> getStreamUnRead(
       NType type, ProfileBlock profileBlock, UserBlock userBlock) {
     return profileBlock
-        .notification(userBlock.user.uid)
+        .notification(userBlock.user!.uid)
         .where("nType", isEqualTo: type.index)
         .where("isRead", isEqualTo: false)
         .snapshots();

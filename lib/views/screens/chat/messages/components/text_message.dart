@@ -1,3 +1,5 @@
+
+
 import 'package:provider/provider.dart';
 import 'package:social_media_app/providers/userBlock.dart';
 import 'package:social_media_app/util/const.dart';
@@ -6,11 +8,11 @@ import 'package:flutter/material.dart';
 
 class TextMessage extends StatelessWidget {
   const TextMessage({
-    Key key,
+    Key? key,
     this.message,
   }) : super(key: key);
 
-  final ChatMessage message;
+  final ChatMessage? message;
 
   @override
   Widget build(BuildContext context) {
@@ -21,17 +23,17 @@ class TextMessage extends StatelessWidget {
         vertical: kDefaultPadding / 2,
       ),
       decoration: BoxDecoration(
-        color:getMessageColor(message.senderUid,userBlock.user.uid),
+        color:getMessageColor(message!.senderUid,userBlock.user!.uid),
         borderRadius: BorderRadius.circular(30),
       ),
       child: Text(
-        message.text,
+        message!.text!,
         style: TextStyle(
           fontWeight: FontWeight.bold,
-          fontStyle: message.isRemoved??true ? FontStyle.italic : FontStyle.normal,
-          color: message.senderUid.isEmpty
+          fontStyle: message!.isRemoved??true ? FontStyle.italic : FontStyle.normal,
+          color: message!.senderUid!.isEmpty
               ? Colors.white
-              :message.isRemoved??true ? Colors.black54 : Theme.of(context).textTheme.bodyText1.color,
+              :message!.isRemoved??true ? Colors.black54 : Theme.of(context).textTheme.bodyText1!.color,
         ),
       ),
     );

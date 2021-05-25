@@ -1,12 +1,14 @@
+
+
 import 'package:flutter/material.dart';
 import 'package:social_media_app/util/const.dart';
 
 
 class PrimaryButton extends StatelessWidget {
   const PrimaryButton({
-    Key key,
-    @required this.text,
-    @required this.press,
+    Key? key,
+    required this.text,
+    required this.press,
     this.color = kPrimaryColor,
     this.padding = const EdgeInsets.all(kDefaultPadding * 0.75),
   }) : super(key: key);

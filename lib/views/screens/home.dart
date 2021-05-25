@@ -1,7 +1,7 @@
+
 import 'dart:math';
 
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:provider/provider.dart';
@@ -18,24 +18,24 @@ import 'package:social_media_app/views/screens/search_screen/search_screen.dart'
 import 'package:social_media_app/views/screens/friendsScreen.dart';
 
 class Home extends StatefulWidget {
-  final ScrollController controller;
-  Home({this.controller, Key key}) : super(key: key);
+  final ScrollController? controller;
+  Home({this.controller, Key? key}) : super(key: key);
   @override
   _HomeState createState() => _HomeState();
 }
 
 class _HomeState extends State<Home> with BuildPostItemList {
-  EasyRefreshController _easyRefreshController;
-  DateTime lastUpdated;
+  EasyRefreshController? _easyRefreshController;
+  DateTime? lastUpdated;
   bool readyUpdate = true;
-  BehaviorSubject<double> elevation;
+  BehaviorSubject<double>? elevation;
 
   @override
   void initState() {
     super.initState();
     _easyRefreshController = EasyRefreshController();
     elevation = BehaviorSubject.seeded(0);
-    widget.controller.addListener(() {
+    widget.controller!.addListener(() {
       getElevation();
     });
   }
@@ -54,7 +54,7 @@ class _HomeState extends State<Home> with BuildPostItemList {
             builder: (context, snapshot) {
               return AppBar(
                 elevation: snapshot.data,
-                title: Text(userBlock.user.displayName),
+                title: Text(userBlock.user!.displayName!),
                 centerTitle: true,
                 leading: Center(
                   child: Container(
@@ -64,7 +64,7 @@ class _HomeState extends State<Home> with BuildPostItemList {
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(8),
                       image: DecorationImage(
-                        image:CachedNetworkImageProvider(userBlock.user.photoURL),
+                        image:CachedNetworkImageProvider(userBlock.user!.photoURL!),
                       ),
                     ),
                   ),
@@ -85,11 +85,11 @@ class _HomeState extends State<Home> with BuildPostItemList {
               );
             }),
       ),
-      body: StreamBuilder<List<String>>(
+      body: StreamBuilder<List<String?>>(
         stream: profileBlock.friendsUid,
-        initialData: profileBlock.friendsUid.valueWrapper.value,
+        initialData: profileBlock.friendsUid!.valueWrapper!.value,
         builder: (c, uids) {
-          if (uids.hasData) if (uids.data.isEmpty) {
+          if (uids.hasData) if (uids.data!.isEmpty) {
             return Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -106,11 +106,11 @@ class _HomeState extends State<Home> with BuildPostItemList {
           }
           return StreamBuilder<List<Post>>(
             stream: postsBlock.posts,
-            initialData: postsBlock.posts.valueWrapper.value,
+            initialData: postsBlock.posts!.valueWrapper!.value,
             builder:
                 (BuildContext context, AsyncSnapshot<List<Post>> snapshot) {
               if (snapshot.hasData) {
-                if (snapshot.data.isEmpty) {
+                if (snapshot.data!.isEmpty) {
                   return Center(
                     child: Text("Burada Hiçbirşey Yok :((("),
                   );
@@ -120,14 +120,14 @@ class _HomeState extends State<Home> with BuildPostItemList {
                   scrollController: widget.controller,
                   onRefresh: () async {
                     GetDatas datas = GetDatas();
-                    _easyRefreshController.callLoad();
+                    _easyRefreshController!.callLoad();
                     if (readyUpdate) {
                       Future.delayed(Duration(seconds: 5), () {
                         setState(() {
                           readyUpdate = true;
                         });
                       });
-                      await datas.getAllDatas(context, userBlock.user.uid);
+                      await datas.getAllDatas(context, userBlock.user!.uid);
                       lastUpdated = DateTime.now();
                       readyUpdate = false;
                     } else {
@@ -140,7 +140,7 @@ class _HomeState extends State<Home> with BuildPostItemList {
                           ? "Yenileme hazır değil"
                           : lastUpdated == null
                               ? ""
-                              : "Son güncelleme ${lastUpdated.hour}:${lastUpdated.minute}",
+                              : "Son güncelleme ${lastUpdated!.hour}:${lastUpdated!.minute}",
                       refreshingText: "Yükleniyor...",
                       refreshFailedText: "Hata Oluştu.",
                       refreshReadyText: "Yenilemek için bırakın.",
@@ -158,17 +158,17 @@ class _HomeState extends State<Home> with BuildPostItemList {
                               child: FriendsScreen(),
                             );
                           }
-                          Post post = snapshot.data[i - 1];
+                          Post post = snapshot.data![i - 1];
                           return Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 8),
                             child: buildPostItemList(
                                 index: i - 1,
-                                length: snapshot.data.length,
-                                userUid: userBlock.user.uid,
+                                length: snapshot.data!.length,
+                                userUid: userBlock.user!.uid,
                                 post: post),
                           );
                         },
-                        childCount: snapshot.data.length + 1,
+                        childCount: snapshot.data!.length + 1,
                       ),
                     ),
                   ],
@@ -187,10 +187,10 @@ class _HomeState extends State<Home> with BuildPostItemList {
   void getElevation() {
     double elev;
     try {
-      elev = widget.controller?.offset?.toInt() <= 0 ? 0 : 8;
+      elev = widget.controller!.offset.toInt() <= 0 ? 0 : 8;
     } catch (e) {
       elev = 0;
     }
-    elevation.add(elev);
+    elevation!.add(elev);
   }
 }

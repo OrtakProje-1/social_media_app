@@ -1,3 +1,5 @@
+
+
 import 'package:flutter/material.dart';
 
 class Constants {
@@ -16,10 +18,10 @@ final Color recMesColor = kPrimaryColor.withOpacity(0.2);
 
 const kDefaultPadding = 20.0;
 
-Color getMessageColor(String senderUid,String myUid){
+Color getMessageColor(String? senderUid,String myUid){
   return senderUid==myUid ? kPrimaryColor : recMesColor;
 }
 
-Color getMessageTextColor(String senderUid,String myUid){
+Color getMessageTextColor(String? senderUid,String myUid){
   return senderUid==myUid ? Colors.white.withOpacity(0.9) : Colors.white.withOpacity(0.9);
 }

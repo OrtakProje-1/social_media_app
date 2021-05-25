@@ -1,3 +1,5 @@
+
+
 import 'dart:io';
 import 'dart:math';
 import 'package:file_picker/file_picker.dart';
@@ -8,10 +10,10 @@ import 'package:social_media_app/views/widgets/buttons/transparant_button.dart';
 
 class BuildImageListWidget extends StatelessWidget {
   const BuildImageListWidget({
-    Key key,
-    @required this.size,
-    @required this.images,
-    @required this.onPressedDeleteButton,
+    Key? key,
+    required this.size,
+    required this.images,
+    required this.onPressedDeleteButton,
   }) : super(key: key);
 
   final Size size;
@@ -39,7 +41,7 @@ class BuildImageListWidget extends StatelessWidget {
               image: DecorationImage(
                 fit: BoxFit.cover,
                 image: FileImage(
-                    File(images[index].path)),
+                    File(images[index].path!)),
               ),
             ),
             child: Stack(

@@ -1,3 +1,5 @@
+
+
 import 'package:flutter/material.dart';
 
 class BottomAppbarNotchedShape extends NotchedShape {
@@ -8,7 +10,7 @@ class BottomAppbarNotchedShape extends NotchedShape {
   BottomAppbarNotchedShape(
       {this.space = 5, this.radius = 20, this.spaceRadius = 8,this.horizontalSpace=0});
   @override
-  Path getOuterPath(Rect host, Rect guest) {
+  Path getOuterPath(Rect host, Rect? guest) {
     double iconSize=40;
     double guestLeft=host.width/2-iconSize;
     double guestRight=host.width/2+iconSize+1;

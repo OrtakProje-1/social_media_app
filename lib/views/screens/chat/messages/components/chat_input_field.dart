@@ -1,3 +1,5 @@
+
+
 import 'dart:async';
 import 'dart:io';
 
@@ -22,9 +24,9 @@ import 'package:social_media_app/views/screens/detail_screens/widgets/send_butto
 import 'package:social_media_app/views/screens/main_screen/widgets/build_audio_widget.dart';
 
 class ChatInputField extends StatefulWidget {
-  const ChatInputField({Key key, this.rUid, this.noMessage = false})
+  const ChatInputField({Key? key, this.rUid, this.noMessage = false})
       : super(key: key);
-  final String rUid;
+  final String? rUid;
   final bool noMessage;
 
   @override
@@ -34,15 +36,15 @@ class ChatInputField extends StatefulWidget {
 class _ChatInputFieldState extends State<ChatInputField> with PickerMixin {
   TextEditingController message = TextEditingController();
   bool loading = false;
-  String docId;
+  String? docId;
   @override
   Widget build(BuildContext context) {
     MessagesBlock messagesBlock = Provider.of<MessagesBlock>(context);
     UserBlock userBlock = Provider.of<UserBlock>(context);
     UsersBlock usersBlock = Provider.of<UsersBlock>(context);
-    MyUser rec = usersBlock.getUserFromUid(widget.rUid);
-    MyUser my = usersBlock.getUserFromUid(userBlock.user.uid);
-    docId = messagesBlock.getDoc(widget.rUid, userBlock.user.uid);
+    MyUser? rec = usersBlock.getUserFromUid(widget.rUid);
+    MyUser? my = usersBlock.getUserFromUid(userBlock.user!.uid);
+    docId = messagesBlock.getDoc(widget.rUid, userBlock.user!.uid);
     return Column(
       children: [
         Divider(
@@ -73,40 +75,40 @@ class _ChatInputFieldState extends State<ChatInputField> with PickerMixin {
                   child: TextButton(
                     child: Icon(Icons.add, color: kPrimaryColor),
                     onPressed: () async {
-                      FilesTyper fType = await showModal();
+                      FilesTyper? fType = await showModal();
                       if (fType != null) {
                         print(fType.type.toString() +
                             " " +
-                            fType.files.length.toString());
-                        SenderMediaMessage senderMessage =await getFilesDetailsScreen(fType, usersBlock, userBlock.user.uid);
+                            fType.files!.length.toString());
+                        SenderMediaMessage? senderMessage =await getFilesDetailsScreen(fType, usersBlock, userBlock.user!.uid);
                         if (senderMessage != null) {
                           print("mesaj= " +
-                              senderMessage.message +
+                              senderMessage.message! +
                               "\ntype= ${senderMessage.type}\n urls= " +
-                              senderMessage.urls.length.toString());
+                              senderMessage.urls!.length.toString());
                           await messagesBlock.addMessage(
-                            my,
-                            rec,
+                            my!,
+                            rec!,
                             widget.noMessage,
                             ChatMessage(
                               isRemoved: false,
                               messageStatus: MessageStatus.not_view,
                               messageTime: DateTime.now().millisecondsSinceEpoch,
                               messageType: senderMessage.type,
-                              senderUid: userBlock.user.uid,
+                              senderUid: userBlock.user!.uid,
                               text: senderMessage.message,
                               audio: senderMessage.type == ChatMessageType.audio
-                                  ? senderMessage.urls[0]
+                                  ? senderMessage.urls![0]
                                   : null,
                               video: senderMessage.type == ChatMessageType.video
-                                  ? senderMessage.urls[0]
+                                  ? senderMessage.urls![0]
                                   : null,
                               images:
                                   senderMessage.type == ChatMessageType.image
                                       ? senderMessage.urls
                                       : null,
                               file: senderMessage.type == ChatMessageType.file
-                                  ? senderMessage.urls[0]
+                                  ? senderMessage.urls![0]
                                   : null,
                             ),
                           );
@@ -138,7 +140,7 @@ class _ChatInputFieldState extends State<ChatInputField> with PickerMixin {
                             controller: message,
                             cursorRadius: Radius.circular(8),
                             cursorColor:
-                                Theme.of(context).textTheme.bodyText1.color,
+                                Theme.of(context).textTheme.bodyText1!.color,
                             cursorWidth: 1.5,
                             decoration: InputDecoration(
                               hintText: "Mesajınız...",
@@ -166,8 +168,8 @@ class _ChatInputFieldState extends State<ChatInputField> with PickerMixin {
                       message.clear();
                       int time = DateTime.now().millisecondsSinceEpoch;
                       await messagesBlock.addMessage(
-                        my,
-                        rec,
+                        my!,
+                        rec!,
                         widget.noMessage,
                         ChatMessage(
                           messageStatus: MessageStatus.not_view,
@@ -175,7 +177,7 @@ class _ChatInputFieldState extends State<ChatInputField> with PickerMixin {
                           messageType: ChatMessageType.text,
                           text: mesaj,
                           isRemoved: false,
-                          senderUid: userBlock.user.uid,
+                          senderUid: userBlock.user!.uid,
                         ),
                       );
                       message.clear();
@@ -205,8 +207,8 @@ class _ChatInputFieldState extends State<ChatInputField> with PickerMixin {
     );
   }
 
-  Future<SenderMediaMessage> getFilesDetailsScreen(FilesTyper filesTyper, UsersBlock usersBlock, String myUid) async {
-    MyUser receiver = usersBlock.getUserFromUid(widget.rUid);
+  Future<SenderMediaMessage?> getFilesDetailsScreen(FilesTyper filesTyper, UsersBlock usersBlock, String myUid) async {
+    MyUser? receiver = usersBlock.getUserFromUid(widget.rUid);
     switch (filesTyper.type) {
       case ChatMessageType.image:
         return await Navigate.pushPage<SenderMediaMessage>(
@@ -217,8 +219,8 @@ class _ChatInputFieldState extends State<ChatInputField> with PickerMixin {
             ));
         break;
       case ChatMessageType.audio:
-        if (filesTyper.files.isNotEmpty) {
-          MediaReference mediaRef = await getAudioModalBottomSheet(filesTyper, receiver, myUid);
+        if (filesTyper.files!.isNotEmpty) {
+          MediaReference? mediaRef = await getAudioModalBottomSheet(filesTyper, receiver, myUid);
           return SenderMediaMessage(type: ChatMessageType.audio,message:"",urls: [mediaRef]);
         } else
           return null;
@@ -228,7 +230,7 @@ class _ChatInputFieldState extends State<ChatInputField> with PickerMixin {
     }
   }
 
-  Future<MediaReference> getAudioModalBottomSheet(FilesTyper filesTyper, MyUser receiver, String myUid) async {
+  Future<MediaReference?> getAudioModalBottomSheet(FilesTyper filesTyper, MyUser? receiver, String myUid) async {
     bool loading=false;
     return await showModalBottomSheet<MediaReference>(
         context: context,
@@ -250,10 +252,10 @@ class _ChatInputFieldState extends State<ChatInputField> with PickerMixin {
                       text: TextSpan(
                         children: [
                           TextSpan(
-                              text: "'${filesTyper.files[0].name}' ",
+                              text: "'${filesTyper.files![0].name}' ",
                               style: TextStyle(fontWeight: FontWeight.bold)),
                           TextSpan(
-                              text: " ${receiver.displayName} ",
+                              text: " ${receiver!.displayName} ",
                               style: TextStyle(fontWeight: FontWeight.bold)),
                           TextSpan(text: "kişisine gönderilsin mi?"),
                         ],
@@ -297,8 +299,8 @@ class _ChatInputFieldState extends State<ChatInputField> with PickerMixin {
                                         .millisecondsSinceEpoch
                                         .toString(),
                                     ext: StorageBlock.fileExt(
-                                        filesTyper.files[0].path),
-                                    file: File(filesTyper.files[0].path),
+                                        filesTyper.files![0].path!),
+                                    file: File(filesTyper.files![0].path!),
                                     userUid: myUid,
                                   );
                                   Navigator.pop(context, mediaRef);
@@ -326,7 +328,7 @@ class _ChatInputFieldState extends State<ChatInputField> with PickerMixin {
         });
   }
 
-  FutureOr<FilesTyper> showModal() async {
+  FutureOr<FilesTyper?> showModal() async {
     return await showModalBottomSheet<FilesTyper>(
       backgroundColor: Colors.transparent,
       context: context,
@@ -369,7 +371,7 @@ class _ChatInputFieldState extends State<ChatInputField> with PickerMixin {
                       Icons.photo_outlined,
                       imagePicker: true,
                       onPressed: () async {
-                        List<PlatformFile> files = await getImagePicker();
+                        List<PlatformFile>? files = await getImagePicker();
                         Navigator.pop(
                             context,
                             files != null
@@ -380,7 +382,7 @@ class _ChatInputFieldState extends State<ChatInputField> with PickerMixin {
                     ),
                     dosyaTipleri("Kamera", Icons.camera_alt_outlined,
                         imagePicker: true, onPressed: () async {
-                      List<Media> images = await getImgesPickerCamera();
+                      List<Media>? images = await getImgesPickerCamera();
                       List<PlatformFile> imagesPlat;
                       if (images != null) {
                         imagesPlat = images
@@ -399,7 +401,7 @@ class _ChatInputFieldState extends State<ChatInputField> with PickerMixin {
                     }),
                     dosyaTipleri("Ses", Icons.headset_outlined,
                         onPressed: () async {
-                      List<PlatformFile> files = await getAudioPicker();
+                      List<PlatformFile> files = await (getAudioPicker() as FutureOr<List<PlatformFile>>);
                       Navigator.pop(
                           context,
                           files.isNotEmpty
@@ -417,7 +419,7 @@ class _ChatInputFieldState extends State<ChatInputField> with PickerMixin {
                   children: <Widget>[
                     dosyaTipleri("Döküman", Icons.insert_drive_file_outlined,
                         onPressed: () async {
-                      List<PlatformFile> files = await getFilePicker();
+                      List<PlatformFile> files = await (getFilePicker() as FutureOr<List<PlatformFile>>);
                       Navigator.pop(
                           context,
                           files.isNotEmpty
@@ -427,7 +429,7 @@ class _ChatInputFieldState extends State<ChatInputField> with PickerMixin {
                     }),
                     dosyaTipleri("Video", Icons.videocam_outlined,
                         onPressed: () async {
-                      List<PlatformFile> files = await getVideoPicker();
+                      List<PlatformFile> files = await (getVideoPicker() as FutureOr<List<PlatformFile>>);
                       Navigator.pop(
                           context,
                           files.isNotEmpty
@@ -449,7 +451,7 @@ class _ChatInputFieldState extends State<ChatInputField> with PickerMixin {
     String isim,
     IconData icon, {
     bool imagePicker = false,
-    VoidCallback onPressed,
+    VoidCallback? onPressed,
   }) {
     return Column(
       children: <Widget>[
@@ -492,6 +494,6 @@ class _ChatInputFieldState extends State<ChatInputField> with PickerMixin {
 class FilesTyper {
   FilesTyper({this.files, this.type});
 
-  final ChatMessageType type;
-  final List<PlatformFile> files;
+  final ChatMessageType? type;
+  final List<PlatformFile>? files;
 }

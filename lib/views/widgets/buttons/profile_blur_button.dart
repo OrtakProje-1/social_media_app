@@ -1,11 +1,13 @@
+
+
 import 'package:flutter/material.dart';
 import 'package:social_media_app/views/widgets/blurWidget.dart';
 import 'package:social_media_app/views/widgets/buttons/transparant_button.dart';
 
 class ProfileBlurButton extends StatelessWidget {
-  final Icon icon;
-  final VoidCallback onPressed;
-  ProfileBlurButton({Key key, this.icon, this.onPressed}) : super(key: key);
+  final Icon? icon;
+  final VoidCallback? onPressed;
+  ProfileBlurButton({Key? key, this.icon, this.onPressed}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return Padding(

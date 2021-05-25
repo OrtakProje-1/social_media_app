@@ -1,3 +1,5 @@
+
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
@@ -7,8 +9,8 @@ import 'package:social_media_app/providers/usersBlock.dart';
 import 'package:social_media_app/views/screens/chat/models/chat_message.dart';
 
 class ExtendedImageView extends StatelessWidget {
-  final ChatMessage message;
-  const ExtendedImageView({Key key, this.message}) : super(key: key);
+  final ChatMessage? message;
+  const ExtendedImageView({Key? key, this.message}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -17,13 +19,13 @@ class ExtendedImageView extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: getAppBarTitle(message, userBlock, usersBlock),
+        title: getAppBarTitle(message!, userBlock, usersBlock),
       ),
       body: ExtendedImageGesturePageView(
         scrollDirection: Axis.horizontal,
-        children: message.images
+        children: message!.images!
             .map((e) => ExtendedImage.network(
-                  e.downloadURL,
+                  e!.downloadURL!,
                   mode: ExtendedImageMode.gesture,
                 ))
             .toList(),
@@ -38,12 +40,12 @@ class ExtendedImageView extends StatelessWidget {
       children: [
         Text("Siz"),
         Text(
-          DateTime.fromMillisecondsSinceEpoch(m.messageTime).toString(),
+          DateTime.fromMillisecondsSinceEpoch(m.messageTime!).toString(),
           style: TextStyle(fontWeight: FontWeight.normal),
         ),
       ],
     );
-    if (m.senderUid == block.user.uid) {
+    if (m.senderUid == block.user!.uid) {
       return widget;
     } else {
       widget = Row(
@@ -58,7 +60,7 @@ class ExtendedImageView extends StatelessWidget {
                 borderRadius: BorderRadius.circular(8),
                 image: DecorationImage(
                   image: CachedNetworkImageProvider(
-                      usersBlock.getUserFromUid(m.senderUid).photoURL),
+                      usersBlock.getUserFromUid(m.senderUid)!.photoURL!),
                 ),
               ),
             ),

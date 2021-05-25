@@ -1,8 +1,10 @@
+
+
 import 'package:flutter/material.dart';
 
 class TextFieldWidget extends StatelessWidget {
-  final TextEditingController controller;
-  const TextFieldWidget({Key key, this.controller}) : super(key: key);
+  final TextEditingController? controller;
+  const TextFieldWidget({Key? key, this.controller}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

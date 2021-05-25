@@ -1,3 +1,5 @@
+
+
 import 'package:social_media_app/models/Post.dart';
 import 'package:social_media_app/models/my_user.dart';
 import 'package:social_media_app/views/screens/notification_screen/enum/notification_type.dart';
@@ -5,14 +7,14 @@ import 'package:social_media_app/views/screens/notification_screen/models/notifi
 import 'package:social_media_app/views/screens/notification_screen/models/notification_sender.dart';
 
 class MyNotification {
-  String nMessage;
-  NType nType;
-  NSender nSender;
-  String nTime;
-  bool isRead;
-  Post post;
-  MyUser friend;
-  NReceiver nReceiver;
+  String? nMessage;
+  NType? nType;
+  NSender? nSender;
+  String? nTime;
+  bool? isRead;
+  Post? post;
+  MyUser? friend;
+  NReceiver? nReceiver;
 
   MyNotification(
       {this.isRead = false,
@@ -37,13 +39,13 @@ class MyNotification {
   Map<String, dynamic> toMap() {
     Map<String, dynamic> map = Map<String, dynamic>();
     map["nMessage"] = this.nMessage;
-    map["nSender"] = this.nSender.toMap();
+    map["nSender"] = this.nSender!.toMap();
     map["nTime"] = this.nTime;
-    map["nType"] = this.nType.index;
+    map["nType"] = this.nType!.index;
     map["isRead"] = this.isRead;
-  if(post!=null)  map["post"] = this.post.toMap();
-  if(friend!=null) map["friend"] = this.friend.toMap();
-   if(nReceiver!=null) map["nReceiver"] = this.nReceiver.toMap();
+  if(post!=null)  map["post"] = this.post!.toMap();
+  if(friend!=null) map["friend"] = this.friend!.toMap();
+   if(nReceiver!=null) map["nReceiver"] = this.nReceiver!.toMap();
     return map;
   }
 }

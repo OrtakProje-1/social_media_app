@@ -1,14 +1,16 @@
+
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:screenshot/screenshot.dart';
 
 class ScreenshotWidget extends StatefulWidget {
-  final String url;
-  final Widget child;
+  final String? url;
+  final Widget? child;
   final double size;
-  final ScreenshotController controller;
-  ScreenshotWidget.fromWidget({Key key,this.child,this.size=150,this.controller}): this.url=null,super(key: key);
-  ScreenshotWidget({Key key, this.url,this.size=150,this.controller}) : this.child=null,super(key: key);
+  final ScreenshotController? controller;
+  ScreenshotWidget.fromWidget({Key? key,this.child,this.size=150,this.controller}): this.url=null,super(key: key);
+  ScreenshotWidget({Key? key, this.url,this.size=150,this.controller}) : this.child=null,super(key: key);
 
   @override
   _ScreenshotWidgetState createState() => _ScreenshotWidgetState();
@@ -37,8 +39,8 @@ class _ScreenshotWidgetState extends State<ScreenshotWidget> {
       child:widget.child!=null ? widget.child : ClipRRect(
         borderRadius: BorderRadius.circular(90),
         child: Screenshot(
-            controller: widget.controller,
-            child: SvgPicture.network(widget.url)),
+            controller: widget.controller!,
+            child: SvgPicture.network(widget.url!)),
       ),
     );
   }

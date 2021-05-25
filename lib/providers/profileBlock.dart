@@ -1,3 +1,5 @@
+
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:social_media_app/database/firebase_yardimci.dart';
@@ -21,33 +23,33 @@ class ProfileBlock{
     friendRequests=BehaviorSubject.seeded([]);
   }
 
-  NotificationBlock _notificationBlock;
-  FirebaseFirestore _firestore;
+  late NotificationBlock _notificationBlock;
+  FirebaseFirestore? _firestore;
 
-  BehaviorSubject<List<MyUser>> friendRequests;
-  BehaviorSubject<List<MyUser>> friends;
-  BehaviorSubject<List<String>> friendsUid;
+  late BehaviorSubject<List<MyUser>> friendRequests;
+  BehaviorSubject<List<MyUser>>? friends;
+  BehaviorSubject<List<String?>>? friendsUid;
   
-  Stream<QuerySnapshot> get query=> _firestore.collection("Users").snapshots();
+  Stream<QuerySnapshot> get query=> _firestore!.collection("Users").snapshots();
   
-  Stream<DocumentSnapshot>  streamQueryFromUid(String uid)=>_firestore.collection("Users").doc(uid).snapshots();
-  DocumentReference  queryFromUid(String uid)=>_firestore.collection("Users").doc(uid);
+  Stream<DocumentSnapshot>  streamQueryFromUid(String uid)=>_firestore!.collection("Users").doc(uid).snapshots();
+  DocumentReference  queryFromUid(String? uid)=>_firestore!.collection("Users").doc(uid);
   
   Stream<QuerySnapshot> streamNotification(String uid)=>queryFromUid(uid).collection("notifications").orderBy("nTime",descending: true).snapshots();
   CollectionReference notification(String uid)=>queryFromUid(uid).collection("notifications");
   
   Stream<QuerySnapshot> streamFriends(String uid)=>queryFromUid(uid).collection("friends").snapshots();
-  CollectionReference friendsCollection(String uid)=>queryFromUid(uid).collection("friends");
+  CollectionReference friendsCollection(String? uid)=>queryFromUid(uid).collection("friends");
 
   Stream<QuerySnapshot> streamFriendRequest(String uid)=>queryFromUid(uid).collection("friend_request").snapshots();
-  CollectionReference friendRequest(String uid)=>queryFromUid(uid).collection("friend_request");
+  CollectionReference friendRequest(String? uid)=>queryFromUid(uid).collection("friend_request");
 
   
   Future<void> updateUserisOnline(String uid,bool isOnline)async{
-    await _firestore.collection("Users").doc(uid).update({"isOnline":isOnline});
+    await _firestore!.collection("Users").doc(uid).update({"isOnline":isOnline});
   }
 
-  Future<void> sendFriendshipRequest({MyUser friend,MyUser sender})async{
+  Future<void> sendFriendshipRequest({required MyUser friend,required MyUser sender})async{
     MyNotification notification=MyNotification(
       friend: sender,
       nMessage: "${sender.displayName} size arkadaşlık isteği göderdi.",
@@ -73,7 +75,7 @@ class ProfileBlock{
   }
 
   Future<void> updateFriendRequest(MyUser newFriend)async{
-    List<MyUser> fReq= friendRequests.value;
+    List<MyUser> fReq= friendRequests.value!;
     if(!fReq.any((e) =>e.uid==newFriend.uid)){
       fReq.add(newFriend);
       friendRequests.add(fReq);
@@ -110,19 +112,19 @@ class ProfileBlock{
     }
   }
 
-  Future<void> getAllFriendsUid(String uid)async{
+  Future<void> getAllFriendsUid(String? uid)async{
     QuerySnapshot query= await friendsCollection(uid).get();
-    List<String> uids= query.docs.map((e) =>e.id).toList();
+    List<String?> uids= query.docs.map((e) =>e.id).toList();
     uids.add(uid);
-    friendsUid.add(uids);
+    friendsUid!.add(uids);
   }
 
-  bool isRequest(String uid){
-    return friendRequests.value.any((e) =>e.uid==uid);
+  bool isRequest(String? uid){
+    return friendRequests.value!.any((e) =>e.uid==uid);
   }
 
-  bool isFriend(String uid){
-    return friends.value.any((e) =>e.uid==uid);
+  bool isFriend(String? uid){
+    return friends!.value!.any((e) =>e.uid==uid);
   }
 
   Future<void> fetchDatas(String uid)async{
@@ -133,19 +135,19 @@ class ProfileBlock{
     List<MyUser> myFriendRequests= friendRequestsCollections.docs.map((e) =>MyUser.fromMap(e.data())).toList();
     List<MyUser> myFriends= friendCollections.docs.map((e) =>MyUser.fromMap(e.data())).toList();
 
-    friends.add(myFriends);
+    friends!.add(myFriends);
     friendRequests.add(myFriendRequests);
   }
 
   void clearDatas(){
     friendRequests.add([]);
-    friends.add([]);
-    friendsUid.add([]);
+    friends!.add([]);
+    friendsUid!.add([]);
   }
 
   void dispose(){
-    friends.close();
-    friendsUid.close();
+    friends!.close();
+    friendsUid!.close();
     friendRequests.close();
   }
 

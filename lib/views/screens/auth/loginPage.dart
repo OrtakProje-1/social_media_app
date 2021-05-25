@@ -1,3 +1,5 @@
+
+
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -24,7 +26,7 @@ class _LoginPageState extends State<LoginPage> with TextFieldMixin {
   int avatarIndex = 0;
   ScreenshotController _controller = ScreenshotController();
   bool result = false;
-  String imagePath;
+  String? imagePath;
 
   @override
   void initState() {
@@ -50,7 +52,7 @@ class _LoginPageState extends State<LoginPage> with TextFieldMixin {
           if (result && imagePath != null) ...[
             ClipRRect(
               borderRadius: BorderRadius.circular(90),
-              child: Image.file(File(imagePath)),
+              child: Image.file(File(imagePath!)),
             ),
           ]
         ],
@@ -118,7 +120,7 @@ class _LoginPageState extends State<LoginPage> with TextFieldMixin {
                           child: Container(
                             height: 120,
                             width: 120,
-                            color: Theme.of(context).textTheme.bodyText1.color,
+                            color: Theme.of(context).textTheme.bodyText1!.color,
                             padding: EdgeInsets.all(20),
                             child: Center(
                                 child: FlutterLogo(
@@ -167,7 +169,7 @@ class _LoginPageState extends State<LoginPage> with TextFieldMixin {
                           try {
                             Directory temporaryDir =
                                 await getTemporaryDirectory();
-                            String path = await _controller.captureAndSave(
+                            String? path = await _controller.captureAndSave(
                                 temporaryDir.path,
                                 fileName: "${DateTime.now()}.png");
                             print(path);

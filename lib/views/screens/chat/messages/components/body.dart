@@ -1,3 +1,5 @@
+
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
 import 'package:social_media_app/providers/messagesBlock.dart';
@@ -9,30 +11,30 @@ import 'chat_input_field.dart';
 import 'message.dart';
 
 class Body extends StatelessWidget {
-  final String rUid;
-  final List<QueryDocumentSnapshot> selectedMessage;
-  final ValueChanged<QueryDocumentSnapshot> longPressed;
-  final ValueChanged<QueryDocumentSnapshot> removeSelected;
-  final ValueChanged<QueryDocumentSnapshot> lastMessage;
-  final ScrollController controller;
+  final String? rUid;
+  final List<QueryDocumentSnapshot>? selectedMessage;
+  final ValueChanged<QueryDocumentSnapshot>? longPressed;
+  final ValueChanged<QueryDocumentSnapshot>? removeSelected;
+  final ValueChanged<QueryDocumentSnapshot>? lastMessage;
+  final ScrollController? controller;
 
   Body({this.rUid, this.longPressed, this.selectedMessage, this.removeSelected,this.lastMessage,this.controller});
 
   @override
   Widget build(BuildContext context) {
-    bool select = selectedMessage.isNotEmpty;
+    bool select = selectedMessage!.isNotEmpty;
     MessagesBlock messagesBlock = Provider.of<MessagesBlock>(context);
     UserBlock userBlock = Provider.of<UserBlock>(context);
     return StreamBuilder<QuerySnapshot>(
-        stream: messagesBlock.getMessageStream(userBlock.user.uid, rUid),
+        stream: messagesBlock.getMessageStream(userBlock.user!.uid, rUid),
         builder: (context, snap) {
           return Column(
             children: [
               if (snap.hasData) ...[
-                if (snap.data.docs.isEmpty) ...[
+                if (snap.data!.docs.isEmpty) ...[
                   empty(rUid),
                 ],
-                if (snap.data.docs.isNotEmpty) ...[
+                if (snap.data!.docs.isNotEmpty) ...[
                   buildMessageList(snap, select,userBlock,controller),
                   ChatInputField(
                     rUid: rUid,
@@ -48,35 +50,35 @@ class Body extends StatelessWidget {
         });
   }
 
-  Expanded buildMessageList(AsyncSnapshot<QuerySnapshot> snap, bool select,UserBlock userBlock,ScrollController controller){
-    lastMessage(snap.data.docs.first);
+  Expanded buildMessageList(AsyncSnapshot<QuerySnapshot> snap, bool select,UserBlock userBlock,ScrollController? controller){
+    lastMessage!(snap.data!.docs.first);
     return Expanded(
       child: ListView.builder(
           reverse: true,
           controller: controller,
           physics: BouncingScrollPhysics(),
           padding: const EdgeInsets.symmetric(vertical: 3),
-          itemCount: snap.data.size,
+          itemCount: snap.data!.size,
           itemBuilder: (context, index) {
-            bool isSelected = selectedMessage.any((e) => e.id == snap.data.docs[index].id);
-            ChatMessage message=ChatMessage.fromMap(snap.data.docs[index].data());
+            bool isSelected = selectedMessage!.any((e) => e.id == snap.data!.docs[index].id);
+            ChatMessage message=ChatMessage.fromMap(snap.data!.docs[index].data());
             return GestureDetector(
               onLongPress: () {
                 print("Long pressed isSelect= " + isSelected.toString());
-               if(!(message.isRemoved??true)&&message.senderUid==userBlock.user.uid){
+               if(!(message.isRemoved??true)&&message.senderUid==userBlock.user!.uid){
                   if (!isSelected)
-                  longPressed(snap.data.docs[index]);
+                  longPressed!(snap.data!.docs[index]);
                 else
-                  removeSelected(snap.data.docs[index]);
+                  removeSelected!(snap.data!.docs[index]);
                }
               },
               onTap: () {
-                if(!(message.isRemoved??true)&&message.senderUid==userBlock.user.uid){
+                if(!(message.isRemoved??true)&&message.senderUid==userBlock.user!.uid){
                   if (select) {
                   if (isSelected) {
-                    removeSelected(snap.data.docs[index]);
+                    removeSelected!(snap.data!.docs[index]);
                   } else {
-                    longPressed(snap.data.docs[index]);
+                    longPressed!(snap.data!.docs[index]);
                   }
                 }
                 }
@@ -90,7 +92,7 @@ class Body extends StatelessWidget {
     );
   }
 
-  Widget empty(String uid) {
+  Widget empty(String? uid) {
     return Expanded(
       child: Column(
         children: [
@@ -108,7 +110,7 @@ class Body extends StatelessWidget {
     );
   }
 
-  Widget loading(String uid) {
+  Widget loading(String? uid) {
     return Expanded(
       child: Column(
         children: [

@@ -1,3 +1,5 @@
+
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -8,7 +10,7 @@ import 'package:social_media_app/providers/usersBlock.dart';
 import 'package:social_media_app/views/screens/search_screen/widgets/build_user_listile.dart';
 
 class SearchScreen extends StatefulWidget {
-  SearchScreen({Key key}) : super(key: key);
+  SearchScreen({Key? key}) : super(key: key);
 
   @override
   _SearchScreenState createState() => _SearchScreenState();
@@ -32,7 +34,7 @@ class _SearchScreenState extends State<SearchScreen> {
                   borderRadius: BorderRadius.circular(45))),
           child: Icon(
             Icons.keyboard_backspace_rounded,
-            color: Theme.of(context).textTheme.bodyText1.color
+            color: Theme.of(context).textTheme.bodyText1!.color
           ),
           onPressed: () {
             Navigator.maybePop(context);
@@ -40,7 +42,7 @@ class _SearchScreenState extends State<SearchScreen> {
         ),
         title: TextField(
           controller: _searchQuery,
-          cursorColor: Theme.of(context).textTheme.bodyText1.color,
+          cursorColor: Theme.of(context).textTheme.bodyText1!.color,
           cursorWidth: 1.5,
           onChanged: (s) {
             setState(() {});
@@ -51,12 +53,12 @@ class _SearchScreenState extends State<SearchScreen> {
         ),
       ),
       body: StreamBuilder<QuerySnapshot>(
-        stream: profileBlock.streamFriendRequest(userBlock.user.uid),
+        stream: profileBlock.streamFriendRequest(userBlock.user!.uid),
         builder: (BuildContext context,
             AsyncSnapshot<QuerySnapshot> friendRequests) {
           List<MyUser> requests = [];
           if (friendRequests.hasData) {
-            requests = friendRequests.data.docs
+            requests = friendRequests.data!.docs
                 .map((e) => MyUser.fromMap(e.data()))
                 .toList();
           }else{
@@ -64,30 +66,30 @@ class _SearchScreenState extends State<SearchScreen> {
           }
           return StreamBuilder<List<MyUser>>(
             stream: usersBlock.users,
-            initialData:usersBlock.users.valueWrapper.value,
+            initialData:usersBlock.users.valueWrapper!.value,
             builder: (c, snap) {
-              if (snap.hasData) if (snap.data.isNotEmpty) {
-                List<MyUser> users = snap.data;
+              if (snap.hasData) if (snap.data!.isNotEmpty) {
+                List<MyUser>? users = snap.data;
 
                 List<MyUser> filteredUsers = _searchQuery.text.isEmpty
-                    ? users
-                    : users
-                        .where((element) => element.displayName
+                    ? users!
+                    : users!
+                        .where((element) => element.displayName!
                             .toLowerCase()
                             .contains(_searchQuery.text.toLowerCase()))
                         .toList();
                 return ListView.separated(
                   separatorBuilder: (c, i) {
                     return Divider(
-                      color: Theme.of(context).textTheme.bodyText1.color.withOpacity(0.5)
+                      color: Theme.of(context).textTheme.bodyText1!.color!.withOpacity(0.5)
                     );
                   },
                   itemCount: filteredUsers.length,
                   itemBuilder: (c, i) {
                     MyUser user = filteredUsers[i];
-                    bool isMee = user.uid == userBlock.user.uid;
+                    bool isMee = user.uid == userBlock.user!.uid;
                     bool isRequest=requests.any((e) =>e.uid==user.uid);
-                    bool isFriend=profileBlock.friends.valueWrapper.value.any((e) =>e.uid==user.uid);
+                    bool isFriend=profileBlock.friends!.valueWrapper!.value.any((e) =>e.uid==user.uid);
                     bool result=isMee||isRequest||isFriend;
                     return BuildUserListile(
                       onPressed: result
@@ -96,7 +98,7 @@ class _SearchScreenState extends State<SearchScreen> {
                               await profileBlock.sendFriendshipRequest(
                                   friend: user,
                                   sender: usersBlock
-                                      .getUserFromUid(userBlock.user.uid));
+                                      .getUserFromUid(userBlock.user!.uid)!);
                             },
                       user: user,
                       textColor:result ? Colors.grey.shade100.withOpacity(0.4) : null,

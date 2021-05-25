@@ -1,5 +1,7 @@
+
+
 class Validations {
-  static String validateName(String value) {
+  static String? validateName(String value) {
     if (value.isEmpty) return 'İsim gerekli.';
     final RegExp nameExp = new RegExp(r'^[A-za-zğüşöçİĞÜŞÖÇ ]+$');
     if (!nameExp.hasMatch(value))
@@ -7,7 +9,7 @@ class Validations {
     return null;
   }
 
-  static String validateEmail(String value) {
+  static String? validateEmail(String value) {
     if (value.isEmpty) return 'Lütfen 1 E-mail adresi girin..';
     final RegExp nameExp = new RegExp(
         r"^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,2"
@@ -17,7 +19,7 @@ class Validations {
     return null;
   }
 
-  static String validatePassword(String value) {
+  static String? validatePassword(String value) {
     if (value.isEmpty || value.length < 6) return 'Please enter a valid password.';
     return null;
   }

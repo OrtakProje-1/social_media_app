@@ -1,3 +1,5 @@
+
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
@@ -6,7 +8,7 @@ class BuildBadgeWidget extends StatelessWidget {
   final Stream<QuerySnapshot> stream;
   final bool isMini;
   const BuildBadgeWidget(
-      {Key key, @required this.widget, @required this.stream,this.isMini=false})
+      {Key? key, required this.widget, required this.stream,this.isMini=false})
       : super(key: key);
 
   @override
@@ -15,7 +17,7 @@ class BuildBadgeWidget extends StatelessWidget {
         stream: stream,
         builder: (context, snapshot) {
           if (snapshot.hasData) {
-            if (snapshot.data.size != 0) {
+            if (snapshot.data!.size != 0) {
               return Stack(
                 children: [
                   widget,
@@ -32,9 +34,9 @@ class BuildBadgeWidget extends StatelessWidget {
                       padding: EdgeInsets.symmetric(horizontal: 4),
                       child: Center(
                           child: Text(
-                        snapshot.data.size > 99
+                        snapshot.data!.size > 99
                             ? "99+"
-                            : snapshot.data.size.toString(),
+                            : snapshot.data!.size.toString(),
                         style: TextStyle(
                           fontSize: isMini ? 10 : 12,
                             color: Colors.white, fontWeight: FontWeight.bold),

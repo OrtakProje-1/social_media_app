@@ -1,3 +1,5 @@
+
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -10,9 +12,9 @@ import 'package:social_media_app/providers/userBlock.dart';
 import 'components/body.dart';
 
 class MessagesScreen extends StatefulWidget {
-  final MyUser user;
+  final MyUser? user;
 
-  MessagesScreen({Key key, this.user}) : super(key: key);
+  MessagesScreen({Key? key, this.user}) : super(key: key);
 
   @override
   _MessagesScreenState createState() => _MessagesScreenState();
@@ -20,9 +22,9 @@ class MessagesScreen extends StatefulWidget {
 
 class _MessagesScreenState extends State<MessagesScreen> {
   List<QueryDocumentSnapshot> selectedMessage = [];
-  QueryDocumentSnapshot lastMessage;
-  ScrollController _controller;
-  BehaviorSubject<double> elevation;
+  QueryDocumentSnapshot? lastMessage;
+  ScrollController? _controller;
+  BehaviorSubject<double>? elevation;
 
   @override
   Widget build(BuildContext context) {
@@ -56,7 +58,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
             this.lastMessage = lastMessage;
             //   if(mounted) setState(() {});
           },
-          rUid: widget.user.uid,
+          rUid: widget.user!.uid,
           selectedMessage: selectedMessage,
           removeSelected: (QueryDocumentSnapshot snap) {
             print("remove = " + snap.toString());
@@ -73,7 +75,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
   }
 
   AppBar buildAppBar(bool isSelect, MessagesBlock messagesBlock,
-      UserBlock userBlock, MyUser user, double elevation) {
+      UserBlock userBlock, MyUser? user, double? elevation) {
     return AppBar(
       titleSpacing: 0,
       elevation: 8,
@@ -88,7 +90,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(8),
                   image: DecorationImage(
-                    image: CachedNetworkImageProvider(widget.user.photoURL),
+                    image: CachedNetworkImageProvider(widget.user!.photoURL!),
                   ),
                 ),
               ),
@@ -107,7 +109,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      widget.user.displayName,
+                      widget.user!.displayName!,
                       overflow: TextOverflow.clip,
                       style: TextStyle(fontSize: 16),
                     ),
@@ -124,9 +126,9 @@ class _MessagesScreenState extends State<MessagesScreen> {
             icon: Icon(Icons.delete_outline),
             onPressed: () async {
               if (lastMessage != null) {
-                if (selectedMessage.any((e) => e.id == lastMessage.id)) {
+                if (selectedMessage.any((e) => e.id == lastMessage!.id)) {
                   removeLastMessage(
-                      messagesBlock, userBlock.user.uid, widget.user.uid);
+                      messagesBlock, userBlock.user!.uid, widget.user!.uid);
                 }
               }
               selectedMessage.forEach((element) async {
@@ -145,14 +147,14 @@ class _MessagesScreenState extends State<MessagesScreen> {
   void getElevation() {
     double elev;
     try {
-      elev = _controller?.offset?.toInt() <=
-              _controller?.position.maxScrollExtent - 10
+      elev = _controller!.offset.toInt() <=
+              _controller!.position.maxScrollExtent - 10
           ? 8
           : 0;
     } catch (e) {
       elev = 0;
     }
-    elevation.add(elev);
+    elevation!.add(elev);
   }
 
   @override
@@ -160,16 +162,16 @@ class _MessagesScreenState extends State<MessagesScreen> {
     super.initState();
     elevation = BehaviorSubject.seeded(0);
     _controller = ScrollController();
-    _controller.addListener(() {
+    _controller!.addListener(() {
       getElevation();
     });
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+    WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
       getElevation();
     });
   }
 
   Future<void> removeLastMessage(
-      MessagesBlock messagesBlock, String myUid, String recUid) async {
+      MessagesBlock messagesBlock, String myUid, String? recUid) async {
     await messagesBlock.lastMessagesReference
         .doc(myUid)
         .collection("messages")

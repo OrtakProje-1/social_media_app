@@ -1,3 +1,5 @@
+
+
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -31,7 +33,7 @@ class MeetNetworkImage extends StatelessWidget {
   /// layout constraints, so that the image does not change size as it loads.
   /// Consider using [fit] to adapt the image's rendering to fit the given width
   /// and height if the exact image dimensions are not known in advance.
-  final double width;
+  final double? width;
 
   /// If non-null, require the image to have this height.
   ///
@@ -43,10 +45,10 @@ class MeetNetworkImage extends StatelessWidget {
   /// layout constraints, so that the image does not change size as it loads.
   /// Consider using [fit] to adapt the image's rendering to fit the given width
   /// and height if the exact image dimensions are not known in advance.
-  final double height;
+  final double? height;
 
   /// If non-null, this color is blended with each image pixel using [colorBlendMode].
-  final Color color;
+  final Color? color;
 
   /// Used to set the [FilterQuality] of the image.
   ///
@@ -63,13 +65,13 @@ class MeetNetworkImage extends StatelessWidget {
   /// See also:
   ///
   ///  * [BlendMode], which includes an illustration of the effect of each blend mode.
-  final BlendMode colorBlendMode;
+  final BlendMode? colorBlendMode;
 
   /// How to inscribe the image into the space allocated during layout.
   ///
   /// The default varies based on the other fields. See the discussion at
   /// [paintImage].
-  final BoxFit fit;
+  final BoxFit? fit;
 
   /// How to align the image within its bounds.
   ///
@@ -108,7 +110,7 @@ class MeetNetworkImage extends StatelessWidget {
   /// region of the image above and below the center slice will be stretched
   /// only horizontally and the region of the image to the left and right of
   /// the center slice will be stretched only vertically.
-  final Rect centerSlice;
+  final Rect? centerSlice;
 
   /// Whether to paint the image in the direction of the [TextDirection].
   ///
@@ -135,7 +137,7 @@ class MeetNetworkImage extends StatelessWidget {
   ///
   /// Used to provide a description of the image to TalkBack on Android, and
   /// VoiceOver on iOS.
-  final String semanticLabel;
+  final String? semanticLabel;
 
   /// Whether to exclude this image from semantics.
   ///
@@ -144,9 +146,9 @@ class MeetNetworkImage extends StatelessWidget {
   final bool excludeFromSemantics;
 
   MeetNetworkImage({
-    @required this.imageUrl,
-    @required this.loadingBuilder,
-    @required this.errorBuilder,
+    required this.imageUrl,
+    required this.loadingBuilder,
+    required this.errorBuilder,
     this.scale = 1.0,
     this.height,
     this.width,

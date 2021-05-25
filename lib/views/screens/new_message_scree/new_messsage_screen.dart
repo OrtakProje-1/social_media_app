@@ -1,3 +1,5 @@
+
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -8,7 +10,7 @@ import 'package:social_media_app/util/router.dart';
 import 'package:social_media_app/views/screens/chat/messages/message_screen.dart';
 
 class NewMessageScreen extends StatefulWidget {
-  NewMessageScreen({Key key}) : super(key: key);
+  NewMessageScreen({Key? key}) : super(key: key);
 
   @override
   _NewMessageScreenState createState() => _NewMessageScreenState();
@@ -46,12 +48,12 @@ class _NewMessageScreenState extends State<NewMessageScreen> {
       ),
       body: StreamBuilder<List<MyUser>>(
         stream: profileBlock.friends,
-        initialData: profileBlock.friends.valueWrapper.value,
+        initialData: profileBlock.friends!.valueWrapper!.value,
         builder: (c, snap) {
           List<MyUser> filteredUser = _controller.text.isEmpty
-              ? snap.data
-              : snap.data
-                  .where((e) => e.displayName
+              ? snap.data!
+              : snap.data!
+                  .where((e) => e.displayName!
                       .toLowerCase()
                       .contains(_controller.text.toLowerCase()))
                   .toList();
@@ -93,11 +95,11 @@ class _NewMessageScreenState extends State<NewMessageScreen> {
                                 image: DecorationImage(
                                   fit: BoxFit.cover,
                                   image:
-                                      CachedNetworkImageProvider(user.photoURL),
+                                      CachedNetworkImageProvider(user.photoURL!),
                                 ),
                               ),
                             ),
-                            if (user.isOnline)
+                            if (user.isOnline!)
                               Positioned(
                                 right: -3,
                                 bottom: 1,
@@ -124,7 +126,7 @@ class _NewMessageScreenState extends State<NewMessageScreen> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  user.displayName,
+                                  user.displayName!,
                                   style: TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.w500),
