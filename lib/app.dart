@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:social_media_app/models/my_user.dart';
+import 'package:social_media_app/providers/crypto_block.dart';
 import 'package:social_media_app/providers/messagesBlock.dart';
 import 'package:social_media_app/providers/postsBlock.dart';
 import 'package:social_media_app/providers/profileBlock.dart';
@@ -57,7 +58,10 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         title: Constants.appName,
-        darkTheme: ThemeData.dark(),
+        color: Colors.black,
+        darkTheme: ThemeData.dark().copyWith(scaffoldBackgroundColor: Color(0xFF1F1F1F),appBarTheme: AppBarTheme(
+          backgroundColor: Color(0xFF1F1F1F),
+        )),
         themeMode: ThemeMode.dark,
         localizationsDelegates: [
           GlobalMaterialLocalizations.delegate,
@@ -73,7 +77,7 @@ class MyApp extends StatelessWidget {
           );
         },
         // darkTheme: themeData(ThemeConfig.darkTheme),
-        home: StreamBuilder<ConnectivityResult>(
+         home:StreamBuilder<ConnectivityResult>(
           stream: Connectivity().onConnectivityChanged,
           builder: (BuildContext context,
               AsyncSnapshot<ConnectivityResult> snapshot) {
@@ -81,7 +85,13 @@ class MyApp extends StatelessWidget {
               if (snapshot.data == ConnectivityResult.none) {
                 return NoInternetScreen();
               } else {
-                return SplashScreen();
+                if(FirebaseAuth.instance.currentUser==null){
+                  return LoginPage();
+                }else{
+                  return SplashScreen(
+                    user: FirebaseAuth.instance.currentUser!,
+                  );
+                }
               }
             } else {
               return SizedBox();
@@ -90,20 +100,6 @@ class MyApp extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  Widget getHomeScreen(
-      UserBlock block, UsersBlock usersBlock, ProfileBlock profileBlock) {
-    User? user = FirebaseAuth.instance.currentUser;
-    if (user == null) {
-      return LoginPage();
-    } else {
-      block.user = user;
-      MyUser myUser = MyUser.fromUser(user, token: block.token);
-      usersBlock.addUser(myUser);
-      profileBlock.getAllFriendsUid(user.uid);
-      return MainScreen();
-    }
   }
 
   ThemeData themeData(ThemeData theme) {
@@ -133,15 +129,14 @@ class _AppLifecycleWidgetState extends State<AppLifecycleWidget>
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    print("state= " + state.toString());
     ProfileBlock profileBlock = context.read<ProfileBlock>();
     UserBlock userBlock = context.read<UserBlock>();
     switch (state) {
       case AppLifecycleState.resumed:
-        profileBlock.updateUserisOnline(userBlock.user!.uid, true);
+        profileBlock.updateUserisOnline(userBlock.user?.uid, true);
         break;
       case AppLifecycleState.paused:
-        profileBlock.updateUserisOnline(userBlock.user!.uid, false);
+        profileBlock.updateUserisOnline(userBlock.user?.uid, false);
         break;
       default:
         break;

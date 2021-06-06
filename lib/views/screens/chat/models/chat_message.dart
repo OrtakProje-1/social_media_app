@@ -3,15 +3,17 @@
 import 'dart:convert';
 
 import 'package:social_media_app/models/media_reference.dart';
-
-enum ChatMessageType { text, audio, image, video,file }
-enum MessageStatus { not_sent, not_view, viewed }
+import 'package:social_media_app/util/enum.dart';
+import 'package:social_media_app/views/screens/notification_screen/models/notification_receiver.dart';
+import 'package:social_media_app/views/screens/notification_screen/models/notification_sender.dart';
 
 class ChatMessage {
-  final String? text;
+  final String? recCryptedText;
+  final String? senderCryptedText;
   final ChatMessageType? messageType;
   final MessageStatus? messageStatus;
-  final String? senderUid;
+  final NSender? sender;
+  final NReceiver? receiver;
   final int? messageTime;
   final bool? isRemoved;
   final List<MediaReference?>? images;
@@ -20,11 +22,13 @@ class ChatMessage {
   final MediaReference? file;
 
   ChatMessage({
-    this.text,
+    this.recCryptedText,
+    this.senderCryptedText,
     this.messageTime,
     this.messageType,
     this.messageStatus,
-    this.senderUid,
+    this.sender,
+    this.receiver,
     this.isRemoved,
     this.audio,
     this.images,
@@ -34,10 +38,12 @@ class ChatMessage {
 
 
   ChatMessage copyWith({
-    String? text,
+    String? recCryptedText,
+    String? senderCryptedText,
     ChatMessageType? messageType,
     MessageStatus? messageStatus,
-    bool? senderUid,
+    NSender? sender,
+    NReceiver? receiver,
     int? messageTime,
     bool? isRemoved,
     List<MediaReference>? images,
@@ -46,27 +52,31 @@ class ChatMessage {
     MediaReference? file,
   }) {
     return ChatMessage(
-      text: text ?? this.text,
+      recCryptedText: recCryptedText ?? this.recCryptedText,
       messageType: messageType ?? this.messageType,
       messageStatus: messageStatus ?? this.messageStatus,
-      senderUid: senderUid as String? ?? this.senderUid,
+      sender: sender ?? this.sender,
+      receiver: receiver ?? this.receiver,
       messageTime: messageTime ?? this.messageTime,
       isRemoved: isRemoved ?? this.isRemoved,
       audio: audio ?? this.audio,
       images: images ?? this.images,
       video: video ?? this.video,
       file: file ?? this.file,
+      senderCryptedText: senderCryptedText ?? this.senderCryptedText,
     );
   }
 
   Map<String, dynamic> toMap() {
     return {
-      'text': text,
+      'recCryptedText': recCryptedText,
+      'senderCryptedText': senderCryptedText,
       'messageType': messageType!.index,
       'messageStatus': messageStatus!.index,
-      'senderUid': senderUid,
+      'sender': sender!.toMap(),
       'messageTime': messageTime,
       'isRemoved': isRemoved,
+      if(receiver!=null) 'receiver':receiver!.toMap(),
       if(audio!=null) 'audio': audio!.toMap(),
       if(video!=null) 'video': video!.toMap(),
       if(images!=null) 'images': images!.map((e) =>e!.toMap()).toList(),
@@ -76,16 +86,18 @@ class ChatMessage {
 
   factory ChatMessage.fromMap(Map<String, dynamic> map) {
     return ChatMessage(
-      text: map['text'],
+      recCryptedText: map['recCryptedText'],
+      senderCryptedText: map['senderCryptedText'],
       messageType: ChatMessageType.values[map['messageType']],
       messageStatus: MessageStatus.values[map['messageStatus']],
-      senderUid: map['senderUid'],
+      sender: map["sender"]!=null ? NSender.fromMap(map["sender"]) : null,
+      receiver: map["receiver"]!=null ? NReceiver.fromMap(map["receiver"]) : null,
       messageTime: map["messageTime"],
       isRemoved: map['isRemoved'],
       video: map['video']!=null ? MediaReference.fromMap(map['video']):null,
       audio: map['audio']!=null ? MediaReference.fromMap(map['audio']):null,
       images: map['images'] !=null ? (map['images']as List<dynamic>).map((e) =>MediaReference.fromMap(e)).toList() : null,
-      file: map['file']!=null ? MediaReference.fromMap(map['audio']):null,
+      file: map['file']!=null ? MediaReference.fromMap(map['file']):null,
     );
   }
 
@@ -95,7 +107,7 @@ class ChatMessage {
 
   @override
   String toString() {
-    return 'ChatMessage(text: $text, messageType: $messageType, messageStatus: $messageStatus, senderUid: $senderUid)';
+    return 'ChatMessage(recCryptedText: $recCryptedText, messageType: $messageType, messageStatus: $messageStatus, senderUid: $sender)';
   }
 
   @override
@@ -103,17 +115,17 @@ class ChatMessage {
     if (identical(this, other)) return true;
   
     return other is ChatMessage &&
-      other.text == text &&
+      other.recCryptedText == recCryptedText &&
       other.messageType == messageType &&
       other.messageStatus == messageStatus &&
-      other.senderUid == senderUid;
+      other.sender == sender;
   }
 
   @override
   int get hashCode {
-    return text.hashCode ^
+    return recCryptedText.hashCode ^
       messageType.hashCode ^
       messageStatus.hashCode ^
-      senderUid.hashCode;
+      sender.hashCode;
   }
 }

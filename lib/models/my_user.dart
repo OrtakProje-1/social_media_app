@@ -1,3 +1,4 @@
+import 'package:social_media_app/models/biografi.dart';
 import 'package:social_media_app/util/extensions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -9,14 +10,17 @@ class MyUser {
       refreshToken,
       tenantId,
       uid,
-      token;
+      token,publicKey;
   bool? emailVerified, isAnonymous, isOnline;
   UserMetadata? metadata;
+  Biografi? biografi;
   List<UserInfo>? providerData;
 
   MyUser(
       {
-      required this.token,
+      this.biografi,
+      this.token,
+      this.publicKey,
       this.displayName,
       this.email,
       this.emailVerified,
@@ -38,6 +42,7 @@ class MyUser {
     this.metadata = UserMetadata(map["metadata"]["creationTime"], map["metadata"]["lastSignInTime"]);
     this.phoneNumber = map["phoneNumber"];
     this.photoURL = map["photoURL"];
+    this.publicKey = map["publicKey"];
     this.providerData = (map["providerData"] as List<dynamic>).map((e) {
       Map<String, dynamic> map = e;
       Map<String, String> newMap = Map<String, String>();
@@ -46,6 +51,7 @@ class MyUser {
       });
       return UserInfo(newMap);
     }).toList();
+    this.biografi = (map["biografi"]!=null) ? Biografi.fromMap(map["biografi"]) : null;
     this.token = map["token"];
     this.refreshToken = map["refreshToken"];
     this.tenantId = map["tenantId"];
@@ -53,7 +59,7 @@ class MyUser {
     this.isOnline = map["isOnline"] ?? false;
   }
 
-  MyUser.fromUser(User user, {bool isOnline = true,required String? token}) {
+  MyUser.fromUser(User user, {bool isOnline = true,required String? token,String? publicKey}) {
     this.displayName = user.displayName;
     this.email = user.email;
     this.phoneNumber = user.phoneNumber;
@@ -67,6 +73,7 @@ class MyUser {
     this.providerData = user.providerData;
     this.isOnline = isOnline;
     this.token = token;
+    this.publicKey = publicKey;
   }
 
   Map<String, dynamic> toMap() {
@@ -84,6 +91,8 @@ class MyUser {
     map["uid"] = this.uid;
     map["token"] = this.token;
     map["isOnline"] = this.isOnline ?? false;
+    map["publicKey"] = this.publicKey;
+    if(this.biografi!=null) map["biografi"] =  this.biografi!.toMap();
     return map;
   }
 

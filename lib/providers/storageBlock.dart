@@ -66,6 +66,17 @@ class StorageBlock {
     return MediaReference(ref:ref, downloadURL: downloadURL);
   }
 
+  Future<MediaReference> uploadFile({required File file, required String userUid, int? index,String? timeStamp,String? ext})async{
+    String ref="$timeStamp-$index.$ext";
+    UploadTask task = filesRef
+        .child(userUid)
+        .child("$timeStamp-$index.$ext")
+        .putFile(file,SettableMetadata(contentType: 'text/$ext'));
+    await task.whenComplete(() => null);
+    String downloadURL= await task.snapshot.ref.getDownloadURL();
+    return MediaReference(ref:ref, downloadURL: downloadURL);
+  }
+
   static String fileExt(String name){
     return name.split(".").last;
   }

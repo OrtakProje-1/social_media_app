@@ -24,7 +24,7 @@ class ImageMessage extends StatelessWidget {
         child: ClipRRect(
           borderRadius: BorderRadius.circular(8),
           child: Container(
-            color: getMessageColor(message!.senderUid, userBlock.user!.uid),
+            color: getMessageColor(message!.sender!.uid, userBlock.user!.uid),
             child: Column(
               children: [
                 Expanded(
@@ -33,7 +33,7 @@ class ImageMessage extends StatelessWidget {
                         top: 2,
                         right: 2,
                         left: 2,
-                        bottom: message!.text!.isNotEmpty ? 0 : 2),
+                        bottom: message!.recCryptedText!.isNotEmpty ? 0 : 2),
                     child: InkWell(
                       child: getImageWidget(message!, userBlock.user!.uid),
                       onTap: () {
@@ -43,15 +43,15 @@ class ImageMessage extends StatelessWidget {
                     ),
                   ),
                 ),
-                if (message!.text != null)
-                  if (message!.text!.isNotEmpty)
+                if (message!.recCryptedText != null)
+                  if (message!.recCryptedText!.isNotEmpty)
                     Container(
                         padding: EdgeInsets.all(5),
                         width: double.maxFinite,
                         child: Text(
-                          message!.text!,
+                          message!.recCryptedText!,
                           textAlign: TextAlign.left,
-                          style: TextStyle(fontWeight: FontWeight.bold,color:getMessageTextColor(message!.senderUid, userBlock.user!.uid )),
+                          style: TextStyle(fontWeight: FontWeight.bold,color:getMessageTextColor(message!.sender!.uid, userBlock.user!.uid )),
                         )),
               ],
             ),
@@ -62,7 +62,7 @@ class ImageMessage extends StatelessWidget {
   }
 
   Widget getImageWidget(ChatMessage message, String myUid) {
-    bool noText = message.text == null ? true : message.text!.isEmpty;
+    bool noText = message.recCryptedText == null ? true : message.recCryptedText!.isEmpty;
     List<String?> urls=message.images!.map((e) => e!.downloadURL).toList();
     switch (urls.length) {
       case 1:
@@ -71,7 +71,7 @@ class ImageMessage extends StatelessWidget {
         return Row(
           children: [
             buildImageWidget(urls[0]!, tL: 8, bL: noText ? 8 : 0),
-            verticalDivider(message.senderUid,myUid),
+            verticalDivider(message.sender!.uid,myUid),
             buildImageWidget(urls[1]!, tR: 8, bR: noText ? 8 : 0),
           ],
         );
@@ -82,12 +82,12 @@ class ImageMessage extends StatelessWidget {
               child: Column(
                 children: [
                   buildImageWidget(urls[0]!, tL:8),
-                  horizontalDivider(message.senderUid,myUid),
+                  horizontalDivider(message.sender!.uid,myUid),
                   buildImageWidget(urls[1]!, bL: noText ? 8 : 0),
                 ],
               ),
             ),
-            verticalDivider(message.senderUid,myUid),
+            verticalDivider(message.sender!.uid,myUid),
             buildImageWidget(urls[2]!, tR: 8, bR: noText ? 8 : 0),
           ],
         );
@@ -101,17 +101,17 @@ class ImageMessage extends StatelessWidget {
                   child: Row(
                     children: [
                      buildImageWidget(urls[0]!, tL: 8),
-                     verticalDivider(message.senderUid,myUid),
+                     verticalDivider(message.sender!.uid,myUid),
                      buildImageWidget(urls[1]!, tR: 8),
                     ],
                   ),
                 ),
-                horizontalDivider(message.senderUid,myUid),
+                horizontalDivider(message.sender!.uid,myUid),
                 Expanded(
                   child: Row(
                     children: [
                       buildImageWidget(urls[2]!, bL: noText ? 8 : 0),
-                      verticalDivider(message.senderUid,myUid),
+                      verticalDivider(message.sender!.uid,myUid),
                       buildImageWidget(urls[3]!, bR: noText ? 8 : 0),
                     ],
                   ),
@@ -125,10 +125,10 @@ class ImageMessage extends StatelessWidget {
               padding: EdgeInsets.all(3),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(90),
-                color: getMessageColor(message.senderUid,myUid)
+                color: getMessageColor(message.sender!.uid,myUid)
               ),
               child: Center(
-                child: Text("+${overCount>9 ? 9 : overCount}",style: TextStyle(color: getMessageTextColor(message.senderUid,myUid),fontWeight: FontWeight.bold),),
+                child: Text("+${overCount>9 ? 9 : overCount}",style: TextStyle(color: getMessageTextColor(message.sender!.uid,myUid),fontWeight: FontWeight.bold),),
               ),
             ),
           ),

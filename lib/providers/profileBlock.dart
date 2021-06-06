@@ -1,8 +1,11 @@
 
 
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:social_media_app/database/firebase_yardimci.dart';
+import 'package:social_media_app/models/blocked_details.dart';
 import 'package:social_media_app/models/my_user.dart';
 import 'package:social_media_app/providers/notificationBlock.dart';
 import 'package:social_media_app/views/screens/notification_screen/enum/notification_type.dart';
@@ -21,14 +24,19 @@ class ProfileBlock{
     friendsUid=BehaviorSubject.seeded([]);
     friends=BehaviorSubject.seeded([]);
     friendRequests=BehaviorSubject.seeded([]);
+    blockedUsers= BehaviorSubject.seeded([]);
   }
 
   late NotificationBlock _notificationBlock;
   FirebaseFirestore? _firestore;
 
+  StreamSubscription<QuerySnapshot>? friendsSubscription;
+  StreamSubscription<QuerySnapshot>? blockedUserSubscription;
+
   late BehaviorSubject<List<MyUser>> friendRequests;
-  BehaviorSubject<List<MyUser>>? friends;
-  BehaviorSubject<List<String?>>? friendsUid;
+  late BehaviorSubject<List<MyUser>> friends;
+  late BehaviorSubject<List<String>> friendsUid;
+  late BehaviorSubject<List<BlockedDetails>> blockedUsers;
   
   Stream<QuerySnapshot> get query=> _firestore!.collection("Users").snapshots();
   
@@ -43,10 +51,13 @@ class ProfileBlock{
 
   Stream<QuerySnapshot> streamFriendRequest(String uid)=>queryFromUid(uid).collection("friend_request").snapshots();
   CollectionReference friendRequest(String? uid)=>queryFromUid(uid).collection("friend_request");
+  
+  Stream<QuerySnapshot> streamBlockedUsers(String uid)=>queryFromUid(uid).collection("blockedUsers").snapshots();
+  CollectionReference blockedUsersCollection(String? uid)=>queryFromUid(uid).collection("blockedUsers");
 
   
-  Future<void> updateUserisOnline(String uid,bool isOnline)async{
-    await _firestore!.collection("Users").doc(uid).update({"isOnline":isOnline});
+  Future<void> updateUserisOnline(String? uid,bool isOnline)async{
+   if(uid!=null) await _firestore!.collection("Users").doc(uid).update({"isOnline":isOnline});
   }
 
   Future<void> sendFriendshipRequest({required MyUser friend,required MyUser sender})async{
@@ -101,7 +112,11 @@ class ProfileBlock{
     await friendsCollection(me.uid).doc(friend.uid).set(friend.toMap());
     await friendsCollection(friend.uid).doc(me.uid).set(me.toMap());
     await deleteRequest(me,friend);
-    await getAllFriendsUid(me.uid);
+  }
+
+  Future<void> deleteFriend(String myUid,String removeFriendUid)async{
+    await friendsCollection(myUid).doc(removeFriendUid).delete();
+    await friendsCollection(removeFriendUid).doc(myUid).delete();
   }
 
   Future<void> deleteRequest(MyUser me,MyUser friend)async{
@@ -112,11 +127,10 @@ class ProfileBlock{
     }
   }
 
-  Future<void> getAllFriendsUid(String? uid)async{
-    QuerySnapshot query= await friendsCollection(uid).get();
-    List<String?> uids= query.docs.map((e) =>e.id).toList();
-    uids.add(uid);
-    friendsUid!.add(uids);
+  Future<void> getAllFriendsUid(String? uid,List<MyUser> myFriends)async{
+    List<String> uids= myFriends.map((e) =>e.uid!).toList();
+    uids.add(uid!);
+    friendsUid.add(uids);
   }
 
   bool isRequest(String? uid){
@@ -124,31 +138,64 @@ class ProfileBlock{
   }
 
   bool isFriend(String? uid){
-    return friends!.value!.any((e) =>e.uid==uid);
+    return friends.value!.any((e) =>e.uid==uid);
   }
 
   Future<void> fetchDatas(String uid)async{
-    await getAllFriendsUid(uid);
     QuerySnapshot friendRequestsCollections= await friendRequest(uid).get();
-    QuerySnapshot friendCollections= await friendsCollection(uid).get();
+    QuerySnapshot friendsCol= await friendsCollection(uid).get();
+    List<MyUser> friendss= friendsCol.docs.map((e) =>MyUser.fromMap(e.data())).toList();
+    friends.add(friendss);
+    await getAllFriendsUid(uid,friendss);
+    friendsSubscription= streamFriends(uid).listen((friendCollections)async{
+      List<MyUser> myFriends= friendCollections.docs.map((e) =>MyUser.fromMap(e.data())).toList();
+      friends.add(myFriends);
+      await getAllFriendsUid(uid,myFriends);
+    });
 
     List<MyUser> myFriendRequests= friendRequestsCollections.docs.map((e) =>MyUser.fromMap(e.data())).toList();
-    List<MyUser> myFriends= friendCollections.docs.map((e) =>MyUser.fromMap(e.data())).toList();
-
-    friends!.add(myFriends);
     friendRequests.add(myFriendRequests);
+    await getBlockedUsers(uid);
+  }
+
+  Future<void> getBlockedUsers(String uid)async{
+    blockedUserSubscription=streamBlockedUsers(uid).listen((e){
+      List<BlockedDetails> usersUid=e.docs.map((e) =>BlockedDetails.fromMap(e.data())).toList();
+      blockedUsers.add(usersUid);
+    });
+  }
+
+  Future<void> changeBlockedUser(MyUser my,String blockedUid)async{
+    if(!blockedUsers.value!.contains(blockedUid)){
+     await addNewBlockedUser(my, blockedUid);
+    }else{
+     await deleteBlockedUser(my, blockedUid);
+    }
+  }
+
+  Future<void> addNewBlockedUser(MyUser my,String blockedUid)async{
+    await blockedUsersCollection(my.uid).doc(blockedUid).set(BlockedDetails(blockedTime: DateTime.now(),blockedUid: blockedUid,lastMessage:"").toMap());
+  }
+
+  Future<void> deleteBlockedUser(MyUser my,String deleteBlockedUid)async{
+    await blockedUsersCollection(my.uid).doc(deleteBlockedUid).delete();
   }
 
   void clearDatas(){
     friendRequests.add([]);
-    friends!.add([]);
-    friendsUid!.add([]);
+    friends.add([]);
+    friendsUid.add([]);
+    blockedUsers.add([]);
+    friendsSubscription?.cancel();
+    blockedUserSubscription?.cancel();
   }
 
   void dispose(){
-    friends!.close();
-    friendsUid!.close();
+    blockedUsers.close();
+    friends.close();
+    friendsUid.close();
     friendRequests.close();
+    friendsSubscription?.cancel();
   }
 
 }

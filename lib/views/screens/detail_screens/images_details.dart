@@ -10,12 +10,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:social_media_app/mixins/loading_mixin.dart';
 import 'package:social_media_app/mixins/picker_mixin.dart';
 import 'package:social_media_app/models/media_reference.dart';
 import 'package:social_media_app/models/my_user.dart';
 import 'package:social_media_app/providers/storageBlock.dart';
 import 'package:social_media_app/providers/userBlock.dart';
 import 'package:extended_image/extended_image.dart';
+import 'package:social_media_app/util/enum.dart';
 import 'package:social_media_app/util/router.dart';
 import 'package:social_media_app/views/screens/chat/models/chat_message.dart';
 import 'package:social_media_app/views/screens/chat/models/sender_media_message.dart';
@@ -33,7 +35,7 @@ class ImagesDetail extends StatefulWidget {
   _ImagesDetailState createState() => _ImagesDetailState(files: files);
 }
 
-class _ImagesDetailState extends State<ImagesDetail> with PickerMixin {
+class _ImagesDetailState extends State<ImagesDetail> with PickerMixin,LoadingMixin {
   List<PlatformFile>? files;
   int selectIndex = 0;
   PageController? _pageController;
@@ -150,7 +152,7 @@ class _ImagesDetailState extends State<ImagesDetail> with PickerMixin {
             left: 0,
             right: 0,
             child: Container(
-              height: 100,
+              height: 110,
               color: Colors.black38,
               child: Row(
                 children: [
@@ -158,11 +160,52 @@ class _ImagesDetailState extends State<ImagesDetail> with PickerMixin {
                     child: Column(
                       children: [
                         Container(
-                          height: 40,
+                          height: 50,
                           padding: EdgeInsets.symmetric(horizontal: 10),
                           width: double.maxFinite,
-                          child: TextFieldWidget(
-                            controller: _message,
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: TextFieldWidget(
+                                  controller: _message,
+                                ),
+                              ),
+                              SendButton(
+                                backgroundColor: Colors.white,
+                                size: 40,
+                                onPressed: () async {
+                                 
+                                  String time =
+                                      DateTime.now().millisecondsSinceEpoch.toString();
+                                  showLoadingStreamDialog(context,loadingProgress!);
+                                 
+                                  files!.asMap().forEach((index, value) async {
+                                    MediaReference ref = await storageBlock.uploadImage(
+                                        index: index,
+                                        ext: StorageBlock.fileExt(value.path!),
+                                        file: File(value.path!),
+                                        timeStamp: time,
+                                        userUid: userBlock.user!.uid);
+                                    print("downloadurl= " + ref.downloadURL!);
+                                    downloadsRef.add(ref);
+                                    double val=(downloadsRef.length/files!.length);
+                                    loadingProgress!.add(val>=1?1:val);
+                                    if(val>=1){
+                                      Navigator.pop(context);
+                                    }
+                                    if (downloadsRef.length == files!.length) {
+                                      SenderMediaMessage senderMessage =
+                                          SenderMediaMessage(
+                                              type: ChatMessageType.image,
+                                              refs: downloadsRef,
+                                              message: _message.text);
+                                      Navigator.pop(context, senderMessage);
+                                    }
+                                  });
+                                  
+                                },
+                              ),
+                            ],
                           ),
                         ),
                         Container(
@@ -209,7 +252,7 @@ class _ImagesDetailState extends State<ImagesDetail> with PickerMixin {
                                       padding: EdgeInsets.only(
                                           top: 5,
                                           bottom: 5,
-                                          left: (snapshot.data! > 0) ? 5 : 0),
+                                          left: (snapshot.data! > 0) ? 5 : 5),
                                       child: AnimatedOpacity(
                                         opacity: snapshot.data! > 0 ? 1 : 0,
                                         duration: Duration(milliseconds: 300),
@@ -274,43 +317,7 @@ class _ImagesDetailState extends State<ImagesDetail> with PickerMixin {
                       ],
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.only(right: 5),
-                    child: SendButton(
-                      backgroundColor: Colors.white,
-                      onPressed: () async {
-                       
-                        String time =
-                            DateTime.now().millisecondsSinceEpoch.toString();
-                        showLoadingDialog();
-                       
-                        files!.asMap().forEach((index, value) async {
-                          MediaReference ref = await storageBlock.uploadImage(
-                              index: index,
-                              ext: StorageBlock.fileExt(value.path!),
-                              file: File(value.path!),
-                              timeStamp: time,
-                              userUid: userBlock.user!.uid);
-                          print("downloadurl= " + ref.downloadURL!);
-                          downloadsRef.add(ref);
-                          double val=(downloadsRef.length/files!.length);
-                          loadingProgress!.add(val>=1?1:val);
-                          if(val>=1){
-                            Navigator.pop(context);
-                          }
-                          if (downloadsRef.length == files!.length) {
-                            SenderMediaMessage senderMessage =
-                                SenderMediaMessage(
-                                    type: ChatMessageType.image,
-                                    urls: downloadsRef,
-                                    message: _message.text);
-                            Navigator.pop(context, senderMessage);
-                          }
-                        });
-                        
-                      },
-                    ),
-                  ),
+                 
                 ],
               ),
             ),
@@ -320,31 +327,7 @@ class _ImagesDetailState extends State<ImagesDetail> with PickerMixin {
     );
   }
 
-  void showLoadingDialog() {
-    showDialog(
-      context: context,
-      builder: (c){
-        return AlertDialog(
-          backgroundColor: Colors.grey.shade800,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-          content: StreamBuilder<double>(
-            stream: loadingProgress,
-            initialData: 0,
-            builder: (context, snapshot) {
-              return Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Colors.white),),
-                  SizedBox(width: 10,),
-                  Text("Resimler Yükleniyor ( %${(snapshot.data!*100).toInt()} )",style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold)),
-                ],
-              );
-            }
-          ),
-        );
-      }
-    );
-  }
+  
 
   void getShadow() {
     double shad;

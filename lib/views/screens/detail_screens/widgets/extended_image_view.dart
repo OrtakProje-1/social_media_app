@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:social_media_app/providers/userBlock.dart';
 import 'package:social_media_app/providers/usersBlock.dart';
+import 'package:social_media_app/util/elapsed_time.dart';
 import 'package:social_media_app/views/screens/chat/models/chat_message.dart';
 
 class ExtendedImageView extends StatelessWidget {
@@ -17,8 +18,8 @@ class ExtendedImageView extends StatelessWidget {
     UserBlock userBlock = Provider.of<UserBlock>(context);
     UsersBlock usersBlock = Provider.of<UsersBlock>(context);
     return Scaffold(
-      backgroundColor: Colors.white,
       appBar: AppBar(
+        titleSpacing: 0,
         title: getAppBarTitle(message!, userBlock, usersBlock),
       ),
       body: ExtendedImageGesturePageView(
@@ -40,12 +41,12 @@ class ExtendedImageView extends StatelessWidget {
       children: [
         Text("Siz"),
         Text(
-          DateTime.fromMillisecondsSinceEpoch(m.messageTime!).toString(),
+          TimeElapsed.fromDateTime(DateTime.fromMillisecondsSinceEpoch(m.messageTime!)),
           style: TextStyle(fontWeight: FontWeight.normal),
         ),
       ],
     );
-    if (m.senderUid == block.user!.uid) {
+    if (m.sender!.uid == block.user!.uid) {
       return widget;
     } else {
       widget = Row(
@@ -60,7 +61,7 @@ class ExtendedImageView extends StatelessWidget {
                 borderRadius: BorderRadius.circular(8),
                 image: DecorationImage(
                   image: CachedNetworkImageProvider(
-                      usersBlock.getUserFromUid(m.senderUid)!.photoURL!),
+                      usersBlock.getUserFromUid(m.sender!.uid)!.photoURL!),
                 ),
               ),
             ),

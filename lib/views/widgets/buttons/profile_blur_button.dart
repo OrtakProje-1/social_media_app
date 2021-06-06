@@ -22,7 +22,7 @@ class ProfileBlurButton extends StatelessWidget {
             height: 40,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(12),
-              color: Colors.white.withOpacity(0.3),
+              color: Colors.white.withOpacity(0.1),
             ),
             child: Center(
               child: TransparantButton(

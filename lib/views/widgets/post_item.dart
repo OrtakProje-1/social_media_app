@@ -5,6 +5,7 @@ import 'dart:math';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttericon/font_awesome_icons.dart';
 import 'package:fluttericon/linecons_icons.dart';
 import 'package:fluttericon/typicons_icons.dart';
 import 'package:provider/provider.dart';
@@ -16,9 +17,9 @@ import 'package:social_media_app/util/elapsed_time.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:social_media_app/util/router.dart';
 import 'package:social_media_app/views/screens/post_screen.dart';
+import 'package:social_media_app/views/screens/profileScreen.dart';
 import 'package:social_media_app/views/widgets/streams_widget/comments_stream_from_post.dart';
 import 'package:social_media_app/views/widgets/userWidgets/BuildUserImageAndIsOnlineWidget.dart';
-import 'package:social_media_app/views/widgets/web_image.dart';
 
 class PostItem extends StatefulWidget {
   final Post? post;
@@ -26,10 +27,12 @@ class PostItem extends StatefulWidget {
   final String? userUid;
   final bool isComment;
   final bool thisIsShowScreen;
+  final String showProfileUid;
 
   PostItem(
       {Key? key,
       this.isComment = false,
+      this.showProfileUid="",
       this.post,
       this.img = "assets/images/cm8.jpeg",
       this.userUid,
@@ -69,67 +72,67 @@ class _PostItemState extends State<PostItem> {
       padding: EdgeInsets.symmetric(vertical: 5),
       child: Column(
         children: <Widget>[
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10),
-            child: ListTile(
-              dense: true,
-              leading: BuildUserImageAndIsOnlineWidget(
-                usersBlock: usersBlock,
-                uid: widget.post!.senderUid,
+          ListTile(
+            dense: true,
+            leading: BuildUserImageAndIsOnlineWidget(
+              usersBlock: usersBlock,
+              uid: widget.post!.senderUid,
+            ),
+            onTap: (){
+            if(widget.showProfileUid!=widget.post!.senderUid)  Navigate.pushPage(context,ProfileScreen(user:usersBlock.getUserFromUid(widget.post!.senderUid)));
+            },
+            contentPadding: const EdgeInsets.symmetric(horizontal: 10),
+            focusColor: Constants.iconColor,
+            horizontalTitleGap: kIsWeb ? 10 : 5,
+            hoverColor: Constants.iconColor,
+            title: Text(
+              "${widget.post!.userName}",
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
               ),
-              contentPadding: EdgeInsets.all(0),
-              focusColor: Constants.iconColor,
-              horizontalTitleGap: kIsWeb ? 10 : 5,
-              hoverColor: Constants.iconColor,
-              title: Text(
-                "${widget.post!.userName}",
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                ),
+            ),
+            subtitle: Text(
+              "${TimeElapsed.fromDateTime(DateTime.fromMillisecondsSinceEpoch(int.parse(widget.post!.postTime!)))}",
+              style: TextStyle(
+                fontWeight: FontWeight.w300,
+                fontSize: 11,
               ),
-              subtitle: Text(
-                "${TimeElapsed.fromDateTime(DateTime.fromMillisecondsSinceEpoch(int.parse(widget.post!.postTime!)))}",
-                style: TextStyle(
-                  fontWeight: FontWeight.w300,
-                  fontSize: 11,
-                ),
-              ),
-              trailing: PopupMenuButton(
-                icon: Icon(Icons.more_horiz_outlined),
-                elevation: 8,
-                padding: EdgeInsets.symmetric(horizontal: 0, vertical: 0),
-                tooltip: "Seçenekler",
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8)),
-                itemBuilder: (BuildContext context) {
-                  return [1]
-                      .map((e) => PopupMenuItem(
-                            height: 30,
-                            enabled: widget.post!.senderUid == widget.userUid,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                Icon(
-                                  Icons.delete_forever_outlined,
-                                ),
-                                SizedBox(width: 10),
-                                Text(
-                                  "Sil",
-                                ),
-                              ],
-                            ),
-                            value: e,
-                          ))
-                      .toList();
-                },
-                onSelected: (int i) {
-                  if (i == 1) {
-                    if (widget.post!.senderUid == widget.userUid) {
-                      postsBlock.deletePost(widget.post!);
-                    }
+            ),
+            trailing: PopupMenuButton(
+              icon: Icon(Icons.more_horiz_outlined),
+              elevation: 8,
+              padding: EdgeInsets.symmetric(horizontal: 0, vertical: 0),
+              tooltip: "Seçenekler",
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8)),
+              itemBuilder: (BuildContext context) {
+                return [1]
+                    .map((e) => PopupMenuItem(
+                          height: 30,
+                          enabled: widget.post!.senderUid == widget.userUid,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              Icon(
+                                Icons.delete_forever_outlined,
+                              ),
+                              SizedBox(width: 10),
+                              Text(
+                                "Sil",
+                              ),
+                            ],
+                          ),
+                          value: e,
+                        ))
+                    .toList();
+              },
+              onSelected: (int i) {
+                if (i == 1) {
+                  if (widget.post!.senderUid == widget.userUid) {
+                    postsBlock.deletePost(widget.post!);
                   }
-                },
-              ),
+                }
+              },
             ),
           ),
           Container(
@@ -155,9 +158,7 @@ class _PostItemState extends State<PostItem> {
                       if (widget.post!.images != null &&
                           widget.post!.images!.isNotEmpty) ...[
                         if (widget.post!.images!.length == 1) ...[
-                          kIsWeb
-                              ? getWebImage(widget.post!.images![0].downloadURL!)
-                              : Container(
+                         Container(
                                   height: 200,
                                   decoration: BoxDecoration(
                                     color: Colors.grey,
@@ -225,12 +226,13 @@ class _PostItemState extends State<PostItem> {
                         Container(
                           width: double.maxFinite,
                           padding:
-                              EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+                              EdgeInsets.symmetric(horizontal: 15, vertical:0),
                           child: Row(
                             children: [
                               buildPostAction(
-                                  icon: Typicons.heart,
-                                  color: likePost ? Colors.red.shade300 : Colors.white,
+                                  icon:FontAwesome.thumbs_up,
+                                  primary:likePost ? kPrimaryColor.withOpacity(0.7) : null,
+                                  color: Colors.white,
                                   value: widget.post!.likes?.length,
                                   onPressed: () async {
                                     if (likePost) {
@@ -254,7 +256,7 @@ class _PostItemState extends State<PostItem> {
                                   value: comments.hasData
                                       ? comments.data!.docs.length
                                       : 0,
-                                  icon: Linecons.comment,
+                                  icon:Icons.messenger_outline_rounded,
                                   color: Colors.white,
                                   onPressed: () {
                                     if (!widget.thisIsShowScreen)
@@ -266,7 +268,7 @@ class _PostItemState extends State<PostItem> {
                                   }),
                               // Spacer(),
                               buildPostAction(
-                                icon: Typicons.bookmark,
+                                icon: Icons.bookmark_border,
                                 value: widget.post!.savedPostCount!.length,
                                 color: Colors.white,
                                 onPressed: () {},
@@ -274,28 +276,7 @@ class _PostItemState extends State<PostItem> {
                             ],
                           ),
                         ),
-                      // if (comments.hasData&& isNotEmpty && showComments) ...[
-                      //   Padding(
-                      //     padding: const EdgeInsets.symmetric(horizontal: 8),
-                      //     child: Column(
-                      //       mainAxisAlignment: MainAxisAlignment.center,
-                      //       children: widget.post.comments.map((e) {
-                      //         return PostItem(
-                      //           userUid: widget.userUid,
-                      //           post: e,
-                      //         );
-                      //       }).toList(),
-                      //     ),
-                      //   ),
-                      // ],
-                      // if (showComments && widget.post.comments.isEmpty) ...[
-                      //   Padding(
-                      //     padding: EdgeInsets.symmetric(horizontal: 8, vertical: 5),
-                      //     child: Center(
-                      //       child: Text("İlk yorumu sen yapmak istermisin."),
-                      //     ),
-                      //   ),
-                      // ]
+                     
                     ],
                   );
                 }),
@@ -306,18 +287,19 @@ class _PostItemState extends State<PostItem> {
   }
 
   Expanded buildPostAction(
-      {IconData? icon, VoidCallback? onPressed, Color? color, int? value}) {
+      {IconData? icon, VoidCallback? onPressed, Color? color, int? value,Color? primary}) {
+       
     value ??= Random().nextInt(2999);
     return Expanded(
       child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 3, vertical: 3),
+        padding: EdgeInsets.symmetric(horizontal: 8, vertical:0),
         child: TextButton(
           style: TextButton.styleFrom(
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(45)),
             padding: EdgeInsets.all(0),
             textStyle: TextStyle(color: Colors.black),
-            primary: Colors.white30,
+            primary: primary,
           ),
           onPressed: onPressed != null ? onPressed : null,
           child: Container(
@@ -326,19 +308,19 @@ class _PostItemState extends State<PostItem> {
                 border: Border.all(
                     color:Colors.white24,
                     width: 1),
-                color: Colors.grey.shade700.withOpacity(0.2)),
+                color: primary),
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 7),
               child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  SizedBox(
-                    width: 8,
-                  ),
                   Icon(
                     icon,
                     color: color,
+                    size: 18,
                   ),
-                  Expanded(child: Center(child: Text(value.toString(),style: TextStyle(color: Theme.of(context).textTheme.bodyText1!.color,fontWeight: FontWeight.bold),))),
+                  SizedBox(width: 8,),
+                  Center(child: Text(value.toString(),style: TextStyle(color: Theme.of(context).textTheme.bodyText1!.color,fontWeight: FontWeight.bold),)),
                 ],
               ),
             ),
@@ -348,19 +330,5 @@ class _PostItemState extends State<PostItem> {
     );
   }
 
-  Widget getWebImage(String url) {
-    return MeetNetworkImage(
-      imageUrl: url,
-      errorBuilder: (BuildContext context, Object error) {
-        return Center(
-          child: Text("Bir hata oluştu= " + error.toString()),
-        );
-      },
-      loadingBuilder: (BuildContext context) {
-        return Center(
-          child: CircularProgressIndicator(),
-        );
-      },
-    );
-  }
+ 
 }

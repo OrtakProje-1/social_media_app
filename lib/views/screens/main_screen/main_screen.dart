@@ -1,5 +1,3 @@
-
-
 import 'dart:io';
 import 'dart:ui';
 import 'dart:math' as math;
@@ -22,6 +20,7 @@ import 'package:social_media_app/util/const.dart';
 import 'package:social_media_app/util/enum.dart';
 import 'package:social_media_app/views/screens/chat/chats_screen.dart';
 import 'package:social_media_app/views/screens/main_screen/widgets/BuildImageListWidget.dart';
+import 'package:social_media_app/views/screens/main_screen/widgets/build_audio_widget.dart';
 import 'package:social_media_app/views/screens/main_screen/widgets/build_badge_widget.dart';
 import 'package:social_media_app/views/screens/main_screen/widgets/build_video_widget.dart';
 import 'package:social_media_app/views/screens/notification_screen/notification_screen.dart';
@@ -31,6 +30,7 @@ import 'package:social_media_app/views/screens/chat/chats.dart';
 import 'package:social_media_app/views/screens/home.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:progress_state_button/progress_button.dart';
+import 'package:social_media_app/views/widgets/blurWidget.dart';
 import 'package:social_media_app/views/widgets/bottom_appbar_notched_shape.dart';
 import 'package:social_media_app/views/widgets/buttons/custom_elevated_button.dart';
 import 'package:social_media_app/views/widgets/buttons/progress_buttons.dart';
@@ -64,61 +64,75 @@ class _MainScreenState extends State<MainScreen>
         controller: _pageController,
         onPageChanged: onPageChanged,
         children: <Widget>[
-          ChatsScreen(),
-          NotificationsScreen(),
+          ChatsScreen(
+            key:PageStorageKey("chat"),
+          ),
+          NotificationsScreen(
+             key:PageStorageKey("notifications"),
+          ),
           Home(
-            key:PageStorageKey("home"),
+            key: PageStorageKey("home"),
             controller: _scrollController,
           ),
           ProfileScreen(
-            user: MyUser.fromUser(userBlock.user!,token:userBlock.token),
+             key:PageStorageKey("profile"),
+            user: MyUser.fromUser(userBlock.user!, token: userBlock.token),
           ),
         ],
       ),
       bottomNavigationBar: BottomAppBar(
-        shape: BottomAppbarNotchedShape(space: 3, radius: 22, spaceRadius: 4),
-        elevation: 11,
-        notchMargin: 6,
-        color: Constants.bottombarBackgroundColor,
-        child: Container(
-          height: AppBar().preferredSize.height,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              IconButton(
-                icon: Icon(
-                  Icons.message_outlined,
-                  color: getCurrentColor(0),
+        color: kPrimaryColor,
+        shape: BottomAppbarNotchedShape(space: 0, radius: 20, spaceRadius: 4),
+        child: BottomAppBar(
+          shape: BottomAppbarNotchedShape(space: 3, radius: 25, spaceRadius: 4),
+          elevation: 11,
+          notchMargin: 0,
+          color: Constants.bottombarBackgroundColor,
+          child: Container(
+            height: AppBar().preferredSize.height,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                IconButton(
+                  icon: Icon(
+                    Icons.messenger_outline_rounded,
+                    color: getCurrentColor(0),
+                  ),
+                  onPressed: () {
+                    navigationTapped(0);
+                  },
                 ),
-                onPressed: () {
-                  navigationTapped(0);
-                },
-              ),
-              BuildBadgeWidget(
-                stream:  profileBlock.notification(userBlock.user!.uid).where("isRead",isEqualTo:false).snapshots(),
-                widget: buildNotificationButton(),
-              ),
-              Spacer(),
-              IconButton(
-                icon: Icon(
-                  Typicons.home_outline,
-                  size:20,
-                  color: getCurrentColor(2),
+                BuildBadgeWidget(
+                  stream: profileBlock
+                      .notification(userBlock.user!.uid)
+                      .where("isRead", isEqualTo: false)
+                      .snapshots(),
+                  widget: buildNotificationButton(),
                 ),
-                onPressed: () {
-                  navigationTapped(2);
-                },
-              ),
-              IconButton(
-                icon: Icon(
-                  Icons.person_outline,
-                  color: getCurrentColor(3),
+                SizedBox(),
+                SizedBox(),
+                SizedBox(),
+                IconButton(
+                  icon: Icon(
+                    Typicons.home_outline,
+                    size: 20,
+                    color: getCurrentColor(2),
+                  ),
+                  onPressed: () {
+                    navigationTapped(2);
+                  },
                 ),
-                onPressed: () {
-                  navigationTapped(3);
-                },
-              ),
-            ],
+                IconButton(
+                  icon: Icon(
+                    Icons.person_outline,
+                    color: getCurrentColor(3),
+                  ),
+                  onPressed: () {
+                    navigationTapped(3);
+                  },
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -127,14 +141,13 @@ class _MainScreenState extends State<MainScreen>
         fabMargin: EdgeInsets.only(
           bottom: AppBar().preferredSize.height / 2 - 4,
         ),
-        ringSecondColor: Colors.orange,
+        ringSecondColor: kPrimaryColor,
         animationCurve: Curves.linear,
         animationController: _controller,
-        fabOpenColor: Colors.green,
         alignment: Alignment.bottomCenter,
-        fabColor: Colors.green,
         ringColor: Constants.bottombarBackgroundColor,
         ringDiameter: 200,
+        ringWidth: 56,
         children: [
           TransparantButton(
             icon: Icon(
@@ -142,8 +155,7 @@ class _MainScreenState extends State<MainScreen>
               color: Colors.white,
             ),
             onPressed: () async {
-              await closeCircularMenu();
-              print("Video seçildi");
+              closeCircularMenu();
               newPostSenderUi(
                   context, storageBlock, userBlock, postsBlock, PostMode.VIDEO);
             },
@@ -154,8 +166,7 @@ class _MainScreenState extends State<MainScreen>
               color: Colors.white,
             ),
             onPressed: () async {
-              await closeCircularMenu();
-              print("Video seçildi");
+              closeCircularMenu();
               newPostSenderUi(
                   context, storageBlock, userBlock, postsBlock, PostMode.IMAGE);
             },
@@ -166,30 +177,27 @@ class _MainScreenState extends State<MainScreen>
               color: Colors.white,
             ),
             onPressed: () async {
-              await closeCircularMenu();
-              print("Video seçildi");
+              closeCircularMenu();
               newPostSenderUi(
                   context, storageBlock, userBlock, postsBlock, PostMode.AUDIO);
             },
           ),
         ],
-        fabCloseColor: Colors.green,
-        fabIconBorder:
-            BeveledRectangleBorder(borderRadius: BorderRadius.circular(45)),
+               //fabIconBorder: BeveledRectangleBorder(borderRadius: BorderRadius.circular(45)),
       ),
     );
   }
 
   IconButton buildNotificationButton() {
     return IconButton(
-                  icon: Icon(
-                    Icons.notifications_none_rounded,
-                    color: getCurrentColor(1),
-                  ),
-                  onPressed: () {
-                    navigationTapped(1);
-                  },
-                );
+      icon: Icon(
+        Icons.notifications_none_rounded,
+        color: getCurrentColor(1),
+      ),
+      onPressed: () {
+        navigationTapped(1);
+      },
+    );
   }
 
   Future<void> closeCircularMenu() async {
@@ -205,151 +213,219 @@ class _MainScreenState extends State<MainScreen>
     Size size = MediaQuery.of(context).size;
     TextEditingController message = TextEditingController();
     List<PlatformFile> images = [];
-    List<PlatformFile>? audios = [];
-    List<PlatformFile>? videos = [];
+    List<PlatformFile> audios = [];
+    List<PlatformFile> videos = [];
     ButtonState state = ButtonState.idle;
     double? indicatorValue;
     showModalBottomSheet(
       elevation: 0,
       context: context,
-      backgroundColor: Colors.black.withOpacity(0),
+      backgroundColor: Colors.transparent,
       isScrollControlled: true,
-      shape:RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(22))
-      ),
+      shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(22))),
       builder: (BuildContext context) {
         return StatefulBuilder(
           builder:
               (BuildContext context, void Function(void Function()) setState) {
-            return Container(
-              width: size.width,
-              height: size.height * 0.6,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.vertical(top:Radius.circular(22)),
-                //color: Colors.white,
-                color: Colors.grey.shade900.withOpacity(0.9),
-              ),
-              child: Column(
-                children: [
-                  Container(
-                    height: 20,
+            return Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: BlurWidget(
+                  sigmaX: 5,
+                  sigmaY: 5,
+                  child: Container(
                     width: size.width,
-                    child: Center(
-                      child: Container(
-                        width: size.width / 3,
-                        height: 10,
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(45),
-                            color: Colors.grey.shade400),
+                    height: size.height * 0.6,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: Colors.white38,
+                        width: 0.5,
                       ),
                     ),
-                  ),
-                  Expanded(
-                    child: ListView(
-                      physics: BouncingScrollPhysics(),
-                      padding: EdgeInsets.all(8),
+                    child: Column(
                       children: [
-                        Center(
-                            child: Text(
-                          "Yeni bir göderi oluştur",
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 17,
-                              fontWeight: FontWeight.bold),
-                        )),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 8),
-                          child: TextField(
-                            scrollPhysics: BouncingScrollPhysics(),
-                            controller: message,
-                            cursorColor: Constants.bottombarBackgroundColor,
-                            cursorRadius: Radius.circular(8),
-                            cursorWidth: 1.5,
-                            style: TextStyle(color: Colors.white),
-                            decoration: InputDecoration(
-                              hintText: "Mesajını buraya yaz...",
-                              labelText: "Gönderi Metni",
-                              labelStyle: TextStyle(color: Colors.white),
-                              hintStyle: TextStyle(color: Colors.white),
-                              focusedBorder: getFormBorder(),
-                              border: getFormBorder(),
-                              disabledBorder: getFormBorder(),
-                              enabledBorder: getFormBorder(),
-                              errorBorder:
-                                  getFormBorder(color: Colors.red.shade700),
-                            ),
+                        Divider(
+                          thickness: 10,
+                          height: 10,
+                          color: Colors.white,
+                        ),
+                        Expanded(
+                          child: ListView(
+                            physics: BouncingScrollPhysics(),
+                            padding: EdgeInsets.all(8),
+                            children: [
+                              Center(
+                                  child: Text(
+                                "Yeni bir göderi oluştur",
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 17,
+                                    fontWeight: FontWeight.bold),
+                              )),
+                              Card(
+                                elevation: 22,
+                                color: Colors.transparent,
+                                margin: EdgeInsets.symmetric(vertical: 5),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(45),
+                                  side: BorderSide(
+                                    color: Colors.white10,
+                                    width: 1,
+                                  ),
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 2, horizontal: 15),
+                                  child: TextField(
+                                    scrollPhysics: BouncingScrollPhysics(),
+                                    controller: message,
+                                    cursorColor: Colors.white,
+                                    cursorRadius: Radius.circular(8),
+                                    cursorWidth: 1.5,
+                                    style: TextStyle(color: Colors.white),
+                                    decoration: InputDecoration(
+                                        hintText: "Mesajını buraya yaz...",
+                                        labelStyle:
+                                            TextStyle(color: Colors.white),
+                                        hintStyle:
+                                            TextStyle(color: Colors.white),
+                                        border: InputBorder.none),
+                                  ),
+                                ),
+                              ),
+                              Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 8),
+                                child: CustomElevatedButton(
+                                    icon: getPickerModeIconData(mode),
+                                    label: getPickerModeText(mode),
+                                    radius: 45,
+                                    primary: Colors.white10,
+                                    onPrimary: Colors.white,
+                                    shadowColor: Colors.transparent,
+                                    onPressed: () async {
+                                      if (mode == PostMode.IMAGE) {
+                                        List<PlatformFile>? newImages =
+                                            await getImagePicker();
+                                        newImages.forEach((e) {
+                                          if (!images.contains(e))
+                                            images.add(e);
+                                        });
+                                      } else if (mode == PostMode.AUDIO) {
+                                        List<PlatformFile>? audio =
+                                            await getAudioPicker();
+                                        audios = audio;
+                                      } else {
+                                        List<PlatformFile>? video =
+                                            await getVideoPicker();
+                                        videos = video;
+                                      }
+                                      setState(() {});
+                                    }),
+                              ),
+                              if (images.isNotEmpty) ...[
+                                Divider(
+                                  height: 1,
+                                ),
+                                BuildImageListWidget(
+                                    size: size,
+                                    images: images,
+                                    onPressedDeleteButton: (int index) {
+                                      setState(() {
+                                        images.removeAt(index);
+                                      });
+                                    }),
+                                Divider(
+                                  height: 1,
+                                ),
+                              ],
+                              if (audios.isNotEmpty) ...[
+                                Divider(
+                                  height: 1,
+                                ),
+                                BuildAudioWidget(
+                                  audios: audios,
+                                  onPressedDeleteButton: (i) {
+                                    setState(() {
+                                      audios.removeAt(i);
+                                    });
+                                  },
+                                  size: MediaQuery.of(context).size,
+                                ),
+                                Divider(
+                                  height: 1,
+                                ),
+                              ],
+                              if (videos.isNotEmpty) ...[
+                                Divider(
+                                  height: 1,
+                                ),
+                                BuildVideoWidget(
+                                    size: size,
+                                    videos: videos,
+                                    onPressedDeleteButton: (index) {}),
+                                Divider(
+                                  height: 1,
+                                ),
+                              ],
+                            ],
                           ),
                         ),
                         Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 8),
-                          child: CustomElevatedButton(
-                              icon: getPickerModeIconData(mode),
-                              label: getPickerModeText(mode),
-                              radius: 8,
+                          padding: const EdgeInsets.only(bottom: 10),
+                          child: CustomProgressButton(
+                              state: state,
+                              value: indicatorValue,
                               onPressed: () async {
-                                if (mode == PostMode.IMAGE) {
-                                  List<PlatformFile>? newImages =
-                                      await getImagePicker();
-                                  newImages?.forEach((e) {
-                                    if (!images.contains(e)) images.add(e);
-                                  });
-                                } else if (mode == PostMode.AUDIO) {
-                                  List<PlatformFile>? audio =
-                                      await getAudioPicker();
-                                  audios = audio;
-                                } else {
-                                  List<PlatformFile>? video = await getVideoPicker();
-                                  videos = video;
-                                }
-                                setState(() {});
-                              }),
-                        ),
-                        if (images.isNotEmpty)
-                          BuildImageListWidget(
-                              size: size,
-                              images: images,
-                              onPressedDeleteButton: (int index) {
-                                setState(() {
-                                  images.removeAt(index);
-                                });
-                              }),
-                        if (videos!.isNotEmpty)
-                          BuildVideoWidget(
-                              size: size,
-                              videos: videos,
-                              onPressedDeleteButton: (index) {}),
-                      ],
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 10),
-                    child: CustomProgressButton(
-                        state: state,
-                        value: indicatorValue,
-                        onPressed: () async {
-                          DateTime time = DateTime.now();
+                                DateTime time = DateTime.now();
 
-                          if (message.text.length > 0) {
-                            List<MediaReference> imagesRef = [];
-                            if (images.isNotEmpty) {
-                              images.asMap().forEach((index, value) async {
-                                setState(() {
-                                  state = ButtonState.loading;
-                                });
-                                  MediaReference ref= await storageBlock.uploadImage(
-                                    file: File(value.path!),
-                                    index: index,
-                                    timeStamp: time.millisecondsSinceEpoch.toString(),
-                                    ext: StorageBlock.fileExt(value.path!),
-                                    userUid: userBlock.user!.uid
-                                  );
-                                imagesRef.add(ref);
-                                if (imagesRef.length == images.length) {
-                                    bool result = await sendPost(
-                                        imagesRef,
-                                        message.text,
-                                        userBlock,
-                                        postsBlock);
+                                if (message.text.length > 0) {
+                                  List<MediaReference> imagesRef = [];
+                                  if (images.isNotEmpty) {
+                                    images
+                                        .asMap()
+                                        .forEach((index, value) async {
+                                      setState(() {
+                                        state = ButtonState.loading;
+                                      });
+                                      MediaReference ref =
+                                          await storageBlock.uploadImage(
+                                              file: File(value.path!),
+                                              index: index,
+                                              timeStamp: time
+                                                  .millisecondsSinceEpoch
+                                                  .toString(),
+                                              ext: StorageBlock.fileExt(
+                                                  value.path!),
+                                              userUid: userBlock.user!.uid);
+                                      imagesRef.add(ref);
+                                      if (imagesRef.length == images.length) {
+                                        bool result = await sendPost(
+                                            imagesRef,
+                                            message.text,
+                                            userBlock,
+                                            postsBlock);
+                                        if (result) {
+                                          setState(() {
+                                            state = ButtonState.success;
+                                          });
+                                        } else {
+                                          setState(() {
+                                            state = ButtonState.fail;
+                                          });
+                                        }
+                                        await Future.delayed(
+                                            Duration(milliseconds: 500), () {
+                                          Navigator.pop(context);
+                                        });
+                                      }
+                                    });
+                                  } else {
+                                    bool result = await sendPost(null,
+                                        message.text, userBlock, postsBlock);
                                     if (result) {
                                       setState(() {
                                         state = ButtonState.success;
@@ -360,41 +436,30 @@ class _MainScreenState extends State<MainScreen>
                                       });
                                     }
                                     await Future.delayed(
-                                        Duration(milliseconds: 500), () {
+                                        Duration(milliseconds: 400), () {
                                       Navigator.pop(context);
                                     });
                                   }
-                                
-                              });
-                            } else {
-                              bool result = await sendPost(null,
-                                  message.text, userBlock, postsBlock);
-                              if (result) {
-                                setState(() {
-                                  state = ButtonState.success;
-                                });
-                              } else {
-                                setState(() {
-                                  state = ButtonState.fail;
-                                });
-                              }
-                              await Future.delayed(
-                                  Duration(milliseconds: 400), () {
-                                Navigator.pop(context);
-                              });
-                            }
-                          } else {
-                            setState(() {
-                              state = ButtonState.fail;
-                            });
-                            await Future.delayed(
-                                Duration(milliseconds: 400), () {
-                              Navigator.pop(context);
-                            });
-                          }
-                        }),
+                                } else {
+                                  setState(() {
+                                    state = ButtonState.fail;
+                                  });
+                                  await Future.delayed(
+                                      Duration(milliseconds: 400), () {
+                                    Navigator.pop(context);
+                                  });
+                                }
+                              }),
+                        ),
+                        Divider(
+                          thickness: 10,
+                          height: 10,
+                          color: Colors.white,
+                        ),
+                      ],
+                    ),
                   ),
-                ],
+                ),
               ),
             );
           },
@@ -407,13 +472,10 @@ class _MainScreenState extends State<MainScreen>
     switch (mode) {
       case PostMode.AUDIO:
         return Icons.audiotrack_outlined;
-        break;
       case PostMode.IMAGE:
         return Icons.image_outlined;
-        break;
       case PostMode.VIDEO:
         return Linecons.videocam;
-        break;
       default:
         return Icons.image_outlined;
     }
@@ -423,20 +485,17 @@ class _MainScreenState extends State<MainScreen>
     switch (mode) {
       case PostMode.AUDIO:
         return "Ses Seç";
-        break;
       case PostMode.IMAGE:
         return "Resim Ekle";
-        break;
       case PostMode.VIDEO:
         return "Video Seç";
-        break;
       default:
         return "Resim Ekle";
     }
   }
 
-  Future<bool> sendPost(List<MediaReference>? imagesRef, String msg, UserBlock userBlock,
-      PostsBlock postsBlock) async {
+  Future<bool> sendPost(List<MediaReference>? imagesRef, String msg,
+      UserBlock userBlock, PostsBlock postsBlock) async {
     Post post = Post(
         senderUid: userBlock.user!.uid,
         msg: msg,
@@ -457,14 +516,14 @@ class _MainScreenState extends State<MainScreen>
 
   Color getCurrentColor(int index) {
     if (_page == index) {
-      return Constants.iconColor;
+      return kPrimaryColor;
     } else {
       return Constants.disableIconColor;
     }
   }
 
-  void navigationTapped(int page) async {
-    await closeCircularMenu();
+  void navigationTapped(int page){
+    closeCircularMenu();
     _pageController!.jumpToPage(page);
   }
 
@@ -472,8 +531,9 @@ class _MainScreenState extends State<MainScreen>
   void initState() {
     super.initState();
     _pageController = PageController(initialPage: 2);
-    _controller = AnimationController(duration: Duration(milliseconds: 800), vsync: this);
-    _scrollController=ScrollController();
+    _controller =
+        AnimationController(duration: Duration(milliseconds: 800), vsync: this);
+    _scrollController = ScrollController();
   }
 
   @override

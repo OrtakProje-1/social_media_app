@@ -10,6 +10,7 @@ import 'package:social_media_app/database/firebase_yardimci.dart';
 import 'package:social_media_app/models/my_user.dart';
 import 'package:social_media_app/providers/storageBlock.dart';
 import 'package:social_media_app/providers/userBlock.dart';
+import 'package:social_media_app/util/enum.dart';
 import 'package:social_media_app/views/screens/chat/models/chat.dart';
 import 'package:social_media_app/views/screens/chat/models/chat_message.dart';
 
@@ -60,12 +61,7 @@ class MessagesBlock {
   Future<void> deleteMessage(QueryDocumentSnapshot doc,BuildContext context) async {
     ChatMessage message= ChatMessage.fromMap(doc.data());
     await _deleteMedia(message,context);
-    await doc.reference.set({
-      "text": "Bu mesaj silindi...",
-      "isRemoved": true,
-      "images":null,
-      "messageType":0
-    }, SetOptions(merge: true));
+    await doc.reference.delete();
     
   }
 
@@ -116,6 +112,14 @@ class MessagesBlock {
     }
   }
 
+  Future<void> blockMessage(MyUser sender,MyUser receiver,bool block)async{
+    String docId=getDoc(sender.uid,receiver.uid);
+    messagesReference.doc(docId).set({
+      "blocker":sender.uid,
+      "blocked":block
+    });
+  }
+
   Future<void> addMessage(
       MyUser sender, MyUser receiver, bool noMessage, ChatMessage mesaj) async {
     String docId = getDoc(sender.uid, receiver.uid);
@@ -124,7 +128,7 @@ class MessagesBlock {
   }
 
   Stream<QuerySnapshot> getMessagesStream(String myUid) {
-    return lastMessagesReference.doc(myUid).collection("messages").snapshots();
+    return lastMessagesReference.doc(myUid).collection("messages").orderBy("time",descending: true).snapshots();
   }
 
   Future<void> setChatCard(String? myUid, String? receiverUid, Chat chat) async {
@@ -149,10 +153,10 @@ class MessagesBlock {
     String? myMesaj;
     String? recMesaj;
     int time = DateTime.now().millisecondsSinceEpoch;
-    if (message.text != null) {
-      if (message.text!.isNotEmpty) {
-        myMesaj = message.text;
-        recMesaj = message.text;
+    if (message.recCryptedText != null) {
+      if (message.recCryptedText!.isNotEmpty) {
+        myMesaj = message.senderCryptedText;
+        recMesaj = message.recCryptedText;
       } else {
         myMesaj = getMesajFromType(message.messageType);
         recMesaj = getMesajFromType(message.messageType, isRec: true, my: my);
@@ -214,13 +218,12 @@ class MessagesBlock {
         return isRec
             ? "${my!.displayName} size bir resim gönderdi."
             : "resim 📷";
-        break;
       case ChatMessageType.audio:
         return isRec ? "${my!.displayName} size bir ses gönderdi." : "ses";
-        break;
+        
       case ChatMessageType.file:
         return isRec ? "${my!.displayName} size bir dosya gönderdi." : "dosya";
-        break;
+        
       default:
         return isRec ? "${my!.displayName} size bir video gönderdi." : "video";
     }

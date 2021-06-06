@@ -1,12 +1,13 @@
-
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:social_media_app/providers/crypto_block.dart';
 import 'package:social_media_app/providers/userBlock.dart';
+import 'package:social_media_app/providers/usersBlock.dart';
 import 'package:social_media_app/util/const.dart';
 import 'package:social_media_app/util/elapsed_time.dart';
 import 'package:social_media_app/views/screens/chat/models/chat.dart';
+import 'package:social_media_app/views/widgets/userWidgets/BuildUserImageAndIsOnlineWidget.dart';
 
 class ChatCard extends StatelessWidget {
   const ChatCard({
@@ -20,9 +21,11 @@ class ChatCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    UserBlock userBlock=Provider.of<UserBlock>(context);
+    UserBlock userBlock = Provider.of<UserBlock>(context);
+    UsersBlock usersBlock = Provider.of<UsersBlock>(context);
+    CryptoBlock cryptoBlock=CryptoBlock();
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 10,vertical:12),
+      padding: EdgeInsets.symmetric(horizontal: 5, vertical: 5),
       child: InkWell(
         borderRadius: BorderRadius.circular(16),
         onTap: press,
@@ -33,41 +36,15 @@ class ChatCard extends StatelessWidget {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
-              color: Colors.grey.shade300,
+              color: Colors.grey.shade500.withOpacity(0.5),
             ),
           ),
           child: Row(
             children: [
-              Stack(
-                children: [
-                  Container(
-                    height: 48,
-                    width: 48,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                      image: DecorationImage(
-                        fit: BoxFit.cover,
-                        image:CachedNetworkImageProvider(chat.image!)
-                      ),
-                    ),
-                  ),
-                  if (true) // isActivate
-                    Positioned(
-                      right: -3,
-                      bottom: 1,
-                      child: Container(
-                        height: 14,
-                        width: 14,
-                        decoration: BoxDecoration(
-                          color: kPrimaryColor,
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                              color: Theme.of(context).scaffoldBackgroundColor,
-                              width: 3),
-                        ),
-                      ),
-                    )
-                ],
+              BuildUserImageAndIsOnlineWidget(
+                usersBlock: usersBlock,
+                uid: chat.senderUid==userBlock.user!.uid ? chat.rUid : chat.senderUid,
+                width: 45,
               ),
               Expanded(
                 child: Padding(
@@ -78,14 +55,16 @@ class ChatCard extends StatelessWidget {
                     children: [
                       Text(
                         chat.name!,
-                        style:
-                            TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                        style: TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.w500),
                       ),
                       SizedBox(height: 8),
                       Opacity(
                         opacity: 0.64,
                         child: Text(
-                          chat.senderUid==userBlock.user!.uid ? "Siz: ${chat.lastMessage}" :  chat.lastMessage!,
+                          chat.senderUid == userBlock.user!.uid
+                              ? "Siz: ${cryptoBlock.decrypt(chat.lastMessage!)}"
+                              : cryptoBlock.decrypt(chat.lastMessage!),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -94,10 +73,11 @@ class ChatCard extends StatelessWidget {
                   ),
                 ),
               ),
-            /*  chat.unReadCount==0 ? */
-             Opacity(
+              /*  chat.unReadCount==0 ? */
+              Opacity(
                 opacity: 0.64,
-                child: Text(TimeElapsed.fromDateTime(DateTime.fromMillisecondsSinceEpoch(chat.time!))),
+                child: Text(TimeElapsed.fromDateTime(
+                    DateTime.fromMillisecondsSinceEpoch(chat.time!))),
               ),
               // :Column(
               //   crossAxisAlignment: CrossAxisAlignment.end,
@@ -116,9 +96,9 @@ class ChatCard extends StatelessWidget {
               //   ),
               //   child: Center(child: Text(chat.unReadCount.toString(),style: TextStyle(color: Colors.black54),),),
               // ),
-            //     ],
-            //   ),
-             ],
+              //     ],
+              //   ),
+            ],
           ),
         ),
       ),

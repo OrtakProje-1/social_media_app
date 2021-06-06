@@ -1,12 +1,9 @@
 
 
 import 'dart:io';
-import 'dart:math';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:social_media_app/views/screens/main_screen/widgets/build_delete_button.dart';
-import 'package:social_media_app/views/widgets/blurWidget.dart';
-import 'package:social_media_app/views/widgets/buttons/transparant_button.dart';
 
 class BuildImageListWidget extends StatelessWidget {
   const BuildImageListWidget({

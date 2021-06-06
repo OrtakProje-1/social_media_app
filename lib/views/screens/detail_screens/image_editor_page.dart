@@ -3,8 +3,6 @@
 import 'package:extended_image/extended_image.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:progress_state_button/iconed_button.dart';
-import 'package:social_media_app/util/const.dart';
 import 'package:social_media_app/views/widgets/bottom_appbar_notched_shape.dart';
 
 class ImageEditorPage extends StatefulWidget {
@@ -36,16 +34,10 @@ class _ImageEditorPageState extends State<ImageEditorPage> {
   Widget build(BuildContext context) {
     String path = widget.image!.path!;
     return Scaffold(
-      backgroundColor: Colors.black,
       appBar: AppBar(
-        elevation: 2,
+        elevation: 0,
         title: Text("Editör"),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.save_rounded),
-            onPressed: () {},
-          ),
-        ],
+       
       ),
       body: ExtendedImage.file(
         File(path),
@@ -60,22 +52,23 @@ class _ImageEditorPageState extends State<ImageEditorPage> {
               cornerColor: Colors.white,
               cropAspectRatio: aspectRatio,
               editorMaskColorHandler: (ctx, c) {
-                return c ? Colors.black : Colors.black;
+                return Theme.of(context).scaffoldBackgroundColor;
               });
         },
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
       floatingActionButton: FloatingActionButton(
+        elevation: 0,
         child: Icon(
           Icons.save_rounded,
           color: Colors.black,
         ),
         backgroundColor: Colors.white,
         onPressed: () {},
-        shape: BeveledRectangleBorder(borderRadius: BorderRadius.circular(45)),
       ),
       bottomNavigationBar: BottomAppBar(
-        shape: BottomAppbarNotchedShape(space: 2,spaceRadius: 3, radius: 45,horizontalSpace:-3),
+        shape: CircularNotchedRectangle(),
+        notchMargin:4,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -126,7 +119,6 @@ class _ImageEditorPageState extends State<ImageEditorPage> {
               },
               icon: Icon(Icons.aspect_ratio_rounded),
             ),
-            SizedBox(),
             IconButton(
               onPressed: () {
                 editorKey.currentState!.rotate(right: false);
@@ -140,6 +132,8 @@ class _ImageEditorPageState extends State<ImageEditorPage> {
               },
               icon: Icon(Icons.restore),
             ),
+            SizedBox(),
+            SizedBox(),
           ],
         ),
       ),

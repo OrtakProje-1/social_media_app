@@ -1,13 +1,14 @@
-
-
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:social_media_app/mixins/bottom_sheet_mixin.dart';
 import 'package:social_media_app/models/my_user.dart';
 import 'package:social_media_app/providers/messagesBlock.dart';
 import 'package:social_media_app/providers/userBlock.dart';
+import 'package:social_media_app/util/router.dart';
+import 'package:social_media_app/views/screens/profileScreen.dart';
+import 'package:social_media_app/views/widgets/build_rec_appbar_title.dart';
 
 import 'components/body.dart';
 
@@ -20,7 +21,7 @@ class MessagesScreen extends StatefulWidget {
   _MessagesScreenState createState() => _MessagesScreenState();
 }
 
-class _MessagesScreenState extends State<MessagesScreen> {
+class _MessagesScreenState extends State<MessagesScreen> with BottomSheetMixin {
   List<QueryDocumentSnapshot> selectedMessage = [];
   QueryDocumentSnapshot? lastMessage;
   ScrollController? _controller;
@@ -79,49 +80,15 @@ class _MessagesScreenState extends State<MessagesScreen> {
     return AppBar(
       titleSpacing: 0,
       elevation: 8,
-      title: Container(
-        child: Row(
-          children: [
-            Center(
-              child: Container(
-                width: 40,
-                height: 40,
-                margin: EdgeInsets.only(left: 10),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(8),
-                  image: DecorationImage(
-                    image: CachedNetworkImageProvider(widget.user!.photoURL!),
-                  ),
-                ),
-              ),
-            ),
-            SizedBox(
-              width: 5,
-            ),
-            InkWell(
-              onTap: () {},
-              child: Container(
-                margin: EdgeInsets.only(left: 5),
-                padding: EdgeInsets.all(4),
-                height: AppBar().preferredSize.height,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      widget.user!.displayName!,
-                      overflow: TextOverflow.clip,
-                      style: TextStyle(fontSize: 16),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
+      backgroundColor: Colors.transparent,
+      title: BuildReceiverAppBarTitle(
+        user: user,
+        onPressed: () {
+          Navigate.pushPage(context, ProfileScreen(user: user));
+        },
       ),
       actions: [
-        if (isSelect)
+        if (isSelect) ...[
           IconButton(
             icon: Icon(Icons.delete_outline),
             onPressed: () async {
@@ -132,7 +99,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
                 }
               }
               selectedMessage.forEach((element) async {
-                await messagesBlock.deleteMessage(element,context);
+                await messagesBlock.deleteMessage(element, context);
                 selectedMessage.remove(element);
               });
 
@@ -140,6 +107,14 @@ class _MessagesScreenState extends State<MessagesScreen> {
               setState(() {});
             },
           ),
+        ],
+        if (!isSelect) ...[
+          IconButton(
+            onPressed: () async {
+            },
+            icon: Icon(Icons.more_vert_rounded),
+          ),
+        ],
       ],
     );
   }

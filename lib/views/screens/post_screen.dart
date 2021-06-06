@@ -1,9 +1,8 @@
-
-
 import 'dart:io';
 import 'dart:math';
 import 'dart:ui';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -16,6 +15,7 @@ import 'package:social_media_app/providers/storageBlock.dart';
 import 'package:social_media_app/providers/userBlock.dart';
 import 'package:social_media_app/providers/usersBlock.dart';
 import 'package:social_media_app/util/const.dart';
+import 'package:social_media_app/util/elapsed_time.dart';
 import 'package:social_media_app/views/screens/detail_screens/widgets/send_button.dart';
 import 'package:social_media_app/views/screens/main_screen/widgets/BuildImageListWidget.dart';
 import 'package:social_media_app/views/screens/main_screen/widgets/build_audio_widget.dart';
@@ -61,6 +61,7 @@ class _PostScreenState extends State<PostScreen>
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
+        backgroundColor: Colors.transparent,
         title: Text(widget.post!.userName!),
       ),
       body: SafeArea(
@@ -69,37 +70,44 @@ class _PostScreenState extends State<PostScreen>
             Expanded(
               child: ListView(
                 physics: BouncingScrollPhysics(),
-                padding: EdgeInsets.symmetric(horizontal: 8),
                 children: [
-                  PostItem(
-                    img: "assets/images/cm7.jpg",
-                    post: widget.post,
-                    userUid: userBlock.user!.uid,
-                    thisIsShowScreen: true,
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 8),
+                    child: PostItem(
+                      img: "assets/images/cm7.jpg",
+                      post: widget.post,
+                      userUid: userBlock.user!.uid,
+                      thisIsShowScreen: true,
+                    ),
                   ),
                   Divider(
-                    height: 1,
-                    color: kPrimaryColor,
+                    height: 2,
+                    thickness: 2,
+                    color: kPrimaryColor.withOpacity(0.3),
                   ),
                   StreamBuilder<QuerySnapshot>(
                     stream: postsBlock
                         .postReference(widget.post!)
                         .collection("comments")
-                        .orderBy("postTime",descending: true)
+                        .orderBy("postTime", descending: true)
                         .snapshots(),
                     builder: (c, comments) {
                       if (comments.hasData) {
                         if (comments.data!.docs.isNotEmpty) {
-                          List<QueryDocumentSnapshot> docs = comments.data!.docs;
-                          return Column(
-                            children: docs
-                                .asMap()
-                                .map((index, value) => MapEntry(
+                          List<QueryDocumentSnapshot> docs =
+                              comments.data!.docs;
+                          return Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 8),
+                            child: Column(
+                              children: docs
+                                  .asMap()
+                                  .map((index, value) => MapEntry(
                                       index,
-                                      buildColumnItem(docs[index],userBlock, index,docs.length)
-                                    ))
-                                .values
-                                .toList(),
+                                      buildColumnItem(docs[index], userBlock,
+                                          index, docs.length)))
+                                  .values
+                                  .toList(),
+                            ),
                           );
                         } else {
                           return Padding(
@@ -122,9 +130,19 @@ class _PostScreenState extends State<PostScreen>
                 ],
               ),
             ),
-            Divider(
-              color: kPrimaryColor,
+            Container(
               height: 1,
+              decoration: BoxDecoration(
+                color: kPrimaryColor,
+                boxShadow: [
+                  BoxShadow(
+                    blurRadius: 5,
+                    color: kPrimaryColor.withOpacity(0.15),
+                    spreadRadius: 2,
+                    offset: Offset(0,-2),
+                  ),
+                ],
+              ),
             ),
             if (videos.isNotEmpty)
               AnimatedContainer(
@@ -182,10 +200,10 @@ class _PostScreenState extends State<PostScreen>
                           ? null
                           : () async {
                               closePickerButtonsAndAnimation();
-                              List<PlatformFile>? newImages =
+                              List<PlatformFile> newImages =
                                   await getImagePicker();
                               setState(() {
-                                images = newImages ?? [];
+                                if (newImages.isNotEmpty) images = newImages;
                               });
                             },
                       radius: 33,
@@ -200,12 +218,12 @@ class _PostScreenState extends State<PostScreen>
                           ? null
                           : () async {
                               closePickerButtonsAndAnimation();
-                              List<PlatformFile>? video = await getVideoPicker();
+                              List<PlatformFile> video = await getVideoPicker();
                               setState(() {
-                                videos = video ?? [];
+                                if (video.isNotEmpty) videos = video;
                               });
                             },
-                      radius:33,
+                      radius: 33,
                     ),
                     CustomElevatedButton(
                       icon: Icons.audiotrack_outlined,
@@ -217,9 +235,10 @@ class _PostScreenState extends State<PostScreen>
                           ? null
                           : () async {
                               closePickerButtonsAndAnimation();
-                              List<PlatformFile>? audio = await getAudioPicker();
+                              List<PlatformFile>? audio =
+                                  await getAudioPicker();
                               setState(() {
-                                audios = audio ?? [];
+                                audios = audio;
                               });
                             },
                       radius: 33,
@@ -259,12 +278,12 @@ class _PostScreenState extends State<PostScreen>
                             }
                           },
                           style: ElevatedButton.styleFrom(
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(90)),
-                        primary: recMesColor,
-                        elevation: 0,
-                        shadowColor: Colors.transparent,
-                        onPrimary: kPrimaryColor.withOpacity(0.6)),
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(90)),
+                              primary: recMesColor,
+                              elevation: 0,
+                              shadowColor: Colors.transparent,
+                              onPrimary: kPrimaryColor.withOpacity(0.6)),
                         ),
                       ),
                     ),
@@ -276,12 +295,14 @@ class _PostScreenState extends State<PostScreen>
                     bottom: 0,
                     right: isThereData() ? 55 : 0,
                     child: Container(
-                      padding: EdgeInsets.symmetric(horizontal: 15,vertical: 5),
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 15, vertical: 5),
                       decoration: BoxDecoration(
-                          color:recMesColor,
+                          color: recMesColor,
                           borderRadius: BorderRadius.circular(45)),
                       child: TextField(
-                        cursorColor: Theme.of(context).textTheme.bodyText1!.color,
+                        cursorColor:
+                            Theme.of(context).textTheme.bodyText1!.color,
                         cursorRadius: Radius.circular(22),
                         cursorWidth: 1.5,
                         controller: message,
@@ -345,7 +366,8 @@ class _PostScreenState extends State<PostScreen>
                                     senderUid: userBlock.user!.uid,
                                     userName: userBlock.user!.displayName,
                                     userPhotoUrl: userBlock.user!.photoURL);
-                                await postsBlock.addComment(comment, widget.post!,usersBlock);
+                                await postsBlock.addComment(
+                                    comment, widget.post!, usersBlock);
                                 clearDatas();
                               }
                               print("imagesUrl.length != images.lenght");
@@ -363,7 +385,8 @@ class _PostScreenState extends State<PostScreen>
                               userName: userBlock.user!.displayName,
                               savedPostCount: [],
                               userPhotoUrl: userBlock.user!.photoURL);
-                          await postsBlock.addComment(comment, widget.post!,usersBlock);
+                          await postsBlock.addComment(
+                              comment, widget.post!, usersBlock);
                           clearDatas();
                           //updatePOST
                         }
@@ -379,7 +402,8 @@ class _PostScreenState extends State<PostScreen>
     );
   }
 
- Widget buildColumnItem(QueryDocumentSnapshot data,UserBlock userBlock,int index,int length) {
+  Widget buildColumnItem(
+      QueryDocumentSnapshot data, UserBlock userBlock, int index, int length) {
     Post comment = Post.fromMap(data.data());
     return buildPostItem(userBlock, comment, index, length - 1);
   }
@@ -387,23 +411,32 @@ class _PostScreenState extends State<PostScreen>
   Widget buildPostItem(
       UserBlock userBlock, Post post, int index, int lastIndex) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10),
+      margin: EdgeInsets.symmetric(vertical:5),
       decoration: BoxDecoration(
-        border: Border(
-          top: index % 2 == 0 && index != 0
-              ? buildBorder()
-              : buildTransparentBorder(),
-          right: index % 2 == 1 ? buildBorder() : buildTransparentBorder(),
-          left: index % 2 == 0 ? buildBorder() : buildTransparentBorder(),
-          bottom: (index % 2 == 0 || index == 0) && index != lastIndex
-              ? buildBorder()
-              : buildTransparentBorder(),
+        borderRadius: BorderRadius.circular(22),
+          border: Border.all(
+            width: 1,
+            color: kPrimaryColor.withOpacity(0.3)
+          ),
         ),
-      ),
-      child: PostItem(
-        userUid: userBlock.user!.uid,
-        post: post,
-        isComment: true,
+      padding: const EdgeInsets.symmetric(horizontal: 10),
+      
+      child: ListTile(
+        contentPadding: EdgeInsets.all(0),
+        dense: true,
+        leading: Container(
+          width: 35,
+          height: 35,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12),
+            image: DecorationImage(
+              image: CachedNetworkImageProvider(post.userPhotoUrl!),
+            ),
+          ),
+        ),
+        title: Text(post.userName!,style: TextStyle(fontWeight: FontWeight.bold,fontSize:12,color:kPrimaryColor.withOpacity(0.8)),),
+        subtitle: Text(post.msg!,style: TextStyle(fontSize: 16,color: Colors.white),),
+        trailing: Text(TimeElapsed.fromDateTime(DateTime.fromMillisecondsSinceEpoch(int.parse(post.postTime!)),short: true)),
       ),
     );
   }

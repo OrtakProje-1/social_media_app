@@ -71,23 +71,19 @@ class _BodyState extends State<Body> {
                   children: [
                     Padding(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: kDefaultPadding / 2, vertical: 10),
+                          horizontal: kDefaultPadding / 2, vertical:5),
                       child: Container(
                         decoration:BoxDecoration(
                         borderRadius:BorderRadius.circular(12),
-                        color:Colors.grey[850],//Color(0xff292d32),
+                        color:Color(0xFF1B1B1B),//Color(0xff292d32),
                        
                         boxShadow: [
                           BoxShadow(
-                            blurRadius: 10,
-                            color: Colors.white.withOpacity(0.2),
-                            offset: Offset(-3,-3)
+                            blurRadius: 5,
+                            color: Colors.white.withOpacity(0.18),
+                            offset: Offset(0,0)
                           ),
-                          BoxShadow(
-                            blurRadius: 10,
-                            color: Colors.black.withOpacity(0.5),
-                            offset: Offset(3,3)
-                          ),
+                          
                         ],
                         ),
                         child: Padding(
@@ -116,47 +112,54 @@ class _BodyState extends State<Body> {
                     Container(
                       height: 55,
                       margin: EdgeInsets.only(
-                          left: kDefaultPadding / 2, bottom: 15, top: 15),
+                          left: kDefaultPadding / 2, bottom:5, top:5),
                       child: StreamBuilder<List<MyUser>>(
                         stream: profileBlock.friends,
-                        initialData: profileBlock.friends!.valueWrapper!.value,
-                        builder: (c, snap) {
-                          List<MyUser> onlineUsers = snap.data!.where((e) => e.isOnline!).toList();
-                          List<MyUser> filteredUser=onlineUsers;
-                          if(onlineUsers.isNotEmpty&&searchUser.text.isNotEmpty){
-                            filteredUser=onlineUsers.where((e) => e.displayName!.toLowerCase().contains(searchUser.text.toLowerCase())).toList();
-                          }
-                          return (filteredUser.isNotEmpty)
-                              ? ListView.builder(
-                                  controller: _scrollController,
-                                  physics: BouncingScrollPhysics(),
-                                  scrollDirection: Axis.horizontal,
-                                  itemCount: filteredUser.length,
-                                  itemBuilder: (c, i) {
-                                    return GestureDetector(
-                                      onTap: () {
-                                        Navigate.pushPage(
-                                            context,
-                                            MessagesScreen(
-                                              user: filteredUser[i],
-                                            ));
+                        initialData:profileBlock.friends.value,
+                        builder: (context, friends) {
+                          return StreamBuilder<List<MyUser>>(
+                            stream: usersBlock.users,
+                            initialData: usersBlock.users.valueWrapper!.value,
+                            builder: (c, users) {
+                              List<MyUser> onlineUsers = friends.data!.map((e) => usersBlock.getUserFromUid(e.uid!)!).toList().where((e) => e.isOnline==true).toList();
+                              List<MyUser> filteredUser=onlineUsers;
+                              if(onlineUsers.isNotEmpty&&searchUser.text.isNotEmpty){
+                                filteredUser=onlineUsers.where((e) => e.displayName!.toLowerCase().contains(searchUser.text.toLowerCase())).toList();
+                              }
+                              return (filteredUser.isNotEmpty)
+                                  ? ListView.builder(
+                                      controller: _scrollController,
+                                      physics: BouncingScrollPhysics(),
+                                      scrollDirection: Axis.horizontal,
+                                      itemCount: filteredUser.length,
+                                      itemBuilder: (c, i) {
+                                        return GestureDetector(
+                                          onTap: () {
+                                            Navigate.pushPage(
+                                                context,
+                                                MessagesScreen(
+                                                  user: filteredUser[i],
+                                                ));
+                                          },
+                                          child: Padding(
+                                            padding: EdgeInsets.only(
+                                                left: i == 0 ? 0 : 8, right: 8),
+                                            child: BuildUserImageAndIsOnlineWidget(
+                                              uid: filteredUser[i].uid,
+                                              usersBlock: usersBlock,
+                                              width: 55,
+                                            ),
+                                          ),
+                                        );
                                       },
-                                      child: Padding(
-                                        padding: EdgeInsets.only(
-                                            left: i == 0 ? 0 : 8, right: 8),
-                                        child: BuildUserImageAndIsOnlineWidget
-                                            .fromUser(
-                                          user: filteredUser[i],
-                                          width: 55,
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                )
-                              : Center(child: Text("Burada Kimse Yok."),);
-                        },
+                                    )
+                                  : Center(child: Text(searchUser.text.isEmpty ? "Aktif Arkadaşınız Yok..." : "Burada Kimse Yok."),);
+                            },
+                          );
+                        }
                       ),
                     ),
+                    Divider(thickness: 2,),
                     if (filteredChat.isEmpty)
                       Container(
                           height: 100,

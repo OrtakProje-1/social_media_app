@@ -5,9 +5,11 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:social_media_app/models/my_user.dart';
 import 'package:social_media_app/providers/profileBlock.dart';
+import 'package:social_media_app/providers/usersBlock.dart';
 import 'package:social_media_app/util/const.dart';
 import 'package:social_media_app/util/router.dart';
 import 'package:social_media_app/views/screens/chat/messages/message_screen.dart';
+import 'package:social_media_app/views/widgets/userWidgets/BuildUserImageAndIsOnlineWidget.dart';
 
 class NewMessageScreen extends StatefulWidget {
   NewMessageScreen({Key? key}) : super(key: key);
@@ -22,6 +24,7 @@ class _NewMessageScreenState extends State<NewMessageScreen> {
   @override
   Widget build(BuildContext context) {
     ProfileBlock profileBlock = Provider.of<ProfileBlock>(context);
+    UsersBlock usersBlock=Provider.of<UsersBlock>(context);
     return Scaffold(
       appBar: AppBar(
         titleSpacing: 0,
@@ -48,7 +51,7 @@ class _NewMessageScreenState extends State<NewMessageScreen> {
       ),
       body: StreamBuilder<List<MyUser>>(
         stream: profileBlock.friends,
-        initialData: profileBlock.friends!.valueWrapper!.value,
+        initialData: profileBlock.friends.valueWrapper!.value,
         builder: (c, snap) {
           List<MyUser> filteredUser = _controller.text.isEmpty
               ? snap.data!
@@ -85,38 +88,10 @@ class _NewMessageScreenState extends State<NewMessageScreen> {
                     ),
                     child: Row(
                       children: [
-                        Stack(
-                          children: [
-                            Container(
-                              height: 48,
-                              width: 48,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10),
-                                image: DecorationImage(
-                                  fit: BoxFit.cover,
-                                  image:
-                                      CachedNetworkImageProvider(user.photoURL!),
-                                ),
-                              ),
-                            ),
-                            if (user.isOnline!)
-                              Positioned(
-                                right: -3,
-                                bottom: 1,
-                                child: Container(
-                                  height: 14,
-                                  width: 14,
-                                  decoration: BoxDecoration(
-                                    color: kPrimaryColor,
-                                    shape: BoxShape.circle,
-                                    border: Border.all(
-                                        color: Theme.of(context)
-                                            .scaffoldBackgroundColor,
-                                        width: 3),
-                                  ),
-                                ),
-                              )
-                          ],
+                        BuildUserImageAndIsOnlineWidget(
+                          width: 48,
+                          usersBlock: usersBlock,
+                          uid: user.uid,
                         ),
                         Expanded(
                           child: Padding(

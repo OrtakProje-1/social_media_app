@@ -1,5 +1,7 @@
 
 
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:social_media_app/models/Post.dart';
@@ -23,6 +25,7 @@ class PostsBlock {
   late FirebaseFirestore _instance;
   late NotificationBlock _notificationBlock;
   BehaviorSubject<List<Post>>? posts;
+  StreamSubscription? postStreamSubscription;
 
   CollectionReference get postsReference => _instance.collection("Posts");
   Stream<QuerySnapshot> get streamPosts => _instance
@@ -30,12 +33,12 @@ class PostsBlock {
       .orderBy("postTime", descending: true)
       .snapshots(); //orderBy("postTime",descending:false);
 
-  Future<QuerySnapshot> getFriendsPost(List<String?> uids)async{
-    return await postsReference.where("senderUid",whereIn: uids ).get();
+  Future<QuerySnapshot> getFriendsPost(List<String>? friendsUid)async{
+    return await postsReference.where("senderUid",whereIn: friendsUid! ).orderBy("postTime",descending: true).get();
   }
 
   Stream<QuerySnapshot> getStreamFriendsPost(List<String> uids){
-    return postsReference.where("senderUid",whereIn: uids ).snapshots();
+    return postsReference.where("senderUid",whereIn: uids ).orderBy("postTime",descending: true).snapshots();
   }
 
   DocumentReference postReference(Post post) {
@@ -137,17 +140,24 @@ class PostsBlock {
     return true;
   }
 
-  Future<void> fetchPosts(List<String?> uids)async{
-    QuerySnapshot query= await getFriendsPost(uids);
+  Future<void> fetchPosts(List<String>? friendsUid)async{
+    QuerySnapshot query= await getFriendsPost(friendsUid);
     List<Post> myPost= query.docs.map((e) =>Post.fromMap(e.data())).toList();
     posts!.add(myPost);
+    postStreamSubscription= getStreamFriendsPost(friendsUid!).listen((event){
+      List<Post> newPosts= event.docs.map((e) =>Post.fromMap(e.data())).toList();
+      posts!.add(newPosts);
+    });
   }
 
   void clearDatas(){
+    postStreamSubscription?.cancel();
     posts!.add([]);
   }
 
   void dispose(){
+    posts?.close();
+    postStreamSubscription?.cancel();
     posts!.close();
   }
 }

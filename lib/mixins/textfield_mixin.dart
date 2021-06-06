@@ -1,18 +1,19 @@
-
-
 import 'package:flutter/material.dart';
 
 mixin TextFieldMixin {
   Container buildTextField(
-      {required Size size, Icon? prefixIcon, String? hintText, Icon? suffixIcon,required BuildContext context}) {
+      {required Size size, Icon? prefixIcon,TextInputType? keyboardType, String? hintText, TextEditingController? controller,Icon? suffixIcon,required BuildContext context}) {
     return Container(
       width: size.width > 700 ? 300 : size.width,
       child: Card(
+        color: Colors.white10,
         margin: EdgeInsets.only(left: 30, right: 30, top: 30),
         elevation: 11,
         shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.all(Radius.circular(40))),
         child: TextField(
+          keyboardType:keyboardType,
+          controller: controller,
           cursorColor: Theme.of(context).textTheme.bodyText1!.color,
           cursorRadius: Radius.circular(8),
           cursorWidth: 1.5,

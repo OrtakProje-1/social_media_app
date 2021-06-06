@@ -27,13 +27,7 @@ class _FriendsScreenState extends State<FriendsScreen> {
     MyUser? me = usersBlock.getUserFromUid(userBlock.user!.uid);
     return Container(
       height:60,
-      decoration: BoxDecoration(
-        border: Border(
-          bottom: BorderSide(
-            color: Colors.grey.shade300,
-          ),
-        ),
-      ),
+     
       width: double.infinity,
       child: StreamBuilder<QuerySnapshot>(
         stream: profileBlock.streamFriends(userBlock.user!.uid),

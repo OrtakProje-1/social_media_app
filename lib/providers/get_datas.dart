@@ -2,12 +2,10 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:provider/provider.dart';
-import 'package:social_media_app/models/my_user.dart';
 import 'package:social_media_app/providers/messagesBlock.dart';
 import 'package:social_media_app/providers/notificationBlock.dart';
 import 'package:social_media_app/providers/postsBlock.dart';
 import 'package:social_media_app/providers/profileBlock.dart';
-import 'package:social_media_app/providers/usersBlock.dart';
 
 class GetDatas{
 
@@ -33,7 +31,7 @@ class GetDatas{
     if(isSignOut) getClearAllDatas(profileBlock,postsBlock,notificationBlock,messagesBlock);
     await messagesBlock.fetchLastMessages(uid);
     await profileBlock.fetchDatas(uid);
-    await postsBlock.fetchPosts(profileBlock.friendsUid!.valueWrapper!.value);
+    await postsBlock.fetchPosts(profileBlock.friendsUid.valueWrapper!.value);
     await notificationBlock.fetchNotifications(uid);
   }
 
@@ -42,6 +40,10 @@ class GetDatas{
     postsBlock.clearDatas();
     notificationBlock.clearDatas();
     messagesBlock.clearData();
+  }
+
+  Future<void> getFetchPosts(PostsBlock postsBlock,List<String> friendsUid)async{
+    await postsBlock.fetchPosts(friendsUid);
   }
 
 }

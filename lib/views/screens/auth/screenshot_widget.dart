@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:screenshot/screenshot.dart';
+import 'package:social_media_app/util/const.dart';
 
 class ScreenshotWidget extends StatefulWidget {
   final String? url;
@@ -23,19 +24,19 @@ class _ScreenshotWidgetState extends State<ScreenshotWidget> {
     return Container(
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: Colors.primaries[2],
+        color: kPrimaryColor.withOpacity(0.5),
         boxShadow: [
           BoxShadow(
             blurRadius: 3,
             spreadRadius: 1,
-            color: Colors.grey.shade300
+            color: Colors.grey.shade300.withOpacity(0.1)
           ),
         ],
       ),
       width:widget.size,
       height: widget.size,
       margin: EdgeInsets.all(5),
-      padding: EdgeInsets.all(4),
+      padding: EdgeInsets.all(2),
       child:widget.child!=null ? widget.child : ClipRRect(
         borderRadius: BorderRadius.circular(90),
         child: Screenshot(

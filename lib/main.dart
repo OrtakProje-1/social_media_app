@@ -7,6 +7,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:social_media_app/util/const.dart';
 import 'package:social_media_app/views/screens/notification_screen/enum/notification_type.dart';
 import 'package:social_media_app/views/screens/notification_screen/models/notification_sender.dart';
 
@@ -24,15 +25,18 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 }
 
 void showNotification(RemoteMessage message) {
-  Map<String, dynamic> data = message.data;
-  NSender sender = NSender.fromMap(data["nSender"]);
-  NType nType = NType.values[data["nType"]];
+   Map<String, dynamic>? data = message.data;
+   print(data);
+   NSender sender = NSender.fromMap(data);
+   NType nType = NType.values[int.parse(data["nType"])];
+   print(sender);
+   print(nType);
   RemoteNotification? notification = message.notification;
  if(!kIsWeb){
    print("bildirim oluşturuluyor");
     NotificationDetails notificationDetails =
       NotificationDetails(android: androidNotificationDetails);
-  flutterLocalNotificationsPlugin.show(notification.hashCode,
+  flutterLocalNotificationsPlugin.show(getIdFromUid(sender.uid!),
       notification!.title, notification.body, notificationDetails,
       payload: JsonEncoder().convert(data));
  }else{
@@ -45,7 +49,7 @@ AndroidNotificationDetails androidNotificationDetails =
   channel.id,
   channel.name,
   channel.description,
-  color: Colors.cyan.shade800,
+  color:kPrimaryColor,
   importance: Importance.max,
   priority: Priority.high,
 );

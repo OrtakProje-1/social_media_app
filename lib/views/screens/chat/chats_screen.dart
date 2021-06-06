@@ -9,11 +9,11 @@ import 'package:social_media_app/providers/profileBlock.dart';
 import 'package:social_media_app/providers/userBlock.dart';
 import 'package:social_media_app/util/const.dart';
 import 'package:social_media_app/util/router.dart';
-import 'package:social_media_app/views/screens/chat/messages/message_screen.dart';
 import 'package:social_media_app/views/screens/new_message_scree/new_messsage_screen.dart';
 import 'components/body.dart';
 
 class ChatsScreen extends StatefulWidget {
+  ChatsScreen({Key? key}):super(key: key);
   @override
   _ChatsScreenState createState() => _ChatsScreenState();
 }
@@ -43,7 +43,7 @@ class _ChatsScreenState extends State<ChatsScreen> {
             initialData: 0,
             stream: elevation,
             builder: (context, snapshot) {
-              return buildAppBar(snapshot.data, profileBlock.friends!.value,userBlock);
+              return buildAppBar(snapshot.data, profileBlock.friends.value,userBlock);
             }),
       ),
       body: Body(

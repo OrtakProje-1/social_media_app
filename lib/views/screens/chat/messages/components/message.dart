@@ -6,6 +6,8 @@ import 'package:social_media_app/models/my_user.dart';
 import 'package:social_media_app/providers/userBlock.dart';
 import 'package:social_media_app/providers/usersBlock.dart';
 import 'package:social_media_app/util/const.dart';
+import 'package:social_media_app/util/enum.dart';
+import 'package:social_media_app/views/screens/chat/messages/components/file_message.dart';
 import 'package:social_media_app/views/screens/chat/messages/components/image_message.dart';
 import 'package:social_media_app/views/screens/chat/models/chat_message.dart';
 import 'package:flutter/material.dart';
@@ -26,8 +28,8 @@ class Message extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     UserBlock userBlock=Provider.of<UserBlock>(context);
-    bool isMee=message.senderUid==userBlock.user!.uid;
-    MyUser? receiver=Provider.of<UsersBlock>(context).getUserFromUid(message.senderUid);
+    bool isMee=message.sender!.uid==userBlock.user!.uid;
+    MyUser? receiver=Provider.of<UsersBlock>(context).getUserFromUid(message.sender!.uid);
     Widget messageContaint(ChatMessage message) {
       switch (message.messageType) {
         case ChatMessageType.text:
@@ -35,11 +37,11 @@ class Message extends StatelessWidget {
         case ChatMessageType.audio:
           return AudioMessage(message: message,key: PageStorageKey(message.audio!.ref,));
         case ChatMessageType.video:
-          return VideoMessage();
+          return VideoMessage(message: message,);
         case ChatMessageType.image:
           return ImageMessage(message: message);
         default:
-          return SizedBox();
+          return FileMessage(message: message);
       }
     }
 

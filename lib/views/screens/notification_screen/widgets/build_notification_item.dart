@@ -8,13 +8,13 @@ import 'package:social_media_app/providers/notificationBlock.dart';
 import 'package:social_media_app/providers/profileBlock.dart';
 import 'package:social_media_app/providers/userBlock.dart';
 import 'package:social_media_app/providers/usersBlock.dart';
+import 'package:social_media_app/util/const.dart';
 import 'package:social_media_app/util/elapsed_time.dart';
 import 'package:social_media_app/util/router.dart';
 import 'package:social_media_app/views/screens/notification_screen/enum/notification_type.dart';
 import 'package:social_media_app/views/screens/notification_screen/models/notification.dart';
 import 'package:social_media_app/views/screens/post_screen.dart';
 import 'package:social_media_app/views/screens/profileScreen.dart';
-import 'package:social_media_app/views/widgets/userWidgets/BuildUserImageAndIsOnlineWidget.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 
 class NotificationItem extends StatelessWidget {
@@ -30,11 +30,9 @@ class NotificationItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print(notification!.nType);
     bool isFriend = notification!.nType == NType.FRIEND;
     SlidableController _controller = SlidableController();
     NotificationBlock notificationBlock = NotificationBlock();
-    UsersBlock usersBlock = Provider.of<UsersBlock>(context);
     UserBlock userBlock = Provider.of<UserBlock>(context);
     ProfileBlock profileBlock = Provider.of<ProfileBlock>(context);
     MyUser me=MyUser.fromUser(userBlock.user!,token:userBlock.token);
@@ -43,17 +41,16 @@ class NotificationItem extends StatelessWidget {
         actionPane: SlidableDrawerActionPane(),
         controller: _controller,
         secondaryActions: [
-          Container(
-            margin: EdgeInsets.only(left: 8, top: 8, bottom: 8, right: 4),
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(6),
-                color: Colors.red.shade600),
-            child: TextButton(
-              onPressed: () async {
+          InkWell(
+            onTap: () async {
                 _controller.activeState!.close();
                 await notificationBlock.deleteNotification(
                     notification!.nReceiver!.rUid, notification!);
               },
+            child: Container(
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(6),
+                  ),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
@@ -70,20 +67,19 @@ class NotificationItem extends StatelessWidget {
               ),
             ),
           ),
-          Container(
-            margin: EdgeInsets.only(right: 8, top: 8, bottom: 8, left: 4),
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(6),
-                color: Colors.green.shade600),
-            child: TextButton(
-              onPressed: () async {
-                if (!notification!.isRead!) {
+          InkWell(
+            onTap: ()async{
+               if (!notification!.isRead!) {
                   await notificationBlock.updateNotification(
                       notification!.nReceiver!.rUid,
                       notification!..isRead = true);
                 }
                 _controller.activeState!.close();
-              },
+            },
+            child: Container(
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(6),
+                  ),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
@@ -105,12 +101,12 @@ class NotificationItem extends StatelessWidget {
           margin: EdgeInsets.symmetric(vertical: 5),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(7),
-            color: Colors.white,
+            color: Colors.grey.shade800,
             boxShadow: [
               BoxShadow(
                 color: notification!.isRead!
                     ? Colors.grey.shade400
-                    : Colors.pink.shade300,
+                    : kPrimaryColor,
                 blurRadius: notification!.isRead! ? 4 : 6,
               ),
             ],
@@ -228,25 +224,3 @@ class NotificationItem extends StatelessWidget {
     return not.isRead! ? Colors.blue.shade200 : Colors.pink.shade200;
   }
 }
-/*
-
-Card(
-      margin: EdgeInsets.symmetric(vertical: 5),
-      elevation: 8,
-      color: !notification.isRead ? Colors.blue.shade100 : Colors.white,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: ListTile(
-        trailing:getIcon(notification.nType),
-        title: Text(notification.nMessage),
-        subtitle: Text(TimeElapsed.fromDateTime(DateTime.fromMillisecondsSinceEpoch(int.parse(notification.nTime)))),
-        leading:BuildUserImageAndIsOnlineWidget(uid: notification.nSender.uid,usersBlock: usersBlock,),
-        onTap: ()async{
-          await notificationBlock.updateNotification(userBlock.user.uid,notification..isRead=!notification.isRead);
-          if(notification.post!=null){
-            Navigate.pushPage(context,PostScreen(post: notification.post,));
-          }
-        },
-      ),
-    );
-
- */

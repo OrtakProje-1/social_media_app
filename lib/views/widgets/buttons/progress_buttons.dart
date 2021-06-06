@@ -27,14 +27,14 @@ class CustomProgressButton extends StatelessWidget {
   Widget build(BuildContext context) {
     var progressTextButton = ProgressButton.icon(
       height: 45.0,
-      radius: 12.0,
+      radius: 45.0,
       progressIndicator:CircularProgressIndicator(
             value:value,
             valueColor: AlwaysStoppedAnimation<Color>(Colors.white)),
       iconedButtons: {
         ButtonState.idle: IconedButton(
           text:idleText,
-          color: Colors.blueGrey.shade400,
+          color: Colors.white10,
           icon: Icon(
             Icons.send_rounded,
             color: Colors.white,
@@ -42,8 +42,8 @@ class CustomProgressButton extends StatelessWidget {
         ),
         ButtonState.loading: IconedButton(
           text:loadingText,
-          color: Colors.blueGrey.shade400,
-          icon: Icon(Icons.send_rounded),
+          color: Colors.white10,
+          icon: Icon(Icons.history_toggle_off_rounded),
         ),
         ButtonState.fail: IconedButton(
           text:errorText,

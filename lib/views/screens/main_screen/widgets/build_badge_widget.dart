@@ -2,6 +2,7 @@
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:social_media_app/util/const.dart';
 
 class BuildBadgeWidget extends StatelessWidget {
   final Widget widget;
@@ -28,7 +29,7 @@ class BuildBadgeWidget extends StatelessWidget {
                       constraints: BoxConstraints(minWidth:isMini ? 15 : 18, minHeight:isMini ? 15 : 18),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(45),
-                        color: Colors.red,
+                        color:kPrimaryColor.withOpacity(0.8),
                         shape: BoxShape.rectangle,
                       ),
                       padding: EdgeInsets.symmetric(horizontal: 4),

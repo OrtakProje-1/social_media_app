@@ -1,5 +1,3 @@
-
-
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -9,6 +7,7 @@ import 'package:screenshot/screenshot.dart';
 import 'package:social_media_app/mixins/textfield_mixin.dart';
 import 'package:social_media_app/providers/userBlock.dart';
 import 'package:social_media_app/providers/usersBlock.dart';
+import 'package:social_media_app/util/const.dart';
 import 'package:social_media_app/util/router.dart';
 import 'package:social_media_app/views/screens/auth/screenshot_widget.dart';
 import 'package:social_media_app/views/screens/auth/sign_up_screen.dart';
@@ -39,23 +38,12 @@ class _LoginPageState extends State<LoginPage> with TextFieldMixin {
     UserBlock userBlock = Provider.of<UserBlock>(context);
     UsersBlock usersBlock = Provider.of<UsersBlock>(context);
     return Scaffold(
+      backgroundColor: Colors.black,
       appBar: AppBar(
-        title: Text("Giriş Yap".toUpperCase(),
-            textAlign: TextAlign.center,
-            style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 28.0)),
+        title: logoText(size1: 30, size2: 28),
         elevation: 0,
-        backgroundColor: Colors.transparent,
+        backgroundColor: Colors.black,
         centerTitle: true,
-        actions: [
-          if (result && imagePath != null) ...[
-            ClipRRect(
-              borderRadius: BorderRadius.circular(90),
-              child: Image.file(File(imagePath!)),
-            ),
-          ]
-        ],
       ),
       body: Builder(builder: (context) {
         return Stack(
@@ -88,7 +76,7 @@ class _LoginPageState extends State<LoginPage> with TextFieldMixin {
                             Color(0xBB0004F1)
                           ],
                           [
-                            Colors.red.shade300.withOpacity(0.2),
+                            Colors.red.shade300.withOpacity(0.4),
                             Color(0x990004F1)
                           ],
                         ],
@@ -120,14 +108,11 @@ class _LoginPageState extends State<LoginPage> with TextFieldMixin {
                           child: Container(
                             height: 120,
                             width: 120,
-                            color: Theme.of(context).textTheme.bodyText1!.color,
+                            color: Colors.black,
                             padding: EdgeInsets.all(20),
                             child: Center(
-                                child: FlutterLogo(
-                              size: 80,
-                              textColor: Colors.black,
-                              style: FlutterLogoStyle.stacked,
-                            )),
+                                child: logoText(
+                                    size1: 55, size2: 50, isMini: true)),
                           ),
                         ),
                       ),
@@ -136,7 +121,7 @@ class _LoginPageState extends State<LoginPage> with TextFieldMixin {
                       size: size,
                       context: context,
                       hintText: "E-mail",
-                      prefixIcon: Icon(Icons.alternate_email_rounded),
+                      prefixIcon: Icon(Icons.alternate_email_rounded,color: kPrimaryColor.withOpacity(0.8),),
                     ),
                     Column(
                       children: [
@@ -144,7 +129,7 @@ class _LoginPageState extends State<LoginPage> with TextFieldMixin {
                           size: size,
                           context: context,
                           hintText: "Şifre",
-                          prefixIcon: Icon(Icons.lock_outlined),
+                          prefixIcon: Icon(Icons.lock_outlined,color: kPrimaryColor.withOpacity(0.8)),
                         ),
                         Padding(
                           padding: const EdgeInsets.symmetric(
@@ -153,8 +138,7 @@ class _LoginPageState extends State<LoginPage> with TextFieldMixin {
                             width: double.maxFinite,
                             child: Text("Şifreni mi unuttun?",
                                 textAlign: TextAlign.right,
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold)),
+                                style: TextStyle(fontWeight: FontWeight.bold)),
                           ),
                         ),
                       ],
@@ -163,8 +147,8 @@ class _LoginPageState extends State<LoginPage> with TextFieldMixin {
                       width: 200,
                       padding: EdgeInsets.all(30.0),
                       child: RawMaterialButton(
-                        padding: EdgeInsets.symmetric(vertical: 16.0),
-                        fillColor: Colors.pink,
+                        padding: EdgeInsets.symmetric(vertical: 13.0),
+                        fillColor: Colors.black.withOpacity(0.05),
                         onPressed: () async {
                           try {
                             Directory temporaryDir =
@@ -183,10 +167,13 @@ class _LoginPageState extends State<LoginPage> with TextFieldMixin {
                         },
                         elevation: 11,
                         shape: RoundedRectangleBorder(
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(40.0))),
+                          borderRadius: BorderRadius.all(Radius.circular(40.0)),
+                          side: BorderSide(
+                              width: 1, color: kPrimaryColor.withOpacity(0.5)),
+                        ),
                         child: Text("Giriş Yap",
-                            style: TextStyle(color: Colors.white70)),
+                            style:
+                                TextStyle(color: Colors.white, fontSize: 19)),
                       ),
                     ),
                   ],
@@ -209,7 +196,7 @@ class _LoginPageState extends State<LoginPage> with TextFieldMixin {
                               child: SignInButton(
                                 btnText: "Google ile giriş yap",
                                 btnTextColor: Colors.white70,
-                                btnColor: Colors.black.withOpacity(0.65),
+                                btnColor: Colors.black.withOpacity(0.05),
                                 buttonType: ButtonType.google,
                                 elevation: 12,
                                 // imagePosition: ImagePosition.left,
@@ -217,7 +204,12 @@ class _LoginPageState extends State<LoginPage> with TextFieldMixin {
                                 // btnTextColor: Colors.white70,
                                 buttonSize: ButtonSize.medium,
                                 shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12)),
+                                  borderRadius: BorderRadius.circular(12),
+                                  side: BorderSide(
+                                    width: 1,
+                                    color: kPrimaryColor.withOpacity(0.5)
+                                  ),
+                                ),
                                 onPressed: () async {
                                   await userBlock.signInWithGoogle(
                                       context, usersBlock);
@@ -237,8 +229,7 @@ class _LoginPageState extends State<LoginPage> with TextFieldMixin {
                           TextButton(
                             child: Text(
                               "Kayıt ol".toUpperCase(),
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold),
+                              style: TextStyle(fontWeight: FontWeight.bold,color: kPrimaryColor),
                             ),
                             onPressed: () {
                               Navigate.pushPage(context, SignUpScreen());

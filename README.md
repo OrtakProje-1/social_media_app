@@ -32,7 +32,7 @@ samples, guidance on mobile development, and a full API reference.
 | Google Girişi                  | ✔️                 |  ✔️               |
 | Kötü Kelimeleri Kapatma        | ✔️                 |  ✔️               |
 | Koyu tema                      | ✔️                 |  ✔️               |
-| Mesaj Gönderme ( Ses )         | ✔️(son güncelleme) |  (test edilmedi) |
+| Mesaj Gönderme ( Ses )         | ✔️                 |  (test edilmedi) |
 | Post Gönderme ( Yazı )         | ✔️                 |  (test edilmedi) |
 | Post Gönderme ( Resim )        | ✔️                 |  (test edilmedi) |
 | Arkadaş Ekleme                 | ✔️                 |  (test edilmedi) |
@@ -42,13 +42,13 @@ samples, guidance on mobile development, and a full API reference.
 | Mesaj Gönderme ( Yazı )        | ✔️                 |  (test edilmedi) |
 | Mesaj Gönderme ( Resim )       | ✔️                 |  (test edilmedi) |
 | Oturumu Kapatma                | ✔️                 |  (test edilmedi) |
-| Kullanıcı Bildirimleri         | ✔️ (kısmen)        |  (test edilmedi) |
+| Kullanıcı Bildirimleri         | ✔️                 |  (test edilmedi) |
+| Mesaj Gönderme ( Video )       | ✔️                 |  (test edilmedi) |
+| Mesaj Gönderme ( Dosya )       | ✔️                 |  (test edilmedi) |
+| Uçtan uca şifreleme            | ✔️ (sadece metin)  |  (test edilmedi) |
 | Post Gönderme ( Video )        | ✖️                 |  ✖️               |
 | Post Gönderme ( Ses )          | ✖️                 |  ✖️               |
-| Mesaj Gönderme ( Video )       | ✖️                 |  ✖️               |
-| Mesaj Gönderme ( Dosya )       | ✖️                 |  ✖️               |
 | Profil Güncelleme              | ✖️                 |  ✖️               |
-| Kullanıcıyı Şikayet Etme       | ✖️                 |  ✖️               |
 | Kullanıcıyı Engelleme          | ✖️                 |  ✖️               |
 | Gönderiyi Kaydetme             | ✖️                 |  ✖️               |
 | Diğer Kullanıcılardan bahsetme | ✖️                 |  ✖️               |

@@ -28,11 +28,12 @@ class UsersBlock{
   }
 
   void addUser(MyUser user)async{
+    print("publicKey= "+user.publicKey.toString());
     String? token=await FirebaseMessaging.instance.getToken();
-    _firestore!.collection("Users").doc(user.uid).set((user..token=token).toMap());
+    _firestore!.collection("Users").doc(user.uid).set((user..token=token).toMap(),SetOptions(merge: true));
   }
-  void updateUser({required MyUser updatedUser}){
-    _firestore!.collection("Users").doc(updatedUser.uid).update(updatedUser.toMap());
+  Future<void> updateUser({required MyUser updatedUser})async{
+   await _firestore!.collection("Users").doc(updatedUser.uid).update(updatedUser.toMap());
   }
 
   MyUser? getUserFromUid(String? uid){
@@ -44,7 +45,10 @@ class UsersBlock{
     }
   }
 
+  
+
   void dispose(){
+    users.close();
     _usersSubsricption?.cancel();
   }
 }

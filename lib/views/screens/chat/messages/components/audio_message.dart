@@ -3,7 +3,6 @@
 import 'dart:async';
 
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firestore_ui/stream_subscriber_mixin.dart';
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:provider/provider.dart';
@@ -42,13 +41,17 @@ class _AudioMessageState extends State<AudioMessage> {
   }
 
   initPlayer() async {
-    Duration? dur = await _player.setAudioSource(
-      AudioSource.uri(Uri.parse(widget.message!.audio!.downloadURL!)),
-    );
-  if(mounted)  setState(() {
-      millisecond = dur!.inMilliseconds.toDouble();
-    });
-    listenPlayer();
+    try {
+      Duration? dur = await _player.setAudioSource(
+        AudioSource.uri(Uri.parse(widget.message!.audio!.downloadURL!)),
+      );
+        if(mounted)  setState(() {
+        millisecond = dur!.inMilliseconds.toDouble();
+      });
+      listenPlayer();
+    } on Exception catch (e) {
+      // TODO
+    }
   }
 
   listenPlayer(){
@@ -84,7 +87,7 @@ class _AudioMessageState extends State<AudioMessage> {
       padding: EdgeInsets.all(kDefaultPadding * 0.4),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(8),
-        color: getMessageColor(widget.message!.senderUid, userBlock.user!.uid),
+        color: getMessageColor(widget.message!.sender!.uid, userBlock.user!.uid),
       ),
       child: Row(
         children: [
@@ -93,7 +96,7 @@ class _AudioMessageState extends State<AudioMessage> {
             height: 40,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(8),
-              color: getMessageTextColor(widget.message!.senderUid, my.uid)
+              color: getMessageTextColor(widget.message!.sender!.uid, my.uid)
                   .withOpacity(0.4),
             ),
             child: Center(
@@ -121,7 +124,7 @@ class _AudioMessageState extends State<AudioMessage> {
               child: Icon(
                 isPlaying ? Icons.pause_rounded : Icons.play_arrow_rounded,
                 size: 30,
-                color: getMessageTextColor(widget.message!.senderUid, my.uid),
+                color: getMessageTextColor(widget.message!.sender!.uid, my.uid),
               ),
             ),
           ),
@@ -147,9 +150,9 @@ class _AudioMessageState extends State<AudioMessage> {
                         max: millisecond,
                         min: 0,
                         activeColor: getMessageTextColor(
-                            widget.message!.senderUid, my.uid),
+                            widget.message!.sender!.uid, my.uid),
                         inactiveColor: getMessageTextColor(
-                                widget.message!.senderUid, my.uid)
+                                widget.message!.sender!.uid, my.uid)
                             .withOpacity(0.3),
                         onChanged: (i) {
                          if(mounted) setState(() {

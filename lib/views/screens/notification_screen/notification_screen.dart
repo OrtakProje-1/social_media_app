@@ -3,9 +3,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:social_media_app/providers/notificationBlock.dart';
 import 'package:social_media_app/providers/profileBlock.dart';
 import 'package:social_media_app/providers/userBlock.dart';
-import 'package:social_media_app/views/screens/main_screen/widgets/build_badge_widget.dart';
 import 'package:social_media_app/views/screens/notification_screen/enum/notification_type.dart';
 import 'package:social_media_app/views/screens/notification_screen/models/notification.dart';
 import 'package:social_media_app/views/screens/notification_screen/widgets/build_notification_item.dart';
@@ -20,92 +20,53 @@ class NotificationsScreen extends StatefulWidget {
 }
 
 class _NotificationsScreenState extends State<NotificationsScreen> {
-  List<String> elemans = ["Hepsi", "Arkadaşlık", "Favori", "Yorum", "Kayıt"];
+  List<String> elemans = ["Hepsi", "Arkadaşlık", "Favori", "Yorum", "Bahsetme"];
 
-  Stream<QuerySnapshot>? stream;
   int pValue =0;
   @override
   Widget build(BuildContext context) {
     UserBlock userBlock = Provider.of<UserBlock>(context);
-    ProfileBlock profileBlock = Provider.of<ProfileBlock>(context);
-    stream = getAllStream(profileBlock, userBlock);
-    return DefaultTabController(
-      length: 4,
-      child: Scaffold(
-        appBar: AppBar(
-          elevation: 8,
-          title: Text("Bildirimler"),
-          centerTitle: true,
-          actions: [
-            BuildPopupMenu(value: 0,),
-          ],
-        ),
-        body: bodyy(userBlock, profileBlock, stream),
+    return Scaffold(
+      appBar: AppBar(
+        elevation: 0,
+        title: Text("Bildirimler"),
+        centerTitle: true,
+        actions: [
+          BuildPopupMenu(value:pValue,onSelected: (i){
+            setState(() {
+              pValue=i;
+            });
+          },),
+        ],
       ),
+      body: bodyy(userBlock,pValue),
     );
   }
 
-  void onSelected(int index, ProfileBlock profileBlock, UserBlock userBlock) {
-    String value=elemans[index];
-    print(value);
-    if (value == "Hepsi") {
-      stream = getAllStream(profileBlock, userBlock);
-    } else if (value == "Arkadaşlık") {
-      stream = getStreamUnRead(NType.FRIEND, profileBlock, userBlock);
-    } else if (value == "Favori") {
-      stream = getStreamUnRead(NType.LIKE, profileBlock, userBlock);
-    } else if (value == "Yorum") {
-      stream = getStreamUnRead(NType.COMMENT, profileBlock, userBlock);
-    } else if (value == "Kayıt") {
-      stream = getStreamUnRead(NType.SAVED, profileBlock, userBlock);
-    }
-    pValue=index;
-    setState(() {});
-  }
+ 
 
-  Stream<QuerySnapshot> getAllStream(
-      ProfileBlock profileBlock, UserBlock userBlock) {
-    return profileBlock
-        .notification(userBlock.user!.uid)
-        .orderBy("nTime", descending: true)
-        .snapshots();
-  }
-
-  Stream<QuerySnapshot> getStreamUnRead(
-      NType type, ProfileBlock profileBlock, UserBlock userBlock) {
-    return profileBlock
-        .notification(userBlock.user!.uid)
-        .where("nType", isEqualTo: type.index)
-        .where("isRead", isEqualTo: false)
-        .snapshots();
-  }
-
-  Stream<QuerySnapshot> getStream(
-      NType type, ProfileBlock profileBlock, UserBlock userBlock) {
-    return profileBlock
-        .notification(userBlock.user!.uid)
-        .where("nType", isEqualTo: type.index)
-        .snapshots();
-  }
-
-  Widget bodyy(UserBlock userBlock, ProfileBlock profileBlock,
-      Stream<QuerySnapshot>? stream) {
-    return StreamBuilder<QuerySnapshot>(
-      stream: stream,
+  Widget bodyy(UserBlock userBlock,int pValue) {
+    NotificationBlock notificationBlock=NotificationBlock();
+    NType? type=getType(pValue);
+    return StreamBuilder<List<MyNotification>>(
+      stream:notificationBlock.notifications,
+      initialData:notificationBlock.notifications.valueWrapper!.value,
       builder: (c, snap) {
+        print("notification ekranı");
         if (snap.hasData) {
-          if (snap.data!.docs.isNotEmpty) {
-            List<QueryDocumentSnapshot> notify = snap.data!.docs;
+          if (snap.data!.isNotEmpty) {
+            List<MyNotification> notify = snap.data!;
+            List<MyNotification> filterNot = getNotifications(notify, type);
             return ListView.builder(
               physics: BouncingScrollPhysics(),
-              padding: EdgeInsets.symmetric(horizontal: 8),
-              itemCount: snap.data!.size,
+              padding: EdgeInsets.symmetric(horizontal: 8,vertical: 3),
+              itemCount: filterNot.length,
               itemBuilder: (c, i) {
                 return NotificationItem(
-                  notification: MyNotification.fromMap(notify[i].data()),
+                  notification:filterNot[i],
                   index: i,
-                  nextNotification: i <= snap.data!.size - 2
-                      ? MyNotification.fromMap(notify[i + 1].data())
+                  nextNotification: i <= filterNot.length - 2
+                      ? filterNot[i + 1]
                       : null,
                 );
               },
@@ -115,5 +76,21 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
         return EmptyNotifications();
       },
     );
+  }
+
+  List<MyNotification> getNotifications(List<MyNotification> nots,NType? type){
+    if(type==null){
+      return nots;
+    }else{
+      return nots.where((e) =>e.nType==type).toList();
+    }
+  }
+
+   NType? getType(int i) {
+    if (i == 0) return null;
+    if (i == 1) return NType.FRIEND;
+    if (i == 2) return NType.LIKE;
+    if (i == 3) return NType.COMMENT;
+    if (i == 4) return NType.SAVED;
   }
 }

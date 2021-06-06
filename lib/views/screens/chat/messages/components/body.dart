@@ -32,7 +32,7 @@ class Body extends StatelessWidget {
             children: [
               if (snap.hasData) ...[
                 if (snap.data!.docs.isEmpty) ...[
-                  empty(rUid),
+                  empty(rUid,context),
                 ],
                 if (snap.data!.docs.isNotEmpty) ...[
                   buildMessageList(snap, select,userBlock,controller),
@@ -65,7 +65,7 @@ class Body extends StatelessWidget {
             return GestureDetector(
               onLongPress: () {
                 print("Long pressed isSelect= " + isSelected.toString());
-               if(!(message.isRemoved??true)&&message.senderUid==userBlock.user!.uid){
+               if(!(message.isRemoved??true)&&message.sender!.uid==userBlock.user!.uid){
                   if (!isSelected)
                   longPressed!(snap.data!.docs[index]);
                 else
@@ -73,7 +73,7 @@ class Body extends StatelessWidget {
                }
               },
               onTap: () {
-                if(!(message.isRemoved??true)&&message.senderUid==userBlock.user!.uid){
+                if(!(message.isRemoved??true)&&message.sender!.uid==userBlock.user!.uid){
                   if (select) {
                   if (isSelected) {
                     removeSelected!(snap.data!.docs[index]);
@@ -92,13 +92,60 @@ class Body extends StatelessWidget {
     );
   }
 
-  Widget empty(String? uid) {
+  Widget empty(String? uid,BuildContext context) {
     return Expanded(
       child: Column(
         children: [
           Expanded(
-            child: Center(
-              child: Text("Hiç Mesajınız Yok"),
+            child: Column(
+              children: [
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 10),
+                  child: Row(
+                    children: [
+                      Container(child: Icon(Icons.lock_outline,size: 33,)),
+                      Container(
+                        width:20,
+                        height: 2,
+                        color: Colors.white,
+                      ),
+                      Container(
+                        height: 20,
+                        width: 2,
+                        color: Colors.white
+                      ),
+                      Expanded(
+                        child: Container(
+                          padding: EdgeInsets.all(5),
+                          margin: EdgeInsets.symmetric(vertical: 15,horizontal: 2),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                              color: Colors.white60,
+                              width: 1.6
+                            ),
+                          ),
+                          child: Center(
+                            child: Text("Metinleriniz uçtan uca şifrelenmiştir",style: TextStyle(fontSize: 15,fontWeight: FontWeight.bold),),
+                          ),
+                        ),
+                      ),
+                      Container(
+                        height: 20,
+                        width: 2,
+                        color: Colors.white
+                      ),
+                      Container(
+                        width:20,
+                        height: 2,
+                        color: Colors.white,
+                      ),
+                      Container(child: Icon(Icons.lock_outline,size: 33,)),
+                     
+                    ],
+                  ),
+                ),
+              ],
             ),
           ),
           ChatInputField(

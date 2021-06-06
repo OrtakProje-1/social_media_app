@@ -26,7 +26,11 @@ dependencies:
   flutter_localizations: # Add this line
     sdk: flutter 
 
+  crypton: ^2.0.1
 
+  #local db
+  hive: ^2.0.4
+  #instabug_flutter:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
@@ -50,6 +54,7 @@ dependencies:
   #video player
   video_player: ^2.1.1
   video_viewer: ^1.2.1
+  chewie: ^1.1.0
 
   #bildirim için gerekli
   firebase_messaging: ^9.1.4
@@ -59,14 +64,20 @@ dependencies:
   flutter_slidable: ^0.6.0
 
   #video kırpma
-  #video_trimmer: ^0.4.0
+  video_trimmer: ^0.4.0
 
+  animated_text_kit: ^4.2.1
+  
   #image editör
   #image_editor: ^1.0.0
+  
+  #video resmi için
+  video_thumbnail: ^0.3.3
 
   #dosya konumları
   path_provider: ^2.0.1
 
+  #widget ın resmini çekmek içiçn
   screenshot: ^1.0.0-nullsafety.1
 
   flutter_svg: ^0.22.0
@@ -97,8 +108,7 @@ dependencies:
 
   #ui için gerekli
   wave: ^0.2.0
-  firestore_ui: ^1.20.0
-  flutter_chat_ui: ^1.0.1
+  #firestore_ui: ^1.20.0
 
   #özel iconlar için
   fluttericon: ^2.0.0
@@ -112,11 +122,15 @@ dependencies:
 
   #dosya seçmek için gereklid
   file_picker: ^3.0.1
+  flutter_document_picker: ^5.0.1-nullsafety.0
   images_picker: ^1.2.4
 
   #çoklu resimlerde kaydırma efekti için
   smooth_page_indicator: ^0.3.0-nullsafety.0
   flutter_card_swipper: ^0.4.0
+
+  #button tıklama efekti
+  like_button: ^2.0.2
 
 dev_dependencies:
   flutter_test:

@@ -1,6 +1,7 @@
 
 
 import 'package:provider/provider.dart';
+import 'package:social_media_app/providers/crypto_block.dart';
 import 'package:social_media_app/providers/userBlock.dart';
 import 'package:social_media_app/util/const.dart';
 import 'package:social_media_app/views/screens/chat/models/chat_message.dart';
@@ -17,21 +18,26 @@ class TextMessage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     UserBlock userBlock=Provider.of<UserBlock>(context);
+    CryptoBlock cryptoBlock=CryptoBlock();
     return Container(
+      constraints: BoxConstraints(
+        maxWidth: MediaQuery.of(context).size.width*0.65,
+      ),
       padding: EdgeInsets.symmetric(
         horizontal: kDefaultPadding * 0.75,
         vertical: kDefaultPadding / 2,
       ),
       decoration: BoxDecoration(
-        color:getMessageColor(message!.senderUid,userBlock.user!.uid),
-        borderRadius: BorderRadius.circular(30),
+        color:getMessageColor(message!.sender!.uid,userBlock.user!.uid),
+        borderRadius: BorderRadius.circular(8),
+        
       ),
       child: Text(
-        message!.text!,
+        cryptoBlock.decrypt(userBlock.user!.uid==message!.sender!.uid ? message!.senderCryptedText! : message!.recCryptedText!),
         style: TextStyle(
           fontWeight: FontWeight.bold,
           fontStyle: message!.isRemoved??true ? FontStyle.italic : FontStyle.normal,
-          color: message!.senderUid!.isEmpty
+          color: message!.sender!.uid!.isEmpty
               ? Colors.white
               :message!.isRemoved??true ? Colors.black54 : Theme.of(context).textTheme.bodyText1!.color,
         ),

@@ -7,6 +7,7 @@ import 'package:social_media_app/models/my_user.dart';
 import 'package:social_media_app/providers/profileBlock.dart';
 import 'package:social_media_app/providers/userBlock.dart';
 import 'package:social_media_app/providers/usersBlock.dart';
+import 'package:social_media_app/util/const.dart';
 import 'package:social_media_app/views/screens/search_screen/widgets/build_user_listile.dart';
 
 class SearchScreen extends StatefulWidget {
@@ -89,7 +90,7 @@ class _SearchScreenState extends State<SearchScreen> {
                     MyUser user = filteredUsers[i];
                     bool isMee = user.uid == userBlock.user!.uid;
                     bool isRequest=requests.any((e) =>e.uid==user.uid);
-                    bool isFriend=profileBlock.friends!.valueWrapper!.value.any((e) =>e.uid==user.uid);
+                    bool isFriend=profileBlock.friends.valueWrapper!.value.any((e) =>e.uid==user.uid);
                     bool result=isMee||isRequest||isFriend;
                     return BuildUserListile(
                       onPressed: result
@@ -101,11 +102,11 @@ class _SearchScreenState extends State<SearchScreen> {
                                       .getUserFromUid(userBlock.user!.uid)!);
                             },
                       user: user,
-                      textColor:result ? Colors.grey.shade100.withOpacity(0.4) : null,
+                      shape: StadiumBorder(),
+                      primary: kPrimaryColor.withOpacity(0.7),
                       buttonBackgroundColor: result ? Colors.grey.shade100.withOpacity(0.2) : null,
                       icon: Icon(
                         isRequest ? Icons.person_outlined : Icons.person_add_alt,
-                        //color: result ? Colors.red.shade100 : Colors.red.shade300,
                       ),
                       mesaj: isMee ? "Bu sizsiniz" :isRequest ? "İstek Gönderildi" :isFriend ? "Arkadaşsınız" : "Arkadaş Ekle",
                     );

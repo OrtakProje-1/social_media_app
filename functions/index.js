@@ -21,11 +21,9 @@ exports.bildirimler = functions.firestore.document("Users/{userUid}/notification
           clickAction: "FLUTTER_NOTIFICATION_CLICK",
         },
         data:{
-          nSender: {
-            senderUid:doc.nSender.uid,
-            displayName:doc.nSender.displayName,
-            photoURL:doc.nSender.photoURL
-          },
+          senderUid:doc.nSender.uid,
+          displayName:doc.nSender.displayName,
+          photoURL:doc.nSender.photoURL,
           nType:doc.nType
         }
       }
@@ -65,4 +63,56 @@ exports.badwords=functions.firestore.document("Posts/{postId}").onCreate(async(s
   } 
   return "badwords bitti";
 
+});
+
+exports.messageNotification = functions.firestore.document("Messages/{docId}/messages/{messageId}").onCreate( async(snap,context)=>{
+  const doc=snap.data();
+  const mesaj=doc.text;
+  var title=(doc.sender.displayName)+" Kullanıcısı size "+getStringFromType(doc.messageType)+" gönderdi."
+  var body;
+  if(doc.receiver.rToken!=null){
+    if(String(mesaj).length>0){
+      console.log("Mesaj= ",mesaj);
+      body=mesaj;
+    }else{
+      body=getStringFromType(doc.messageType);
+    }
+  
+    const payload = {
+      notification: {
+        title: title,
+        body: body,
+        badge: '1',
+        sound: 'default',
+        clickAction: "FLUTTER_NOTIFICATION_CLICK",
+      },
+      data:{
+        senderUid:String(doc.sender.uid),
+        displayName:String(doc.sender.displayName),
+        photoURL:String(doc.sender.photoURL),
+        nType:String(doc.messageType),
+      }
+    }
+  
+    admin.messaging().sendToDevice(doc.receiver.rToken,payload).then(as=>{
+      console.log(doc.receiver.rUid, " kullanıcısına bildirim gönderildi");
+    }).catch(hata => {
+      console.log("hata oluştu= ", hata,"payload= ",payload);
+    })
+  }
+
+  function getStringFromType(type){
+    if(type==0){
+      return "Mesaj";
+    }else if(type==1){
+      return "Ses";
+    }else if(type==2){
+      return "Resim";
+    }else if(type==3){
+      return "Video";
+    }else if(type==4){
+      return "Dosya";
+    }
+  }
+  
 });

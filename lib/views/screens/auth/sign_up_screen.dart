@@ -1,16 +1,12 @@
-
-
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_card_swipper/widgets/flutter_page_indicator/flutter_page_indicator.dart';
-import 'package:flutter_card_swipper/widgets/transformer_page_view/transformer_page_view.dart';
 import 'dart:math' as math;
 import 'package:provider/provider.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:social_media_app/mixins/textfield_mixin.dart';
 import 'package:social_media_app/providers/userBlock.dart';
-import 'package:social_media_app/providers/usersBlock.dart';
+import 'package:social_media_app/util/const.dart';
 import 'package:social_media_app/util/router.dart';
 import 'package:social_media_app/views/screens/auth/loginPage.dart';
 import 'package:social_media_app/views/screens/auth/screenshot_widget.dart';
@@ -24,12 +20,13 @@ class SignUpScreen extends StatefulWidget {
   _SignUpScreenState createState() => _SignUpScreenState();
 }
 
-class _SignUpScreenState extends State<SignUpScreen> with TextFieldMixin{
+class _SignUpScreenState extends State<SignUpScreen> with TextFieldMixin {
   int avatarIndex = 0;
   SwiperController? _swiperController;
   bool result = false;
   String? imagePath;
-  List<ScreenshotController> controllers=List.generate(100, (index) => ScreenshotController());
+  List<ScreenshotController> controllers =
+      List.generate(100, (index) => ScreenshotController());
 
   @override
   void initState() {
@@ -42,23 +39,13 @@ class _SignUpScreenState extends State<SignUpScreen> with TextFieldMixin{
     final size = MediaQuery.of(context).size;
     UserBlock userBlock = Provider.of<UserBlock>(context);
     return Scaffold(
+      backgroundColor: Colors.black,
       appBar: AppBar(
-        title: Text("Kayıt ol".toUpperCase(),
-            textAlign: TextAlign.center,
-            style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 28.0)),
+        title:logoText(size1: 30, size2: 28),
         elevation: 0,
         backgroundColor: Colors.transparent,
         centerTitle: true,
-        actions: [
-          if (result && imagePath != null) ...[
-            ClipRRect(
-              borderRadius: BorderRadius.circular(90),
-              child: Image.file(File(imagePath!)),
-            ),
-          ]
-        ],
+       
       ),
       body: Builder(builder: (context) {
         return Stack(
@@ -121,8 +108,8 @@ class _SignUpScreenState extends State<SignUpScreen> with TextFieldMixin{
                     Padding(
                       padding: const EdgeInsets.only(top: 10),
                       child: Swiper(
-                        onIndexChanged: (i){
-                          avatarIndex=i;
+                        onIndexChanged: (i) {
+                          avatarIndex = i;
                         },
                         itemWidth: 100,
                         layout: SwiperLayout.TINDER,
@@ -132,8 +119,9 @@ class _SignUpScreenState extends State<SignUpScreen> with TextFieldMixin{
                         controller: _swiperController,
                         itemBuilder: (c, i) {
                           return ScreenshotWidget(
-                            controller: controllers[i],
-                            url:"https://avatars.dicebear.com/api/avataaars/:seed$i.svg");
+                              controller: controllers[i],
+                              url:
+                                  "https://avatars.dicebear.com/api/avataaars/:seed$i.svg");
                         },
                       ),
                     ),
@@ -143,9 +131,11 @@ class _SignUpScreenState extends State<SignUpScreen> with TextFieldMixin{
                       hintText: "Kullanıcı Adı",
                       prefixIcon: Icon(
                         Icons.person_outline_rounded,
+                        color: kPrimaryColor,
                       ),
                       suffixIcon: Icon(
                         Icons.check_circle,
+                        color: kPrimaryColor,
                       ),
                     ),
                     buildTextField(
@@ -154,25 +144,29 @@ class _SignUpScreenState extends State<SignUpScreen> with TextFieldMixin{
                       hintText: "E-mail",
                       prefixIcon: Icon(
                         Icons.alternate_email_rounded,
+                        color: kPrimaryColor,
                       ),
                       suffixIcon: Icon(
                         Icons.check_circle,
+                        color: kPrimaryColor,
                       ),
                     ),
                     buildTextField(
-                      size:size,
+                      size: size,
                       context: context,
                       hintText: "Şifre",
                       prefixIcon: Icon(
                         Icons.lock_outline_rounded,
+                        color: kPrimaryColor,
                       ),
                     ),
                     buildTextField(
-                      size:size,
+                      size: size,
                       context: context,
                       hintText: "Şifre Tekrar",
                       prefixIcon: Icon(
                         Icons.lock_outline_rounded,
+                        color: kPrimaryColor,
                       ),
                     ),
                     Container(
@@ -180,15 +174,15 @@ class _SignUpScreenState extends State<SignUpScreen> with TextFieldMixin{
                       padding: EdgeInsets.all(30.0),
                       child: RawMaterialButton(
                         padding: EdgeInsets.symmetric(vertical: 16.0),
-                        fillColor: Colors.pink,
+                        fillColor: Colors.black.withOpacity(0.05),
                         onPressed: () async {
                           print(avatarIndex);
                           try {
                             Directory temporaryDir =
                                 await getTemporaryDirectory();
-                            String? path = await controllers[avatarIndex].captureAndSave(
-                                temporaryDir.path,
-                                fileName: "${DateTime.now()}.png");
+                            String? path = await controllers[avatarIndex]
+                                .captureAndSave(temporaryDir.path,
+                                    fileName: "${DateTime.now()}.png");
                             print(path);
                             setState(() {
                               result = true;
@@ -200,10 +194,16 @@ class _SignUpScreenState extends State<SignUpScreen> with TextFieldMixin{
                         },
                         elevation: 11,
                         shape: RoundedRectangleBorder(
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(40.0))),
+                          borderRadius: BorderRadius.all(Radius.circular(40.0)),
+                          side: BorderSide(
+                            width: 1,
+                            color: kPrimaryColor.withOpacity(0.5)
+                          ),
+                        ),
                         child: Text("Kayıt Ol",
-                            style: TextStyle(color: Colors.white70,fontWeight: FontWeight.bold)),
+                            style: TextStyle(
+                                color: Colors.white70,
+                                fontWeight: FontWeight.bold)),
                       ),
                     ),
                   ],
@@ -220,8 +220,7 @@ class _SignUpScreenState extends State<SignUpScreen> with TextFieldMixin{
                           TextButton(
                             child: Text(
                               "Giriş yap".toUpperCase(),
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold),
+                              style: TextStyle(fontWeight: FontWeight.bold,color: kPrimaryColor),
                             ),
                             onPressed: () async {
                               bool result = await Navigator.maybePop(context);
@@ -242,6 +241,4 @@ class _SignUpScreenState extends State<SignUpScreen> with TextFieldMixin{
       }),
     );
   }
-
-  
 }

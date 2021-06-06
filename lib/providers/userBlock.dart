@@ -2,33 +2,35 @@
 
 import 'dart:async';
 
+import 'package:crypton/crypton.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:provider/provider.dart';
-import 'package:social_media_app/database/firebase_yardimci.dart';
 import 'package:social_media_app/models/my_user.dart';
 import 'package:social_media_app/providers/get_datas.dart';
+import 'package:social_media_app/providers/crypto_block.dart';
 import 'package:social_media_app/providers/profileBlock.dart';
 import 'package:social_media_app/providers/usersBlock.dart';
 import 'package:social_media_app/util/router.dart';
 import 'package:social_media_app/views/screens/auth/loginPage.dart';
-import 'package:social_media_app/views/screens/main_screen/main_screen.dart';
+import 'package:social_media_app/views/screens/splash_screen.dart/splash_screen.dart';
 
 class UserBlock {
+  CryptoBlock? _hiveBlock;
   UserBlock(){
     init();
   }
 
   void init()async{
+    _hiveBlock=CryptoBlock();
   }
+
 
   User? _user;
   String? _token;
-
   String? get token=>_token;
   User? get user => _user;
 
@@ -36,11 +38,15 @@ class UserBlock {
     _user = newUser;
   }
 
+ 
+
   Future<void> signOut(BuildContext context) async {
+    GetDatas().getAllDatas(context,user!.uid,isSignOut: true);
     await FirebaseAuth.instance.signOut();
     GoogleSignIn googleSignIn = GoogleSignIn();
     await googleSignIn.signOut();
     await userOffline(context);
+    this.user=null;
     Navigate.pushPageWithFadeAnimation(context, LoginPage());
   }
 
@@ -74,11 +80,11 @@ class UserBlock {
           usersBlock.addUser(MyUser.fromUser(user,token:token));
         }
         await GetDatas().getAllDatas(context,user.uid,isSignOut: true);
-        Navigate.pushPageReplacement(context, MainScreen());
+        Navigate.pushPageReplacement(context, SplashScreen(user: user,));
       } else {
-        final GoogleSignInAccount googleUser = await (GoogleSignIn().signIn() as FutureOr<GoogleSignInAccount>);
+        final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
         final GoogleSignInAuthentication googleAuth =
-            await googleUser.authentication;
+            await googleUser!.authentication;
         final GoogleAuthCredential googleAuthCredential =
             GoogleAuthProvider.credential(
           accessToken: googleAuth.accessToken,
@@ -91,10 +97,12 @@ class UserBlock {
         bool isSavedUser = usersBlock.users.valueWrapper!.value
             .any((element) => element.uid == user.uid);
         if (!isSavedUser) {
-          usersBlock.addUser(MyUser.fromUser(user,token: token));
+          CryptoBlock cryptoBlock=CryptoBlock();
+          RSAKeypair keys=await cryptoBlock.getKeys(user.uid);
+          usersBlock.addUser(MyUser.fromUser(user,token: token,publicKey:keys.publicKey.toString()));
         }
-        GetDatas().getAllDatas(context,user.uid,isSignOut: true);
-        Navigate.pushPageReplacement(context, MainScreen());
+        
+        Navigate.pushPageReplacement(context, SplashScreen(user: user,));
       }
     } catch (e) {
       print(e);

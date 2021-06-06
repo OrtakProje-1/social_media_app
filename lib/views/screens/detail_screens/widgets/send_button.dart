@@ -7,13 +7,14 @@ class SendButton extends StatelessWidget {
   final VoidCallback? onPressed;
   final Color iconColor;
   final Color? backgroundColor;
-  const SendButton({Key? key, this.onPressed,this.backgroundColor,this.iconColor=Colors.black}) : super(key: key);
+  final double size; 
+  const SendButton({Key? key, this.onPressed,this.backgroundColor,this.size=46,this.iconColor=Colors.black}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
-        minimumSize: Size(46, 46),
+        minimumSize: Size(size, size),
         padding: EdgeInsets.all(0),
         primary:this.backgroundColor ?? recMesColor,
         elevation: 0,
