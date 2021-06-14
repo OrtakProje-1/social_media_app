@@ -44,7 +44,7 @@ class StorageBlock {
     return MediaReference(downloadURL: downloadURL,ref: ref);
   }
 
-  Future<MediaReference> uploadAudio({required File file, required String userUid, int? index,String? timeStamp,String? ext})async{
+  Future<MediaReference> uploadAudio({required File file, required String userUid, int index=0,String? timeStamp,String? ext})async{
     String ref="$timeStamp-$index.$ext";
     UploadTask task = audiosRef
         .child(userUid)
@@ -55,7 +55,7 @@ class StorageBlock {
     return MediaReference(ref:ref, downloadURL: downloadURL);
   }
 
-  Future<MediaReference> uploadVideo({required File file, required String userUid, int? index,String? timeStamp,String? ext})async{
+  Future<MediaReference> uploadVideo({required File file, required String userUid, int index=0,String? timeStamp,String? ext})async{
     String ref="$timeStamp-$index.$ext";
     UploadTask task = videosRef
         .child(userUid)

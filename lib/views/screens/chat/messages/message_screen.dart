@@ -79,8 +79,7 @@ class _MessagesScreenState extends State<MessagesScreen> with BottomSheetMixin {
       UserBlock userBlock, MyUser? user, double? elevation) {
     return AppBar(
       titleSpacing: 0,
-      elevation: 8,
-      backgroundColor: Colors.transparent,
+      elevation: elevation??0,
       title: BuildReceiverAppBarTitle(
         user: user,
         onPressed: () {
@@ -108,13 +107,7 @@ class _MessagesScreenState extends State<MessagesScreen> with BottomSheetMixin {
             },
           ),
         ],
-        if (!isSelect) ...[
-          IconButton(
-            onPressed: () async {
-            },
-            icon: Icon(Icons.more_vert_rounded),
-          ),
-        ],
+       
       ],
     );
   }

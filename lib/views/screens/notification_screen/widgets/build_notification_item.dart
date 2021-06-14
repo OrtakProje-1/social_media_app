@@ -35,7 +35,7 @@ class NotificationItem extends StatelessWidget {
     NotificationBlock notificationBlock = NotificationBlock();
     UserBlock userBlock = Provider.of<UserBlock>(context);
     ProfileBlock profileBlock = Provider.of<ProfileBlock>(context);
-    MyUser me=MyUser.fromUser(userBlock.user!,token:userBlock.token);
+    MyUser me=MyUser.fromUser(userBlock.user!);
     return Container(
       child: Slidable(
         actionPane: SlidableDrawerActionPane(),

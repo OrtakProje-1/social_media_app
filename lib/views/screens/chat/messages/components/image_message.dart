@@ -4,6 +4,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:social_media_app/providers/crypto_block.dart';
 import 'package:social_media_app/providers/userBlock.dart';
 import 'package:social_media_app/util/const.dart';
 import 'package:social_media_app/util/router.dart';
@@ -17,6 +18,10 @@ class ImageMessage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     UserBlock userBlock = Provider.of<UserBlock>(context);
+    CryptoBlock cryptoBlock=CryptoBlock();
+    String mesaj=cryptoBlock.decrypt(userBlock.user!.uid == message!.sender!.uid
+            ? message!.senderCryptedText!
+            : message!.recCryptedText!);
     return SizedBox(
       width: MediaQuery.of(context).size.width * 0.60, // 55% of total width
       child: AspectRatio(
@@ -33,7 +38,7 @@ class ImageMessage extends StatelessWidget {
                         top: 2,
                         right: 2,
                         left: 2,
-                        bottom: message!.recCryptedText!.isNotEmpty ? 0 : 2),
+                        bottom: mesaj.isNotEmpty ? 0 : 2),
                     child: InkWell(
                       child: getImageWidget(message!, userBlock.user!.uid),
                       onTap: () {
@@ -43,13 +48,12 @@ class ImageMessage extends StatelessWidget {
                     ),
                   ),
                 ),
-                if (message!.recCryptedText != null)
-                  if (message!.recCryptedText!.isNotEmpty)
+                  if (mesaj.isNotEmpty)
                     Container(
                         padding: EdgeInsets.all(5),
                         width: double.maxFinite,
                         child: Text(
-                          message!.recCryptedText!,
+                          mesaj,
                           textAlign: TextAlign.left,
                           style: TextStyle(fontWeight: FontWeight.bold,color:getMessageTextColor(message!.sender!.uid, userBlock.user!.uid )),
                         )),

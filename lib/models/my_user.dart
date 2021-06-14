@@ -59,7 +59,7 @@ class MyUser {
     this.isOnline = map["isOnline"] ?? false;
   }
 
-  MyUser.fromUser(User user, {bool isOnline = true,required String? token,String? publicKey}) {
+  MyUser.fromUser(User user, {bool isOnline = true,String? publicKey}) {
     this.displayName = user.displayName;
     this.email = user.email;
     this.phoneNumber = user.phoneNumber;

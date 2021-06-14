@@ -17,6 +17,7 @@ import 'package:social_media_app/providers/messagesBlock.dart';
 import 'package:social_media_app/providers/profileBlock.dart';
 import 'package:social_media_app/providers/userBlock.dart';
 import 'package:social_media_app/providers/usersBlock.dart';
+import 'package:ntp/ntp.dart';
 
 import 'package:social_media_app/util/const.dart';
 import 'package:social_media_app/util/enum.dart';
@@ -91,16 +92,7 @@ class _ChatInputFieldState extends State<ChatInputField>
                             horizontal: kDefaultPadding / 4,
                             vertical: kDefaultPadding / 4,
                           ),
-                          decoration: BoxDecoration(
                             color: Theme.of(context).scaffoldBackgroundColor,
-                            boxShadow: [
-                              BoxShadow(
-                                offset: Offset(0, 4),
-                                blurRadius: 32,
-                                color: Color(0xFF087949).withOpacity(0.08),
-                              ),
-                            ],
-                          ),
                           child: SafeArea(
                             child: Row(
                               children: [
@@ -143,7 +135,6 @@ class _ChatInputFieldState extends State<ChatInputField>
                                             senderMesaj = message.text;
                                             recMesaj = message.text;
                                           }
-
                                           await messagesBlock.addMessage(
                                             my!,
                                             rec,
@@ -152,8 +143,6 @@ class _ChatInputFieldState extends State<ChatInputField>
                                               isRemoved: false,
                                               messageStatus:
                                                   MessageStatus.not_view,
-                                              messageTime: DateTime.now()
-                                                  .millisecondsSinceEpoch,
                                               messageType: senderMessage.type,
                                               sender: NSender(
                                                 uid: my.uid,
@@ -256,15 +245,12 @@ class _ChatInputFieldState extends State<ChatInputField>
                                       }
 
                                       message.clear();
-                                      int time =
-                                          DateTime.now().millisecondsSinceEpoch;
                                       await messagesBlock.addMessage(
                                         my!,
                                         rec,
                                         widget.noMessage,
                                         ChatMessage(
                                           messageStatus: MessageStatus.not_view,
-                                          messageTime: time,
                                           messageType: ChatMessageType.text,
                                           recCryptedText: recMesaj,
                                           senderCryptedText: senderMesaj,
@@ -475,7 +461,7 @@ class _ChatInputFieldState extends State<ChatInputField>
                               FilesTyper(
                                   files: files, type: ChatMessageType.image));
                         }
-                        Navigator.pop(context);
+                        else Navigator.pop(context);
                       },
                     ),
                     dosyaTipleri("Kamera", Icons.camera_alt_outlined,
@@ -495,7 +481,7 @@ class _ChatInputFieldState extends State<ChatInputField>
                                 files: imagesPlat,
                                 type: ChatMessageType.image));
                       }
-                      Navigator.pop(context);
+                      else Navigator.pop(context);
                     }),
                     dosyaTipleri("Ses", Icons.headset_outlined,
                         onPressed: () async {
@@ -602,50 +588,4 @@ class FilesTyper {
 
   final ChatMessageType? type;
   final List<PlatformFile>? files;
-}
-
-class MyCrypto {
-  void main() {
-    String sifreli = encrypt("Merhaba");
-    print(sifreli);
-    String normal = decrypt(sifreli);
-    print(normal);
-  }
-
-  var encryptionKey = 'hasan';
-
-  String encrypt(String data) {
-    var charCount = data.length;
-    var encrypted = [];
-    var kp = 0;
-    var kl = encryptionKey.length - 1;
-    print("charCount= " + charCount.toString());
-
-    for (var i = 0; i < charCount; i++) {
-      var other = data[i].codeUnits[0] ^ encryptionKey[kp].codeUnits[0];
-      print("${data[i]} units= " +
-          data[i].codeUnits[0].toString() +
-          " encry= " +
-          encryptionKey[kp] +
-          " = " +
-          encryptionKey[kp].codeUnits[0].toString() +
-          " other= " +
-          other.toString());
-      encrypted.insert(i, other);
-      kp = (kp < kl) ? (++kp) : (0);
-    }
-    return dataToString(encrypted);
-  }
-
-  String decrypt(data) {
-    return encrypt(data);
-  }
-
-  String dataToString(data) {
-    var s = "";
-    for (var i = 0; i < data.length; i++) {
-      s += String.fromCharCode(data[i]);
-    }
-    return s;
-  }
 }

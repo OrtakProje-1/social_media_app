@@ -4,6 +4,7 @@ import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:ntp/ntp.dart';
 import 'package:provider/provider.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:social_media_app/database/firebase_yardimci.dart';
@@ -112,17 +113,13 @@ class MessagesBlock {
     }
   }
 
-  Future<void> blockMessage(MyUser sender,MyUser receiver,bool block)async{
-    String docId=getDoc(sender.uid,receiver.uid);
-    messagesReference.doc(docId).set({
-      "blocker":sender.uid,
-      "blocked":block
-    });
-  }
-
   Future<void> addMessage(
       MyUser sender, MyUser receiver, bool noMessage, ChatMessage mesaj) async {
     String docId = getDoc(sender.uid, receiver.uid);
+    DateTime time=await NTP.now();
+    mesaj=mesaj.copyWith(
+      messageTime: time.millisecondsSinceEpoch,
+    );
     await updateChat(noMessage, sender, receiver, mesaj);
     await messagesColReference(docId).add(mesaj.toMap());
   }

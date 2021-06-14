@@ -2,20 +2,19 @@ import 'dart:io';
 import 'dart:ui';
 import 'dart:math' as math;
 
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:fluttericon/typicons_icons.dart';
+import 'package:images_picker/images_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:social_media_app/mixins/picker_mixin.dart';
 import 'package:social_media_app/models/Post.dart';
 import 'package:social_media_app/models/media_reference.dart';
-import 'package:social_media_app/models/my_user.dart';
 import 'package:social_media_app/providers/postsBlock.dart';
 import 'package:social_media_app/providers/profileBlock.dart';
 import 'package:social_media_app/providers/storageBlock.dart';
 import 'package:social_media_app/providers/userBlock.dart';
+import 'package:social_media_app/providers/usersBlock.dart';
 import 'package:social_media_app/util/const.dart';
 import 'package:social_media_app/util/enum.dart';
 import 'package:social_media_app/views/screens/chat/chats_screen.dart';
@@ -65,18 +64,18 @@ class _MainScreenState extends State<MainScreen>
         onPageChanged: onPageChanged,
         children: <Widget>[
           ChatsScreen(
-            key:PageStorageKey("chat"),
+            key: PageStorageKey("chat"),
           ),
           NotificationsScreen(
-             key:PageStorageKey("notifications"),
+            key: PageStorageKey("notifications"),
           ),
           Home(
-            key: PageStorageKey("home"),
             controller: _scrollController,
           ),
           ProfileScreen(
-             key:PageStorageKey("profile"),
-            user: MyUser.fromUser(userBlock.user!, token: userBlock.token),
+            key: PageStorageKey("profile"),
+            user: Provider.of<UsersBlock>(context, listen: false)
+                .getUserFromUid(userBlock.user!.uid),
           ),
         ],
       ),
@@ -183,7 +182,7 @@ class _MainScreenState extends State<MainScreen>
             },
           ),
         ],
-               //fabIconBorder: BeveledRectangleBorder(borderRadius: BorderRadius.circular(45)),
+        //fabIconBorder: BeveledRectangleBorder(borderRadius: BorderRadius.circular(45)),
       ),
     );
   }
@@ -381,51 +380,77 @@ class _MainScreenState extends State<MainScreen>
                               value: indicatorValue,
                               onPressed: () async {
                                 DateTime time = DateTime.now();
-
-                                if (message.text.length > 0) {
+                                if (images.isNotEmpty) {
                                   List<MediaReference> imagesRef = [];
-                                  if (images.isNotEmpty) {
-                                    images
-                                        .asMap()
-                                        .forEach((index, value) async {
-                                      setState(() {
-                                        state = ButtonState.loading;
-                                      });
-                                      MediaReference ref =
-                                          await storageBlock.uploadImage(
-                                              file: File(value.path!),
-                                              index: index,
-                                              timeStamp: time
-                                                  .millisecondsSinceEpoch
-                                                  .toString(),
-                                              ext: StorageBlock.fileExt(
-                                                  value.path!),
-                                              userUid: userBlock.user!.uid);
-                                      imagesRef.add(ref);
-                                      if (imagesRef.length == images.length) {
-                                        bool result = await sendPost(
-                                            imagesRef,
-                                            message.text,
-                                            userBlock,
-                                            postsBlock);
-                                        if (result) {
-                                          setState(() {
-                                            state = ButtonState.success;
-                                          });
-                                        } else {
-                                          setState(() {
-                                            state = ButtonState.fail;
-                                          });
-                                        }
-                                        await Future.delayed(
-                                            Duration(milliseconds: 500), () {
-                                          Navigator.pop(context);
+                                  images.asMap().forEach((index, value) async {
+                                    setState(() {
+                                      state = ButtonState.loading;
+                                    });
+                                    MediaReference ref =
+                                        await storageBlock.uploadImage(
+                                            file: File(value.path!),
+                                            index: index,
+                                            timeStamp: time
+                                                .millisecondsSinceEpoch
+                                                .toString(),
+                                            ext: StorageBlock.fileExt(
+                                                value.path!),
+                                            userUid: userBlock.user!.uid);
+                                    imagesRef.add(ref);
+                                    if (imagesRef.length == images.length) {
+                                      bool result = await sendPost(message.text, userBlock, postsBlock,imagesRef: imagesRef);
+                                      if (result) {
+                                        Navigator.pop(context);
+                                      } else {
+                                        setState(() {
+                                          state = ButtonState.fail;
                                         });
                                       }
+                                    }
+                                  });
+                                } else if (videos.isNotEmpty) {
+                                  setState(() {
+                                      state = ButtonState.loading;
                                     });
+                                  MediaReference ref =
+                                      await storageBlock.uploadVideo(
+                                          file: File(videos[0].path!),
+                                          userUid: userBlock.user!.uid,
+                                          ext: StorageBlock.fileExt(
+                                              videos[0].path!),
+                                          timeStamp: time.millisecondsSinceEpoch
+                                              .toString());
+                                  bool result = await sendPost(message.text, userBlock, postsBlock,video: ref);
+                                  if (result) {
+                                    Navigator.pop(context);
                                   } else {
-                                    bool result = await sendPost(null,
-                                        message.text, userBlock, postsBlock);
+                                    setState(() {
+                                      state = ButtonState.fail;
+                                    });
+                                  }
+                                } else if (audios.isNotEmpty) {
+                                  setState(() {
+                                      state = ButtonState.loading;
+                                    });
+                                  MediaReference ref =
+                                      await storageBlock.uploadAudio(
+                                          file: File(audios[0].path!),
+                                          userUid: userBlock.user!.uid,
+                                          ext: StorageBlock.fileExt(
+                                              audios[0].path!),
+                                          timeStamp: time.millisecondsSinceEpoch
+                                              .toString());
+                                  bool result = await sendPost(message.text, userBlock, postsBlock,audio: ref);
+                                  if (result) {
+                                    Navigator.pop(context);
+                                  } else {
+                                    setState(() {
+                                      state = ButtonState.fail;
+                                    });
+                                  }
+                                } else {
+                                  if (message.text.isNotEmpty) {
+                                    bool result = await sendPost(message.text, userBlock, postsBlock);
                                     if (result) {
                                       setState(() {
                                         state = ButtonState.success;
@@ -435,19 +460,16 @@ class _MainScreenState extends State<MainScreen>
                                         state = ButtonState.fail;
                                       });
                                     }
-                                    await Future.delayed(
-                                        Duration(milliseconds: 400), () {
-                                      Navigator.pop(context);
-                                    });
+                                  Navigator.pop(context);
                                   }
-                                } else {
                                   setState(() {
-                                    state = ButtonState.fail;
-                                  });
-                                  await Future.delayed(
-                                      Duration(milliseconds: 400), () {
-                                    Navigator.pop(context);
-                                  });
+                                        state = ButtonState.fail;
+                                      });
+                                      Future.delayed(Duration(milliseconds: 1500),(){
+                                        setState(() {
+                                        state = ButtonState.idle;
+                                      });
+                                      });
                                 }
                               }),
                         ),
@@ -494,14 +516,16 @@ class _MainScreenState extends State<MainScreen>
     }
   }
 
-  Future<bool> sendPost(List<MediaReference>? imagesRef, String msg,
-      UserBlock userBlock, PostsBlock postsBlock) async {
+  Future<bool> sendPost( String msg,
+      UserBlock userBlock, PostsBlock postsBlock,{List<MediaReference>? imagesRef,MediaReference? audio,MediaReference? video}) async {
     Post post = Post(
         senderUid: userBlock.user!.uid,
         msg: msg,
         postTime: DateTime.now().millisecondsSinceEpoch.toString(),
         userName: userBlock.user!.displayName,
         userPhotoUrl: userBlock.user!.photoURL,
+        video: video,
+        audio: audio,
         images: imagesRef);
     return await postsBlock.addPost(post);
   }
@@ -522,7 +546,7 @@ class _MainScreenState extends State<MainScreen>
     }
   }
 
-  void navigationTapped(int page){
+  void navigationTapped(int page) {
     closeCircularMenu();
     _pageController!.jumpToPage(page);
   }

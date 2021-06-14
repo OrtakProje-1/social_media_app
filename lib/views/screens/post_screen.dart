@@ -22,7 +22,7 @@ import 'package:social_media_app/views/screens/main_screen/widgets/build_audio_w
 import 'package:social_media_app/views/screens/main_screen/widgets/build_video_widget.dart';
 import 'package:social_media_app/views/widgets/buttons/custom_elevated_button.dart';
 import 'package:social_media_app/views/widgets/buttons/transparant_button.dart';
-import 'package:social_media_app/views/widgets/post_item.dart';
+import 'package:social_media_app/views/widgets/post/post_item.dart';
 
 class PostScreen extends StatefulWidget {
   final Post? post;
@@ -61,7 +61,6 @@ class _PostScreenState extends State<PostScreen>
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        backgroundColor: Colors.transparent,
         title: Text(widget.post!.userName!),
       ),
       body: SafeArea(
@@ -134,14 +133,7 @@ class _PostScreenState extends State<PostScreen>
               height: 1,
               decoration: BoxDecoration(
                 color: kPrimaryColor,
-                boxShadow: [
-                  BoxShadow(
-                    blurRadius: 5,
-                    color: kPrimaryColor.withOpacity(0.15),
-                    spreadRadius: 2,
-                    offset: Offset(0,-2),
-                  ),
-                ],
+               
               ),
             ),
             if (videos.isNotEmpty)
@@ -265,7 +257,7 @@ class _PostScreenState extends State<PostScreen>
                         child: TextButton(
                           child: Icon(
                             Icons.add,
-                            color: kPrimaryColor,
+                            color: Colors.white
                           ),
                           onPressed: () {
                             if (animationController.status ==
@@ -337,7 +329,7 @@ class _PostScreenState extends State<PostScreen>
                     //bottom: isThereData() ? 0 : -55,
                     right: isThereData() ? 5 : -55,
                     child: SendButton(
-                      iconColor: kPrimaryColor,
+                      iconColor: Colors.white,
                       onPressed: () async {
                         List<MediaReference> imagesRef = [];
                         if (images.isNotEmpty) {
@@ -416,7 +408,7 @@ class _PostScreenState extends State<PostScreen>
         borderRadius: BorderRadius.circular(22),
           border: Border.all(
             width: 1,
-            color: kPrimaryColor.withOpacity(0.3)
+            color: Colors.white.withOpacity(0.1)
           ),
         ),
       padding: const EdgeInsets.symmetric(horizontal: 10),
@@ -425,8 +417,8 @@ class _PostScreenState extends State<PostScreen>
         contentPadding: EdgeInsets.all(0),
         dense: true,
         leading: Container(
-          width: 35,
-          height: 35,
+          width: 45,
+          height: 45,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(12),
             image: DecorationImage(
@@ -434,7 +426,7 @@ class _PostScreenState extends State<PostScreen>
             ),
           ),
         ),
-        title: Text(post.userName!,style: TextStyle(fontWeight: FontWeight.bold,fontSize:12,color:kPrimaryColor.withOpacity(0.8)),),
+        title: Text(post.userName!,style: TextStyle(fontWeight: FontWeight.bold,fontSize:12),),
         subtitle: Text(post.msg!,style: TextStyle(fontSize: 16,color: Colors.white),),
         trailing: Text(TimeElapsed.fromDateTime(DateTime.fromMillisecondsSinceEpoch(int.parse(post.postTime!)),short: true)),
       ),

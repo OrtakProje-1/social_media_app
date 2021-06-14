@@ -11,6 +11,8 @@ import 'package:fluttericon/typicons_icons.dart';
 import 'package:provider/provider.dart';
 import 'package:social_media_app/models/Post.dart';
 import 'package:social_media_app/providers/postsBlock.dart';
+import 'package:social_media_app/providers/profileBlock.dart';
+import 'package:social_media_app/providers/userBlock.dart';
 import 'package:social_media_app/providers/usersBlock.dart';
 import 'package:social_media_app/util/const.dart';
 import 'package:social_media_app/util/elapsed_time.dart';
@@ -18,6 +20,10 @@ import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:social_media_app/util/router.dart';
 import 'package:social_media_app/views/screens/post_screen.dart';
 import 'package:social_media_app/views/screens/profileScreen.dart';
+import 'package:social_media_app/views/widgets/post/widgets/build_audio_post.dart';
+import 'package:social_media_app/views/widgets/post/widgets/build_image_post.dart';
+import 'package:social_media_app/views/widgets/post/widgets/build_images_post.dart';
+import 'package:social_media_app/views/widgets/post/widgets/build_video_post.dart';
 import 'package:social_media_app/views/widgets/streams_widget/comments_stream_from_post.dart';
 import 'package:social_media_app/views/widgets/userWidgets/BuildUserImageAndIsOnlineWidget.dart';
 
@@ -43,15 +49,14 @@ class PostItem extends StatefulWidget {
 }
 
 class _PostItemState extends State<PostItem> {
-  PageController? _controller;
   late bool likePost;
+  late bool bookmarkPost;
 
   bool showComments = false;
 
   @override
   void initState() {
     super.initState();
-    _controller = PageController();
     if (widget.post?.likes != null) {
       if (widget.post!.likes!.isNotEmpty) {
         likePost =
@@ -62,12 +67,15 @@ class _PostItemState extends State<PostItem> {
     } else {
       likePost = false;
     }
+    List<String> bookmarks=widget.post!.savedPostCount??[];
+    bookmarkPost=bookmarks.contains(widget.userUid);
   }
 
   @override
   Widget build(BuildContext context) {
     PostsBlock postsBlock = Provider.of<PostsBlock>(context);
     UsersBlock usersBlock = Provider.of<UsersBlock>(context);
+    ProfileBlock profileBlock = Provider.of<ProfileBlock>(context);
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 5),
       child: Column(
@@ -158,69 +166,18 @@ class _PostItemState extends State<PostItem> {
                       if (widget.post!.images != null &&
                           widget.post!.images!.isNotEmpty) ...[
                         if (widget.post!.images!.length == 1) ...[
-                         Container(
-                                  height: 200,
-                                  decoration: BoxDecoration(
-                                    color: Colors.grey,
-                                    borderRadius: BorderRadius.circular(
-                                        widget.post!.msg == null ||
-                                                widget.post!.msg == ""
-                                            ? 22
-                                            : 12),
-                                    image: DecorationImage(
-                                      fit: BoxFit.cover,
-                                      image: CachedNetworkImageProvider(
-                                          widget.post!.images![0].downloadURL!),
-                                    ),
-                                  ),
-                                ),
+                          BuildImagePost(post:widget.post!),
                         ],
                         if (widget.post!.images!.length > 1) ...[
-                          AspectRatio(
-                            aspectRatio: 10 / 6,
-                            child: Stack(
-                              children: [
-                                PageView.builder(
-                                  controller: _controller,
-                                  itemCount: widget.post!.images!.length,
-                                  itemBuilder:
-                                      (BuildContext context, int index) {
-                                    return Container(
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(12),
-                                        image: DecorationImage(
-                                          image: CachedNetworkImageProvider(
-                                              widget.post!.images![index].downloadURL!,
-                                              errorListener: () {
-                                            print(
-                                                "resim yüklenirken hata oluştu");
-                                          }),
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                ),
-                                Positioned(
-                                  bottom: 5,
-                                  left: 0,
-                                  right: 0,
-                                  child: Center(
-                                    child: SmoothPageIndicator(
-                                      controller: _controller!,
-                                      count: widget.post!.images!.length,
-                                      effect: ScrollingDotsEffect(
-                                          activeDotScale: 1.3,
-                                          dotColor: Colors.white60,
-                                          radius: 5,
-                                          activeDotColor: Colors.white,
-                                          strokeWidth: 3),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
+                          BuildImagesPost(post:widget.post!),
                         ]
+                      ],
+                      if(widget.post?.audio!=null)...[
+                        BuildAudioPost(post:widget.post!),
+                      ],
+                      if(widget.post?.video!=null)...[
+                        BuildVideoPost(post:widget.post!),
+                        
                       ],
                       if (!widget.isComment)
                         Container(
@@ -248,7 +205,7 @@ class _PostItemState extends State<PostItem> {
                                           widget.userUid,
                                           usersBlock);
                                     }
-                                    setState(() {
+                                   if(mounted) setState(() {
                                       likePost = !likePost;
                                     });
                                   }),
@@ -269,9 +226,16 @@ class _PostItemState extends State<PostItem> {
                               // Spacer(),
                               buildPostAction(
                                 icon: Icons.bookmark_border,
+                                primary:bookmarkPost ? kPrimaryColor.withOpacity(0.7) : null,
                                 value: widget.post!.savedPostCount!.length,
                                 color: Colors.white,
-                                onPressed: () {},
+                                onPressed: ()async{
+                                  await postsBlock.updateBookmark(widget.post!,widget.userUid!,profileBlock);
+                                  List<String> bookmarks=widget.post!.savedPostCount??[];
+                                  setState(() {
+                                    bookmarkPost=bookmarks.contains(widget.userUid);
+                                  });
+                                },
                               )
                             ],
                           ),

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:social_media_app/models/Post.dart';
-import 'package:social_media_app/views/widgets/post_item.dart';
+import 'package:social_media_app/views/widgets/post/post_item.dart';
 import 'package:social_media_app/util/extensions.dart';
 
 class BuildPostItemList {

@@ -7,13 +7,14 @@ import 'package:rxdart/rxdart.dart';
 import 'package:social_media_app/models/Post.dart';
 import 'package:social_media_app/models/my_user.dart';
 import 'package:social_media_app/providers/notificationBlock.dart';
+import 'package:social_media_app/providers/profileBlock.dart';
 import 'package:social_media_app/providers/usersBlock.dart';
 import 'package:social_media_app/util/data.dart';
 import 'package:social_media_app/views/screens/notification_screen/enum/notification_type.dart';
 import 'package:social_media_app/views/screens/notification_screen/models/notification.dart';
 import 'package:social_media_app/views/screens/notification_screen/models/notification_receiver.dart';
 import 'package:social_media_app/views/screens/notification_screen/models/notification_sender.dart';
-import 'package:social_media_app/views/widgets/post_item.dart';
+import 'package:social_media_app/views/widgets/post/post_item.dart';
 
 class PostsBlock {
   PostsBlock() {
@@ -63,6 +64,18 @@ class PostsBlock {
     return true;
   }
 
+  Future<void> updateBookmark(Post post,String uid,ProfileBlock profileBlock)async{
+    List<String> bookmarks=post.savedPostCount??[];
+    if(bookmarks.contains(uid)){
+      bookmarks.remove(uid);
+      profileBlock.removeBookmark(post, uid);
+    }else{
+      bookmarks.add(uid);
+      profileBlock.addBookmark(post, uid);
+    }
+    await updatePost(post..savedPostCount=bookmarks);
+  }
+
   Future<bool> updatePost(Post updatedPost) async {
     await _instance
         .collection("Posts")
@@ -106,7 +119,7 @@ class PostsBlock {
     MyUser? receiverUser=usersBlock.getUserFromUid(post.senderUid);
     if (newValue) {
       updatedLikes.add(liker!.uid);
-     /*if(post.senderUid!=liker.uid)*/ await _notificationBlock.addNotification(
+     if(post.senderUid!=liker.uid) await _notificationBlock.addNotification(
           post.senderUid,
           MyNotification(
               nMessage: "${liker.displayName} sizin göderinizi beğendi.",
@@ -133,12 +146,29 @@ class PostsBlock {
       await postsReference
           .doc(deletePost.senderUid! + "_" + deletePost.postTime!)
           .delete();
+      await deletePostMedia(deletePost);
     } catch (e) {
       print("Post silmede hata oluştu hata= " + e.toString());
       return false;
     }
     return true;
   }
+
+  Future<void> deletePostMedia(Post deletedPost)async{
+    if(deletedPost.images!=null){
+      if(deletedPost.images!.isNotEmpty) deletedPostImages(deletedPost);
+    }
+    if(deletedPost.audio!=null){
+       deletedPostAudio(deletedPost);
+    }
+    if(deletedPost.video!=null){
+       deletedPostVideo(deletedPost);
+    }
+  }
+
+  Future<void> deletedPostImages(Post post)async{}
+  Future<void> deletedPostAudio(Post post)async{}
+  Future<void> deletedPostVideo(Post post)async{}
 
   Future<void> fetchPosts(List<String>? friendsUid)async{
     QuerySnapshot query= await getFriendsPost(friendsUid);

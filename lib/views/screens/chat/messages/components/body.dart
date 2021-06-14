@@ -52,6 +52,7 @@ class Body extends StatelessWidget {
 
   Expanded buildMessageList(AsyncSnapshot<QuerySnapshot> snap, bool select,UserBlock userBlock,ScrollController? controller){
     lastMessage!(snap.data!.docs.first);
+    String myUid=userBlock.user!.uid;
     return Expanded(
       child: ListView.builder(
           reverse: true,
@@ -62,6 +63,15 @@ class Body extends StatelessWidget {
           itemBuilder: (context, index) {
             bool isSelected = selectedMessage!.any((e) => e.id == snap.data!.docs[index].id);
             ChatMessage message=ChatMessage.fromMap(snap.data!.docs[index].data());
+            ChatMessage? nextMessage;
+            ChatMessage? prevMessage;
+            if(index<snap.data!.size-2){
+              nextMessage=ChatMessage.fromMap(snap.data!.docs[index+1].data());
+            }
+            if(index>=1){
+              prevMessage=ChatMessage.fromMap(snap.data!.docs[index-1].data());
+            }
+
             return GestureDetector(
               onLongPress: () {
                 print("Long pressed isSelect= " + isSelected.toString());
@@ -86,6 +96,8 @@ class Body extends StatelessWidget {
               child: Message(
                 message:message,
                 isSelected: isSelected,
+                nextMessage:nextMessage,
+                prevMessage:prevMessage,
               ),
             );
           }),

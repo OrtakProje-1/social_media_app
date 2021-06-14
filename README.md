@@ -47,8 +47,8 @@ samples, guidance on mobile development, and a full API reference.
 | Mesaj Gönderme ( Dosya )       | ✔️                 |  (test edilmedi) |
 | Uçtan uca şifreleme            | ✔️ (sadece metin)  |  (test edilmedi) |
 | Kullanıcıyı Engelleme          | ✔️                 |  (test edilmedi) |
-| Post Gönderme ( Video )        | ✖️                 |  ✖️               |
-| Post Gönderme ( Ses )          | ✖️                 |  ✖️               |
-| Profil Güncelleme              | ✖️                 |  ✖️               |
-| Gönderiyi Kaydetme             | ✖️                 |  ✖️               |
+| Post Gönderme ( Video )        | ✔️                 |  (test edilmedi) |
+| Post Gönderme ( Ses )          | ✔️                 |  (test edilmedi) |
+| Profil Güncelleme              | ✔️                 |  (test edilmedi) |
+| Gönderiyi Kaydetme             | ✔️                 |  (test edilmedi) |
 | Diğer Kullanıcılardan bahsetme | ✖️                 |  ✖️               |

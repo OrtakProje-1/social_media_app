@@ -19,26 +19,15 @@ import 'package:social_media_app/views/screens/auth/loginPage.dart';
 import 'package:social_media_app/views/screens/splash_screen.dart/splash_screen.dart';
 
 class UserBlock {
-  CryptoBlock? _hiveBlock;
-  UserBlock(){
-    init();
-  }
-
-  void init()async{
-    _hiveBlock=CryptoBlock();
-  }
-
+  UserBlock();
 
   User? _user;
   String? _token;
   String? get token=>_token;
   User? get user => _user;
-
   set user(User? newUser){
     _user = newUser;
   }
-
- 
 
   Future<void> signOut(BuildContext context) async {
     GetDatas().getAllDatas(context,user!.uid,isSignOut: true);
@@ -49,15 +38,11 @@ class UserBlock {
     this.user=null;
     Navigate.pushPageWithFadeAnimation(context, LoginPage());
   }
-
   Future<void> userOffline(BuildContext context)async{
    await Provider.of<ProfileBlock>(context,listen: false).updateUserisOnline(user!.uid,false);
   }
-
   void dispose() {}
-
-  Future<void> signInWithGoogle(
-      BuildContext context, UsersBlock usersBlock) async {
+  Future<void> signInWithGoogle(BuildContext context, UsersBlock usersBlock) async {
     try {
       final FirebaseAuth _auth = FirebaseAuth.instance;
       UserCredential userCredential;
@@ -77,7 +62,7 @@ class UserBlock {
         bool isSavedUser = usersBlock.users.valueWrapper!.value
             .any((element) => element.uid == user.uid);
         if (!isSavedUser) {
-          usersBlock.addUser(MyUser.fromUser(user,token:token));
+          usersBlock.addUser(MyUser.fromUser(user));
         }
         await GetDatas().getAllDatas(context,user.uid,isSignOut: true);
         Navigate.pushPageReplacement(context, SplashScreen(user: user,));
@@ -99,7 +84,7 @@ class UserBlock {
         if (!isSavedUser) {
           CryptoBlock cryptoBlock=CryptoBlock();
           RSAKeypair keys=await cryptoBlock.getKeys(user.uid);
-          usersBlock.addUser(MyUser.fromUser(user,token: token,publicKey:keys.publicKey.toString()));
+          usersBlock.addUser(MyUser.fromUser(user,publicKey:keys.publicKey.toString()));
         }
         
         Navigate.pushPageReplacement(context, SplashScreen(user: user,));

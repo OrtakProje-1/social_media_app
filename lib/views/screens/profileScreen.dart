@@ -10,6 +10,7 @@ import 'package:rxdart/rxdart.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:social_media_app/mixins/build_postitem_list.dart';
 import 'package:social_media_app/models/Post.dart';
+import 'package:social_media_app/models/biografi.dart';
 import 'package:social_media_app/models/blocked_details.dart';
 import 'package:social_media_app/models/my_user.dart';
 import 'package:social_media_app/providers/get_datas.dart';
@@ -25,7 +26,6 @@ import 'package:social_media_app/views/screens/search_screen/search_screen.dart'
 import 'package:social_media_app/views/screens/search_screen/widgets/build_user_listile.dart';
 import 'package:social_media_app/views/widgets/blurWidget.dart';
 import 'package:social_media_app/views/widgets/buttons/profile_blur_button.dart';
-import 'package:social_media_app/views/widgets/empty_post_item.dart';
 import 'package:social_media_app/views/widgets/userWidgets/BuildUserImageAndIsOnlineWidget.dart';
 
 typedef Builder = Widget Function(
@@ -36,17 +36,18 @@ class ProfileScreen extends StatefulWidget {
   ProfileScreen({Key? key, required this.user}) : super(key: key);
 
   @override
-  _ProfileScreenState createState() => _ProfileScreenState();
+  _ProfileScreenState createState() => _ProfileScreenState(user: user);
 }
 
 class _ProfileScreenState extends State<ProfileScreen> with BuildPostItemList {
   int index = 0;
-  late BehaviorSubject<List<MyUser>> userFriends;
+  MyUser? user;
+
+  _ProfileScreenState({this.user});
 
   @override
   void initState() {
     super.initState();
-    // getUserFriends();
   }
 
   @override
@@ -55,7 +56,7 @@ class _ProfileScreenState extends State<ProfileScreen> with BuildPostItemList {
     PostsBlock postsBlock = Provider.of<PostsBlock>(context);
     UserBlock userBlock = Provider.of<UserBlock>(context);
     ProfileBlock profileBlock = Provider.of<ProfileBlock>(context);
-    bool isMee = widget.user!.uid == userBlock.user!.uid;
+    bool isMee = user!.uid == userBlock.user!.uid;
     return Scaffold(
       body: CustomScrollView(
         physics: BouncingScrollPhysics(),
@@ -79,7 +80,7 @@ class _ProfileScreenState extends State<ProfileScreen> with BuildPostItemList {
                       image: DecorationImage(
                           fit: BoxFit.cover,
                           image: CachedNetworkImageProvider(
-                              widget.user!.photoURL!)),
+                              user!.photoURL!)),
                     ),
                     child: BlurWidget(
                       sigmaY: 20,
@@ -113,9 +114,9 @@ class _ProfileScreenState extends State<ProfileScreen> with BuildPostItemList {
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(18),
                         image: DecorationImage(
-                            image: (widget.user!.photoURL != null
+                            image: (user!.photoURL != null
                                     ? CachedNetworkImageProvider(
-                                        widget.user!.photoURL!)
+                                        user!.photoURL!)
                                     : AssetImage("assets/images/cm7.jpeg"))
                                 as ImageProvider<Object>,
                             fit: BoxFit.cover),
@@ -129,9 +130,11 @@ class _ProfileScreenState extends State<ProfileScreen> with BuildPostItemList {
                 ? null
                 : ProfileBlurButton(
                     icon: Icon(Linecons.pencil, color: Colors.white),
-                    onPressed: () {
-                      Navigate.pushPage(
-                          context, EditProfileScreen(user: widget.user!));
+                    onPressed: () async{
+                      Biografi? biografi=await Navigate.pushPage<Biografi>(context, EditProfileScreen(user: user!));
+                      setState(() {
+                        user=user?..biografi=biografi;
+                      });
                     },
                   ),
             actions: [
@@ -149,7 +152,7 @@ class _ProfileScreenState extends State<ProfileScreen> with BuildPostItemList {
                   ),
                   onPressed: () async {
                     await profileBlock.updateUserisOnline(
-                        widget.user!.uid!, false);
+                        user!.uid!, false);
                     await userBlock.signOut(context);
                   },
                 ),
@@ -171,7 +174,7 @@ class _ProfileScreenState extends State<ProfileScreen> with BuildPostItemList {
                   child: Padding(
                     padding: const EdgeInsets.only(top: 7),
                     child: Text(
-                      widget.user!.displayName!.toString(),
+                      user!.displayName!.toString(),
                       style:
                           TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
                     ),
@@ -185,10 +188,26 @@ class _ProfileScreenState extends State<ProfileScreen> with BuildPostItemList {
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        if (widget.user!.biografi != null) ...[
-                          Text(widget.user!.biografi!.hakkimda ?? "Ben Social Club kullanıyorum..."),
+                        if (user!.biografi != null) ...[
+                          Row(
+                            children: [
+                              Icon(Icons.info_outline_rounded),
+                              SizedBox(width: 8,),
+                              Text(user!.biografi!.hakkimda ?? "Ben Social Club kullanıyorum..."),
+                            ],
+                          ),
+                          if(user!.biografi!.numara!=null&&user!.biografi!.numara!="")...[
+                            SizedBox(height: 8,),
+                            Row(
+                            children: [
+                              Icon(Icons.phone_iphone_rounded),
+                              SizedBox(width: 8,),
+                              Text(user!.biografi!.numara!),
+                            ],
+                          ),
+                          ],
                         ],
-                        if (widget.user!.biografi == null) ...[
+                        if (user!.biografi == null) ...[
                           Text("Ben Social Club kullanıyorum...")
                         ]
                       ],
@@ -266,7 +285,7 @@ class _ProfileScreenState extends State<ProfileScreen> with BuildPostItemList {
             ),
           ),
           if (index == 0) ...[
-            getMyPosts(postsBlock, widget.user!.uid, buildPostItemList),
+            getMyPosts(postsBlock, user!.uid, buildPostItemList),
           ],
           if (index == 1) ...[
             buildFriends(context, isMee),
@@ -332,20 +351,20 @@ class _ProfileScreenState extends State<ProfileScreen> with BuildPostItemList {
                               initialData: profileBlock.friends.value,
                               builder: (context, friends) {
                                 bool isRequest = req.data!
-                                    .any((e) => e.uid == widget.user!.uid);
+                                    .any((e) => e.uid == user!.uid);
                                 bool isFriend = friends.data!
-                                    .any((e) => e.uid == widget.user!.uid);
+                                    .any((e) => e.uid == user!.uid);
                                 return InkWell(
                                   onTap: isRequest
                                       ? null
                                       : () async {
                                           if (isFriend) {
                                             await profileBlock.deleteFriend(
-                                                myUid, widget.user!.uid!);
+                                                myUid, user!.uid!);
                                           } else {
                                             await profileBlock
                                                 .sendFriendshipRequest(
-                                                    friend: widget.user!,
+                                                    friend: user!,
                                                     sender: usersBlock
                                                         .getUserFromUid(
                                                             myUid)!);
@@ -380,7 +399,7 @@ class _ProfileScreenState extends State<ProfileScreen> with BuildPostItemList {
                       onTap: () {
                         Navigator.pop(context);
                         Navigate.pushPage(
-                            context, MessagesScreen(user: widget.user!));
+                            context, MessagesScreen(user: user!));
                       },
                       child: Container(
                         width: double.maxFinite,
@@ -400,12 +419,12 @@ class _ProfileScreenState extends State<ProfileScreen> with BuildPostItemList {
                         initialData: profileBlock.blockedUsers.value,
                         builder: (context, blocked) {
                           bool isBlocked = blocked.data!
-                              .any((e) => e.blockedUid == widget.user!.uid!);
+                              .any((e) => e.blockedUid == user!.uid!);
                           return InkWell(
                             onTap: () {
                               MyUser my = usersBlock.getUserFromUid(myUid)!;
                               Provider.of<ProfileBlock>(context, listen: false)
-                                  .changeBlockedUser(my, widget.user!.uid!);
+                                  .changeBlockedUser(my, user!.uid!);
                             },
                             child: Container(
                               width: double.maxFinite,
@@ -495,7 +514,7 @@ class _ProfileScreenState extends State<ProfileScreen> with BuildPostItemList {
       );
     } else {
       return StreamBuilder<QuerySnapshot>(
-        stream: profileBlock.streamFriends(widget.user!.uid!),
+        stream: profileBlock.streamFriends(user!.uid!),
         builder: (c, snap) {
           if (snap.hasData) {
             List<MyUser> friends=snap.data!.docs.map((e) =>MyUser.fromMap(e.data())).toList();

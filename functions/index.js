@@ -21,10 +21,11 @@ exports.bildirimler = functions.firestore.document("Users/{userUid}/notification
           clickAction: "FLUTTER_NOTIFICATION_CLICK",
         },
         data:{
-          senderUid:doc.nSender.uid,
+          uid:doc.nSender.uid,
           displayName:doc.nSender.displayName,
           photoURL:doc.nSender.photoURL,
-          nType:doc.nType
+          nType:doc.nType,
+          recUid:receiver.rUid
         }
       }
       admin.messaging().sendToDevice(receiverToken, payload).then(as => {
@@ -67,7 +68,7 @@ exports.badwords=functions.firestore.document("Posts/{postId}").onCreate(async(s
 
 exports.messageNotification = functions.firestore.document("Messages/{docId}/messages/{messageId}").onCreate( async(snap,context)=>{
   const doc=snap.data();
-  const mesaj=doc.text;
+  const mesaj=doc.recCryptedText;
   var title=(doc.sender.displayName)+" Kullanıcısı size "+getStringFromType(doc.messageType)+" gönderdi."
   var body;
   if(doc.receiver.rToken!=null){
@@ -81,13 +82,14 @@ exports.messageNotification = functions.firestore.document("Messages/{docId}/mes
     const payload = {
       notification: {
         title: title,
-        body: body,
+        body: String(body),
         badge: '1',
         sound: 'default',
         clickAction: "FLUTTER_NOTIFICATION_CLICK",
       },
       data:{
-        senderUid:String(doc.sender.uid),
+        recUid:String(doc.receiver.rUid),
+        uid:String(doc.sender.uid),
         displayName:String(doc.sender.displayName),
         photoURL:String(doc.sender.photoURL),
         nType:String(doc.messageType),

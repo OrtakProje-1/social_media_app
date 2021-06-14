@@ -19,11 +19,15 @@ class Message extends StatelessWidget {
   const Message({
     Key? key,
     this.isSelected=false,
+    this.prevMessage,
+    this.nextMessage,
     required this.message,
   }) : super(key: key);
 
   final ChatMessage message;
   final bool isSelected;
+  final ChatMessage? prevMessage;
+  final ChatMessage? nextMessage;
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +37,7 @@ class Message extends StatelessWidget {
     Widget messageContaint(ChatMessage message) {
       switch (message.messageType) {
         case ChatMessageType.text:
-          return TextMessage(message: message);
+          return TextMessage(message: message,nextMessage:nextMessage,prevMessage: prevMessage,);
         case ChatMessageType.audio:
           return AudioMessage(message: message,key: PageStorageKey(message.audio!.ref,));
         case ChatMessageType.video:

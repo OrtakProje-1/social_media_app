@@ -1,12 +1,9 @@
-
-
-import 'dart:async';
 import 'dart:io';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:rxdart/rxdart.dart';
@@ -19,7 +16,6 @@ import 'package:social_media_app/providers/userBlock.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:social_media_app/util/enum.dart';
 import 'package:social_media_app/util/router.dart';
-import 'package:social_media_app/views/screens/chat/models/chat_message.dart';
 import 'package:social_media_app/views/screens/chat/models/sender_media_message.dart';
 import 'package:social_media_app/views/screens/detail_screens/image_editor_page.dart';
 import 'package:social_media_app/views/screens/detail_screens/widgets/image_dismissible_widget.dart';
@@ -46,8 +42,6 @@ class _ImagesDetailState extends State<ImagesDetail> with PickerMixin,LoadingMix
   BehaviorSubject<double>? loadingProgress;
 
   _ImagesDetailState({this.files});
-
-
 
 
   @override
@@ -218,7 +212,7 @@ class _ImagesDetailState extends State<ImagesDetail> with PickerMixin,LoadingMix
                                 child: InkWell(
                                   onTap: () async {
                                     List<PlatformFile> newImages =
-                                        await (getImagePicker() as FutureOr<List<PlatformFile>>);
+                                        await getImagePicker();
                                     newImages.forEach((element) {
                                       if (!files!
                                           .any((e) => e.path == element.path)) {

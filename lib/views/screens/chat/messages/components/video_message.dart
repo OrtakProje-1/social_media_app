@@ -47,6 +47,7 @@ class _VideoMessageState extends State<VideoMessage> {
     UserBlock userBlock = Provider.of<UserBlock>(context);
     UsersBlock usersBlock = Provider.of<UsersBlock>(context);
     CryptoBlock cryptoBlock=CryptoBlock();
+    String mesaj=cryptoBlock.getPrivateKey().decrypt(userBlock.user!.uid==widget.message!.sender!.uid ? widget.message!.senderCryptedText! : widget.message!.recCryptedText!);
     return SizedBox(
       width: MediaQuery.of(context).size.width * 0.60, // 60% of total width
       child: AspectRatio(
@@ -105,13 +106,13 @@ class _VideoMessageState extends State<VideoMessage> {
                   ),
                 ),
               ),
-              if (widget.message!.recCryptedText!.isNotEmpty)
+              if (mesaj.isNotEmpty)
                 Padding(
                   padding: const EdgeInsets.all(5.0),
                   child: Container(
                       width: double.maxFinite,
                       child: Text(
-                         cryptoBlock.getPrivateKey().decrypt(userBlock.user!.uid==widget.message!.sender!.uid ? widget.message!.senderCryptedText! : widget.message!.recCryptedText!),
+                         mesaj,
                         style: TextStyle(fontWeight: FontWeight.bold),
                         textAlign: TextAlign.left,
                       )),

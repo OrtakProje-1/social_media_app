@@ -1,9 +1,7 @@
-
-
 import 'package:extended_image/extended_image.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:social_media_app/views/widgets/bottom_appbar_notched_shape.dart';
 
 class ImageEditorPage extends StatefulWidget {
   final PlatformFile? image;
@@ -39,7 +37,8 @@ class _ImageEditorPageState extends State<ImageEditorPage> {
         title: Text("Editör"),
        
       ),
-      body: ExtendedImage.file(
+      body:
+      ExtendedImage.file(
         File(path),
         fit: BoxFit.contain,
         extendedImageEditorKey: editorKey,

@@ -71,7 +71,7 @@ class _SplashScreenState extends State<SplashScreen>
     block.user = user;
     CryptoBlock cryptoBlock=CryptoBlock();
     RSAKeypair keypair=await cryptoBlock.getKeys(user.uid);
-    MyUser myUser = MyUser.fromUser(user, token: block.token,publicKey: keypair.publicKey.toString());
+    MyUser myUser = MyUser.fromUser(user,publicKey: keypair.publicKey.toString());
     usersBlock.addUser(myUser);
     await getDatas.getAllDatas(context, user.uid);
   }

@@ -5,6 +5,7 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:social_media_app/database/firebase_yardimci.dart';
+import 'package:social_media_app/models/Post.dart';
 import 'package:social_media_app/models/blocked_details.dart';
 import 'package:social_media_app/models/my_user.dart';
 import 'package:social_media_app/providers/notificationBlock.dart';
@@ -163,6 +164,13 @@ class ProfileBlock{
       List<BlockedDetails> usersUid=e.docs.map((e) =>BlockedDetails.fromMap(e.data())).toList();
       blockedUsers.add(usersUid);
     });
+  }
+
+  Future<void> addBookmark(Post post,String uid)async{
+    await queryFromUid(uid).collection("bookmarks").doc(post.senderUid!+"_"+post.postTime!).set(post.toMap());
+  }
+  Future<void> removeBookmark(Post post,String uid)async{
+    await queryFromUid(uid).collection("bookmarks").doc(post.senderUid!+"_"+post.postTime!).delete();
   }
 
   Future<void> changeBlockedUser(MyUser my,String blockedUid)async{

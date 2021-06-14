@@ -105,10 +105,17 @@ class _BuildAudioWidgetState extends State<BuildAudioWidget> {
                               return Row(
                                 children: [
                                   if (widget.onPressedDeleteButton != null)
-                                    Text(_player!.position.inMinutes.toString() +
-                                        ":" +
-                                        (_player!.position.inSeconds % 60)
-                                            .toString()),
+                                     StreamBuilder<Duration>(
+                                        stream: _player!.positionStream,
+                                        initialData: Duration.zero,
+                                        builder: (context, snapshot) {
+                                          return Text(sliderScroll
+                                              ? getDuration(Duration(
+                                                  milliseconds:
+                                                      scrollSliderValue
+                                                          .toInt()))
+                                              : getDuration(snapshot.data!));
+                                        }),
                                   Expanded(
                                     child: SliderTheme(
                                       data: SliderThemeData(
@@ -158,17 +165,7 @@ class _BuildAudioWidgetState extends State<BuildAudioWidget> {
                                   ),
                                   SizedBox(width: 5,),
                                   if (_player!.duration != null)
-                                    StreamBuilder<Duration>(
-                                        stream: _player!.positionStream,
-                                        initialData: Duration.zero,
-                                        builder: (context, snapshot) {
-                                          return Text(sliderScroll
-                                              ? getDuration(Duration(
-                                                  milliseconds:
-                                                      scrollSliderValue
-                                                          .toInt()))
-                                              : getDuration(snapshot.data!));
-                                        }),
+                                    Text(getDuration(_player!.duration!)),
                                 ],
                               );
                             }),

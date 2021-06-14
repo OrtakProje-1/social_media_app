@@ -3,8 +3,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:social_media_app/models/my_user.dart';
-import 'package:social_media_app/providers/crypto_block.dart';
 import 'package:social_media_app/providers/messagesBlock.dart';
 import 'package:social_media_app/providers/postsBlock.dart';
 import 'package:social_media_app/providers/profileBlock.dart';
@@ -14,7 +12,6 @@ import 'package:social_media_app/providers/usersBlock.dart';
 import 'package:social_media_app/util/const.dart';
 import 'package:social_media_app/util/theme_config.dart';
 import 'package:social_media_app/views/screens/auth/loginPage.dart';
-import 'package:social_media_app/views/screens/main_screen/main_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:social_media_app/views/screens/no_internet_screen.dart';
 import 'package:social_media_app/views/screens/splash_screen.dart/splash_screen.dart';
@@ -59,9 +56,11 @@ class MyApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         title: Constants.appName,
         color: Colors.black,
-        darkTheme: ThemeData.dark().copyWith(scaffoldBackgroundColor: Color(0xFF1F1F1F),appBarTheme: AppBarTheme(
-          backgroundColor: Color(0xFF1F1F1F),
-        )),
+        darkTheme: ThemeData.dark().copyWith(
+            scaffoldBackgroundColor: Color(0xFF1F1F1F),
+            appBarTheme: AppBarTheme(
+              backgroundColor: Color(0xFF1F1F1F),
+            )),
         themeMode: ThemeMode.dark,
         localizationsDelegates: [
           GlobalMaterialLocalizations.delegate,
@@ -76,8 +75,7 @@ class MyApp extends StatelessWidget {
             child: w,
           );
         },
-        // darkTheme: themeData(ThemeConfig.darkTheme),
-         home:StreamBuilder<ConnectivityResult>(
+        home: StreamBuilder<ConnectivityResult>(
           stream: Connectivity().onConnectivityChanged,
           builder: (BuildContext context,
               AsyncSnapshot<ConnectivityResult> snapshot) {
@@ -85,9 +83,9 @@ class MyApp extends StatelessWidget {
               if (snapshot.data == ConnectivityResult.none) {
                 return NoInternetScreen();
               } else {
-                if(FirebaseAuth.instance.currentUser==null){
+                if (FirebaseAuth.instance.currentUser == null) {
                   return LoginPage();
-                }else{
+                } else {
                   return SplashScreen(
                     user: FirebaseAuth.instance.currentUser!,
                   );
