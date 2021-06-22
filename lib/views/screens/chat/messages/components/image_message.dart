@@ -40,7 +40,7 @@ class ImageMessage extends StatelessWidget {
                         left: 2,
                         bottom: mesaj.isNotEmpty ? 0 : 2),
                     child: InkWell(
-                      child: getImageWidget(message!, userBlock.user!.uid),
+                      child: getImageWidget(message!, userBlock.user!.uid,mesaj),
                       onTap: () {
                         Navigate.pushPage(
                             context, ExtendedImageView(message: message));
@@ -65,8 +65,8 @@ class ImageMessage extends StatelessWidget {
     );
   }
 
-  Widget getImageWidget(ChatMessage message, String myUid) {
-    bool noText = message.recCryptedText == null ? true : message.recCryptedText!.isEmpty;
+  Widget getImageWidget(ChatMessage message, String myUid,String? mesaj) {
+    bool noText = mesaj == null ? true : mesaj.isEmpty;
     List<String?> urls=message.images!.map((e) => e!.downloadURL).toList();
     switch (urls.length) {
       case 1:

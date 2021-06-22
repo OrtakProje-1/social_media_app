@@ -33,6 +33,7 @@ dependencies:
 
   #online saat
   ntp: ^2.0.0
+  scrollable_list_tabview: ^0.2.0-nullsafety
   
   #instabug_flutter:
   # The following adds the Cupertino Icons font to your application.

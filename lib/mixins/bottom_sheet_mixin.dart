@@ -9,6 +9,7 @@ import 'package:social_media_app/util/const.dart';
 import 'package:social_media_app/views/screens/chat/messages/components/chat_input_field.dart';
 import 'package:social_media_app/views/screens/main_screen/widgets/build_audio_widget.dart';
 import 'package:social_media_app/views/widgets/buttons/custom_elevated_button.dart';
+import 'package:scrollable_list_tabview/scrollable_list_tabview.dart';
 
 mixin BottomSheetMixin {
   Future<MediaReference?> getAudioModalBottomSheet(BuildContext context,

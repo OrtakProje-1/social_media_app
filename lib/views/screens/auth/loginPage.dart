@@ -9,7 +9,6 @@ import 'package:social_media_app/providers/userBlock.dart';
 import 'package:social_media_app/providers/usersBlock.dart';
 import 'package:social_media_app/util/const.dart';
 import 'package:social_media_app/util/router.dart';
-import 'package:social_media_app/views/screens/auth/screenshot_widget.dart';
 import 'package:social_media_app/views/screens/auth/sign_up_screen.dart';
 import 'package:wave/config.dart';
 import 'package:wave/wave.dart';
@@ -23,7 +22,6 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> with TextFieldMixin {
   int avatarIndex = 0;
-  ScreenshotController _controller = ScreenshotController();
   bool result = false;
   String? imagePath;
 
@@ -101,20 +99,20 @@ class _LoginPageState extends State<LoginPage> with TextFieldMixin {
                   children: <Widget>[
                     Padding(
                       padding: const EdgeInsets.only(top: 10),
-                      child: ScreenshotWidget.fromWidget(
-                        size: 120,
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(90),
-                          child: Container(
-                            height: 120,
-                            width: 120,
-                            color: Colors.black,
-                            padding: EdgeInsets.all(20),
-                            child: Center(
-                                child: logoText(
-                                    size1: 55, size2: 50, isMini: true)),
+                      child:  Container(
+                        height: 120,
+                        width: 120,
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            color: kPrimaryColor,
                           ),
+                            borderRadius: BorderRadius.circular(90),
+                        color: Colors.black,
                         ),
+                        padding: EdgeInsets.all(20),
+                        child: Center(
+                            child: logoText(
+                                size1: 55, size2: 50, isMini: true)),
                       ),
                     ),
                     buildTextField(
@@ -149,21 +147,8 @@ class _LoginPageState extends State<LoginPage> with TextFieldMixin {
                       child: RawMaterialButton(
                         padding: EdgeInsets.symmetric(vertical: 13.0),
                         fillColor: Colors.black.withOpacity(0.05),
-                        onPressed: () async {
-                          try {
-                            Directory temporaryDir =
-                                await getTemporaryDirectory();
-                            String? path = await _controller.captureAndSave(
-                                temporaryDir.path,
-                                fileName: "${DateTime.now()}.png");
-                            print(path);
-                            setState(() {
-                              result = true;
-                              imagePath = path;
-                            });
-                          } catch (e) {
-                            print(e);
-                          }
+                        onPressed: (){
+                         
                         },
                         elevation: 11,
                         shape: RoundedRectangleBorder(

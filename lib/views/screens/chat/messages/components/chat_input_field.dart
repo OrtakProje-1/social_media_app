@@ -40,19 +40,12 @@ class ChatInputField extends StatefulWidget {
   _ChatInputFieldState createState() => _ChatInputFieldState();
 }
 
-class _ChatInputFieldState extends State<ChatInputField>
-    with PickerMixin, BottomSheetMixin {
+class _ChatInputFieldState extends State<ChatInputField>with PickerMixin, BottomSheetMixin {
   TextEditingController message = TextEditingController();
   bool loading = false;
   String? docId;
   bool didIBlock = false;
   bool didHeBlock = false;
-// JaDNxHLL6YUIgQEGraHk3xpYUvB2
-  @override
-  void initState() {
-    super.initState();
-  }
-
   @override
   Widget build(BuildContext context) {
     MessagesBlock messagesBlock = Provider.of<MessagesBlock>(context);
@@ -92,7 +85,7 @@ class _ChatInputFieldState extends State<ChatInputField>
                             horizontal: kDefaultPadding / 4,
                             vertical: kDefaultPadding / 4,
                           ),
-                            color: Theme.of(context).scaffoldBackgroundColor,
+                          color: Theme.of(context).scaffoldBackgroundColor,
                           child: SafeArea(
                             child: Row(
                               children: [
@@ -104,33 +97,21 @@ class _ChatInputFieldState extends State<ChatInputField>
                                     onPressed: () async {
                                       FilesTyper? fType = await showModal();
                                       if (fType != null) {
-                                        print(fType.type.toString() +
-                                            " " +
-                                            fType.files!.length.toString());
                                         SenderMediaMessage? senderMessage =
                                             await getFilesDetailsScreen(
                                                 fType,
                                                 usersBlock,
                                                 userBlock.user!.uid);
                                         if (senderMessage != null) {
-                                          print("mesaj= " +
-                                              senderMessage.message! +
-                                              "\ntype= ${senderMessage.type}\n urls= " +
-                                              senderMessage.refs!.length
-                                                  .toString());
-
                                           String recMesaj;
                                           String senderMesaj;
                                           if (rec.publicKey != null) {
                                             senderMesaj = CryptoBlock()
                                                 .getPublicKey()
-                                                .encrypt(
-                                                    senderMessage.message!);
+                                                .encrypt(senderMessage.message!);
                                             recMesaj =
-                                                crypt.RSAPublicKey.fromString(
-                                                        rec.publicKey!)
-                                                    .encrypt(
-                                                        senderMessage.message!);
+                                                crypt.RSAPublicKey.fromString(rec.publicKey!)
+                                                    .encrypt(senderMessage.message!);
                                           } else {
                                             senderMesaj = message.text;
                                             recMesaj = message.text;
@@ -218,9 +199,10 @@ class _ChatInputFieldState extends State<ChatInputField>
                                   ),
                                 ),
                                 SizedBox(
-                                  width: 10,
+                                  width: 5,
                                 ),
                                 SendButton(
+                                  size: 40,
                                   iconColor: Colors.white,
                                   onPressed: () async {
                                     if (!loading) if (message.text.length > 0) {
@@ -232,18 +214,12 @@ class _ChatInputFieldState extends State<ChatInputField>
                                       String recMesaj;
                                       String senderMesaj;
                                       if (rec.publicKey != null) {
-                                        senderMesaj = CryptoBlock()
-                                            .getPublicKey()
-                                            .encrypt(message.text);
-                                        recMesaj =
-                                            crypt.RSAPublicKey.fromString(
-                                                    rec.publicKey!)
-                                                .encrypt(message.text);
+                                        senderMesaj = CryptoBlock().getPublicKey().encrypt(message.text);
+                                        recMesaj =crypt.RSAPublicKey.fromString(rec.publicKey!).encrypt(message.text);
                                       } else {
                                         senderMesaj = message.text;
                                         recMesaj = message.text;
                                       }
-
                                       message.clear();
                                       await messagesBlock.addMessage(
                                         my!,
@@ -273,16 +249,6 @@ class _ChatInputFieldState extends State<ChatInputField>
                                     }
                                   },
                                 ),
-                                // TextButton(
-                                //   child: Icon(Icons.send_rounded, color: kPrimaryColor),
-
-                                //   style: ElevatedButton.styleFrom(
-                                //       shape: RoundedRectangleBorder(
-                                //           borderRadius: BorderRadius.circular(90)),
-                                //       primary: Colors.white,
-                                //       elevation: 0,
-                                //       onPrimary: kPrimaryColor.withOpacity(0.5)),
-                                // ),
                               ],
                             ),
                           ),
@@ -316,20 +282,22 @@ class _ChatInputFieldState extends State<ChatInputField>
                           child: Row(
                             children: [
                               Expanded(
-                                child: Text("Bu kullanıcıyı engellediniz.",style: TextStyle(fontWeight: FontWeight.bold),),
+                                child: Text(
+                                  "Bu kullanıcıyı engellediniz.",
+                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                ),
                               ),
                               TextButton(
                                   style: TextButton.styleFrom(
-                                    shape: StadiumBorder(
-                                      side: BorderSide(
-                                        color:Colors.white30,
+                                      shape: StadiumBorder(
+                                        side: BorderSide(
+                                          color: Colors.white30,
+                                        ),
                                       ),
-                                      
-                                    ),
-                                    primary:Colors.white
-                                  ),
-                                  onPressed: ()async{
-                                   await profileBlock.deleteBlockedUser(my!,rec.uid!);
+                                      primary: Colors.white),
+                                  onPressed: () async {
+                                    await profileBlock.deleteBlockedUser(
+                                        my!, rec.uid!);
                                   },
                                   child: Text("Engeli Kaldır")),
                             ],
@@ -342,8 +310,7 @@ class _ChatInputFieldState extends State<ChatInputField>
         });
   }
 
-  Future<SenderMediaMessage?> getFilesDetailsScreen(
-      FilesTyper filesTyper, UsersBlock usersBlock, String myUid) async {
+  Future<SenderMediaMessage?> getFilesDetailsScreen(FilesTyper filesTyper, UsersBlock usersBlock, String myUid) async {
     MyUser? receiver = usersBlock.getUserFromUid(widget.rUid);
     switch (filesTyper.type) {
       case ChatMessageType.image:
@@ -460,8 +427,8 @@ class _ChatInputFieldState extends State<ChatInputField>
                               context,
                               FilesTyper(
                                   files: files, type: ChatMessageType.image));
-                        }
-                        else Navigator.pop(context);
+                        } else
+                          Navigator.pop(context);
                       },
                     ),
                     dosyaTipleri("Kamera", Icons.camera_alt_outlined,
@@ -480,8 +447,8 @@ class _ChatInputFieldState extends State<ChatInputField>
                             FilesTyper(
                                 files: imagesPlat,
                                 type: ChatMessageType.image));
-                      }
-                      else Navigator.pop(context);
+                      } else
+                        Navigator.pop(context);
                     }),
                     dosyaTipleri("Ses", Icons.headset_outlined,
                         onPressed: () async {

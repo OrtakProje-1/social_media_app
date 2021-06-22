@@ -258,7 +258,7 @@ class _MainScreenState extends State<MainScreen>
                             children: [
                               Center(
                                   child: Text(
-                                "Yeni bir göderi oluştur",
+                                "Yeni bir gönderi oluştur",
                                 style: TextStyle(
                                     color: Colors.white,
                                     fontSize: 17,

@@ -72,15 +72,15 @@ class _VideoMessageState extends State<VideoMessage> {
                     fit: StackFit.expand,
                     children: [
                       Positioned(
-                        left: 0,
-                        bottom: 0,
-                        right: 0,
-                        top: 0,
+                        left: 2,
+                        bottom: mesaj.isNotEmpty ? 0 : 2,
+                        right: 2,
+                        top: 2,
                         child: ClipRRect(
                           borderRadius: BorderRadius.vertical(
                             top: Radius.circular(8),
                             bottom: Radius.circular(
-                                widget.message!.recCryptedText!.isNotEmpty ? 0 : 8),
+                                mesaj.length>0 ? 0 : 8),
                           ),
                           child: videoThump == null
                               ? SizedBox(width: 10,height: 10,)

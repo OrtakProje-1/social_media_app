@@ -9,7 +9,6 @@ import 'package:social_media_app/providers/userBlock.dart';
 import 'package:social_media_app/util/const.dart';
 import 'package:social_media_app/util/router.dart';
 import 'package:social_media_app/views/screens/auth/loginPage.dart';
-import 'package:social_media_app/views/screens/auth/screenshot_widget.dart';
 import 'package:wave/config.dart';
 import 'package:wave/wave.dart';
 import 'package:path_provider/path_provider.dart';
@@ -22,17 +21,7 @@ class SignUpScreen extends StatefulWidget {
 
 class _SignUpScreenState extends State<SignUpScreen> with TextFieldMixin {
   int avatarIndex = 0;
-  SwiperController? _swiperController;
   bool result = false;
-  String? imagePath;
-  List<ScreenshotController> controllers =
-      List.generate(100, (index) => ScreenshotController());
-
-  @override
-  void initState() {
-    super.initState();
-    _swiperController = SwiperController();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -107,22 +96,17 @@ class _SignUpScreenState extends State<SignUpScreen> with TextFieldMixin {
                   children: <Widget>[
                     Padding(
                       padding: const EdgeInsets.only(top: 10),
-                      child: Swiper(
-                        onIndexChanged: (i) {
-                          avatarIndex = i;
-                        },
-                        itemWidth: 100,
-                        layout: SwiperLayout.TINDER,
-                        itemHeight: 100,
-                        itemCount: 100,
-                        loop: true,
-                        controller: _swiperController,
-                        itemBuilder: (c, i) {
-                          return ScreenshotWidget(
-                              controller: controllers[i],
-                              url:
-                                  "https://avatars.dicebear.com/api/avataaars/:seed$i.svg");
-                        },
+                      child: Container(
+                        width: 120,
+                        height: 120,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(90),
+                          color: Colors.black12,
+                          border: Border.all(
+                            color: kPrimaryColor
+                          ),
+                        ),
+                        child: Icon(Icons.person,size: 70,color: Colors.white,),
                       ),
                     ),
                     buildTextField(
@@ -171,26 +155,12 @@ class _SignUpScreenState extends State<SignUpScreen> with TextFieldMixin {
                     ),
                     Container(
                       width: 200,
-                      padding: EdgeInsets.all(30.0),
+                      padding: EdgeInsets.all(15.0),
                       child: RawMaterialButton(
                         padding: EdgeInsets.symmetric(vertical: 16.0),
                         fillColor: Colors.black.withOpacity(0.05),
                         onPressed: () async {
                           print(avatarIndex);
-                          try {
-                            Directory temporaryDir =
-                                await getTemporaryDirectory();
-                            String? path = await controllers[avatarIndex]
-                                .captureAndSave(temporaryDir.path,
-                                    fileName: "${DateTime.now()}.png");
-                            print(path);
-                            setState(() {
-                              result = true;
-                              imagePath = path;
-                            });
-                          } catch (e) {
-                            print(e);
-                          }
                         },
                         elevation: 11,
                         shape: RoundedRectangleBorder(

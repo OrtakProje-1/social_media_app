@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:social_media_app/hus.dart';
 import 'package:social_media_app/providers/messagesBlock.dart';
 import 'package:social_media_app/providers/postsBlock.dart';
 import 'package:social_media_app/providers/profileBlock.dart';
@@ -75,6 +76,7 @@ class MyApp extends StatelessWidget {
             child: w,
           );
         },
+        //home:BorderAnimation(),
         home: StreamBuilder<ConnectivityResult>(
           stream: Connectivity().onConnectivityChanged,
           builder: (BuildContext context,

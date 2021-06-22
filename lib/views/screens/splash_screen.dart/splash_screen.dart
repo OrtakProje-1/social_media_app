@@ -38,7 +38,7 @@ class _SplashScreenState extends State<SplashScreen>
     super.initState();
     getDatas = GetDatas();
     _animationController =
-        AnimationController(vsync: this, duration: Duration(seconds: 3))
+        AnimationController(vsync: this, duration: Duration(seconds: 2))
           ..addListener(() {
             setState(() {});
           })
@@ -53,7 +53,7 @@ class _SplashScreenState extends State<SplashScreen>
       getAllData(widget.user);
     WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
       _animationController?.forward();
-      Future.delayed(Duration(seconds: 3),()async{
+      Future.delayed(Duration(seconds: 2),()async{
         Navigate.pushPageReplacement(context,MainScreen());
       });
     });
@@ -140,7 +140,7 @@ class _SplashScreenState extends State<SplashScreen>
                     animatedTexts: [
                       RotateAnimatedText(
                         widget.user.displayName!,
-                        duration: Duration(milliseconds: 3000),
+                        duration: Duration(seconds: 3),
                         textStyle: GoogleFonts.lobster(
                             fontSize: 40, color:kPrimaryColor),
                       ),
